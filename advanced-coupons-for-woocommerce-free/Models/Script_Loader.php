@@ -362,8 +362,12 @@ class Script_Loader extends Base_Model implements Model_Interface {
             );
         }
 
+        // Retrieve the list of post types allowed for enqueueing scripts on the edit order page.
+        $allowed_post_types_edit_order = apply_filters( 'acfw_allowed_enqueue_edit_order', array() );
+
         // enqueue script in edit order page.
         if ( ( 'post' === $screen->base && 'shop_order' === $screen->id && 'shop_order' === $post_type ) ||
+            ( in_array( $screen->post_type, $allowed_post_types_edit_order, true ) && isset( $_GET['id'] ) ) || // phpcs:ignore WordPress.Security
             ( 'woocommerce_page_wc-orders' === $screen->base && isset( $_GET['id'] ) && 'shop_order' === OrderUtil::get_order_type( $_GET['id'] ) ) // phpcs:ignore WordPress.Security
         ) {
 

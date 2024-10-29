@@ -466,10 +466,17 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
      * @since 4.5.2 Update session cart total amount when original cart total amount is changed.
      * @access public
      *
-     * @param float $cart_total Cart Total.
+     * @param float    $cart_total Cart Total.
+     * @param \WC_Cart $cart Cart object.
      * @return float Filtered cart total.
      */
-    public function apply_store_credit_discount( $cart_total ) {
+    public function apply_store_credit_discount( $cart_total, $cart ) {
+
+        // Validate the cart before applying store credits.
+        if ( ! apply_filters( 'acfw_validate_cart_before_apply_store_credits', true, $cart_total, $cart ) ) {
+            return $cart_total;
+        }
+
         /**
          * NOTE: When currency converter is active, the cart total and the discount amount is based on user currency.
          *       When the currency is switched by the user, the filter allows the currency converter plugin to convert
@@ -1137,7 +1144,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
         add_action( 'woocommerce_cart_totals_coupon_label', array( $this, 'apply_store_credit_discount_coupon_label' ), 10, 2 );
 
         // store credit after tax.
-        add_filter( 'woocommerce_calculated_total', array( $this, 'apply_store_credit_discount' ) );
+        add_filter( 'woocommerce_calculated_total', array( $this, 'apply_store_credit_discount' ), 10, 2 );
         add_action( 'woocommerce_checkout_order_processed', array( $this, 'deduct_store_credits_discount_from_balance' ), 10, 3 );
         add_filter( 'woocommerce_get_order_item_totals', array( $this, 'display_order_review_store_credits_discount_total' ), 10, 2 );
         add_filter( 'woocommerce_get_order_item_totals', array( $this, 'display_order_review_paid_in_store_credits' ), 10, 2 );

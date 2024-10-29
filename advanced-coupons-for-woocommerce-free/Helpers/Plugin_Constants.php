@@ -44,7 +44,7 @@ class Plugin_Constants {
     // Plugin configuration constants.
     const TOKEN               = 'acfwf';
     const INSTALLED_VERSION   = 'acfwf_installed_version';
-    const VERSION             = '4.6.3.1';
+    const VERSION             = '4.6.3.2';
     const TEXT_DOMAIN         = 'advanced-coupons-for-woocommerce-free';
     const THEME_TEMPLATE_PATH = 'advanced-coupons-for-woocommerce-free';
     const META_PREFIX         = '_acfw_';
@@ -213,6 +213,7 @@ class Plugin_Constants {
     const FUNNEL_BUILDER_PLUGIN    = 'funnel-builder/funnel-builder.php';
     const FUNNELKIT_STRIPE         = 'funnelkit-stripe-woo-payment-gateway/funnelkit-stripe-woo-payment-gateway.php';
     const SPEED_OPTIMIZER_PLUGIN   = 'sg-cachepress/sg-cachepress.php';
+    const WC_SUBSCRIPTIONS         = 'woocommerce-subscriptions/woocommerce-subscriptions.php';
 
     // Notifications.
     const NOTIFICATIONS_SCHEDULE_HOOK = 'acfwf_fetch_notifications';

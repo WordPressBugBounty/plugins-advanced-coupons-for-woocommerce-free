@@ -703,6 +703,11 @@ class Helper_Functions {
 
                 $data = \WWP_Wholesale_Prices::get_product_wholesale_price_on_shop_v3( $product->get_id(), $wwp_wholesale_roles );
 
+                // Use wholesale_price_with_tax when setting tax is set to yes and tax display cart is excl.
+                if ( $data['wholesale_price_with_tax'] && \wc_tax_enabled() && 'yes' === get_option( 'woocommerce_prices_include_tax' ) && 'excl' === get_option( 'woocommerce_tax_display_cart' ) ) {
+                    return (float) $data['wholesale_price_with_tax'];
+                }
+
                 if ( $data['wholesale_price'] ) {
                     return (float) $data['wholesale_price'];
                 }

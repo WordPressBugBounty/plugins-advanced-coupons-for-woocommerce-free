@@ -127,6 +127,27 @@ class General extends Base_Model implements Model_Interface {
             return $price;
         }
 
+        // Get product type.
+        $product_type = $product->get_type();
+
+        // Handle variable products differently to avoid availability issues.
+        if ( 'variable' === $product_type || 'variable-subscription' === $product_type ) {
+            // Loop through variations to ensure correct price handling.
+            foreach ( $product->get_children() as $variation_id ) {
+                $variation = wc_get_product( $variation_id );
+                if ( $this->_is_product_valid_for_coupons_in_cart( $variation ) ) {
+                    return $variation->get_regular_price();
+                }
+            }
+            return $price;
+        }
+
+        // Check if the product type is unsupported.
+        $unsupported_product_types = apply_filters( 'acfw_always_use_regular_price_unsupported_product_types', array( 'bundle', 'subscription', 'membership' ) );
+        if ( in_array( $product_type, $unsupported_product_types, true ) ) {
+            return $price;
+        }
+
         // Don't proceed when cart has no applied coupons.
         if ( ! $this->_is_product_valid_for_coupons_in_cart( $product ) ) {
             return $price;

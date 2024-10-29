@@ -375,7 +375,9 @@ class Vite_App {
             foreach ( $imports as $import ) {
                 $file_url = $this->base_url . "{$this->manifest[$import]['file']}";
 
-                printf( '<link rel="modulepreload" href="%s" />', esc_url( $file_url ) );
+                $cross_origin = apply_filters( 'acfw_enable_subresource_integrity_check', false, $file_url );
+
+                printf( '<link rel="modulepreload" href="%s" %s />', esc_url( $file_url ), $cross_origin ? 'crossorigin' : '' );
 
                 /***************************************************************************
                  * Enqueue styles of directly imported components

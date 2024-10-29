@@ -284,14 +284,17 @@ class Frontend extends Base_Model implements Model_Interface {
                 $total_discount     += $discount * $deal['quantity'];
                 $total_discount_qty += $deal['quantity'];
 
-                if ( ! isset( $discounted_prices[ $discount ] ) ) {
-                    $discounted_prices[ $discount ] = array(
+                // Cast the discount to a string if it's a float.
+                $discount_key = (string) $discount;
+
+                if ( ! isset( $discounted_prices[ $discount_key ] ) ) {
+                    $discounted_prices[ $discount_key ] = array(
                         'discount' => $discount,
                         'quantity' => 0,
                     );
                 }
 
-                $discounted_prices[ $discount ]['quantity'] += $deal['quantity'];
+                $discounted_prices[ $discount_key ]['quantity'] += $deal['quantity'];
             }
 
             // calculate new item price based on the total discount and set it.

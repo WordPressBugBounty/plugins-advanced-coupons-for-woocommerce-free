@@ -3,7 +3,7 @@ Contributors: jkohlbach, RymeraWebCo, Rymera01, smub
 Tags: woocommerce coupons, bogo coupons, store credit, url coupons, bogo
 Requires at least: 5.2
 Tested up to: 6.6
-Stable tag: 4.6.3.1
+Stable tag: 4.6.3.2
 Requires PHP: 5.6
 License: GNU General Public License v2.0 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -367,6 +367,9 @@ Thanks,
 Josh Kohlbach (CEO of Rymera Web Co)
 
 == Changelog ==
+
+= 4.6.3.2 =
+- Bug Fix: Store Credit Should Only Applied to Orders not on the Subscription
 
 = 4.6.3.1 =
 - Bug Fix: Old and expired auto-apply coupons are applied on the cart

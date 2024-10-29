@@ -31,6 +31,10 @@ trait Admin_Apply_Store_Credits {
      */
     public function display_apply_store_credits_discount_in_edit_order_page( $order ) {
 
+        if ( ! apply_filters( 'acfw_enable_apply_store_credits_order', true, $order ) ) {
+            return;
+        }
+
         $allowed_statuses = apply_filters( 'acfwf_apply_store_credits_order_allowed_statuses', array( 'pending', 'on-hold', 'checkout-draft' ) );
 
         if ( ! in_array( $order->get_status(), $allowed_statuses, true ) || // Skip if order status is not allowed.
