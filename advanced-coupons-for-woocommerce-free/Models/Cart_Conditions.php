@@ -712,7 +712,7 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initializab
                     'group'     => 'cart-items',
                     'key'       => 'cart-subtotal',
                     'title'     => __( 'Cart Subtotal', 'advanced-coupons-for-woocommerce-free' ),
-                    'desc'      => __( 'After any price modifications or discounts', 'advanced-coupons-for-woocommerce-free' ),
+                    'desc'      => __( 'After any price modifications', 'advanced-coupons-for-woocommerce-free' ),
                     /* Translators: %s: Currency symbol. */
                     'field'     => sprintf( __( 'Cart Subtotal (%s)', 'advanced-coupons-for-woocommerce-free' ), get_woocommerce_currency_symbol() ),
                     'tax_label' => __( 'Include Tax?', 'advanced-coupons-for-woocommerce-free' ),

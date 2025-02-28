@@ -478,7 +478,6 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
      * @return float Filtered cart total.
      */
     public function apply_store_credit_discount( $cart_total, $cart ) {
-
         // Validate the cart before applying store credits.
         if ( ! apply_filters( 'acfw_validate_cart_before_apply_store_credits', true, $cart_total, $cart ) ) {
             return $cart_total;
@@ -496,6 +495,14 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
          * propagated yet. The currency converter plugin will recalculate the cart again and would then correctly apply the discount.
          */
         if ( ! $sc_data || ! isset( $sc_data['amount'] ) || get_woocommerce_currency() !== $sc_data['currency'] ) {
+            return $cart_total;
+        }
+
+        /**
+         * Skip when the cart total amount is equal to the actual cart total minus the applied store credit discount.
+         * This is to prevent the store credit discount from being applied twice.
+         */
+        if ( wc_remove_number_precision( wc_add_number_precision( $sc_data['cart_total'] ) - wc_add_number_precision( $sc_data['amount'] ) ) === $cart_total ) {
             return $cart_total;
         }
 
@@ -1151,7 +1158,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
         add_action( 'woocommerce_cart_totals_coupon_label', array( $this, 'apply_store_credit_discount_coupon_label' ), 10, 2 );
 
         // store credit after tax.
-        add_filter( 'woocommerce_calculated_total', array( $this, 'apply_store_credit_discount' ), 10, 2 );
+        add_filter( 'woocommerce_calculated_total', array( $this, 'apply_store_credit_discount' ), 1001, 2 );
         add_action( 'woocommerce_checkout_order_processed', array( $this, 'deduct_store_credits_discount_from_balance' ), 10, 3 );
         add_filter( 'woocommerce_get_order_item_totals', array( $this, 'display_order_review_store_credits_discount_total' ), 10, 2 );
         add_filter( 'woocommerce_get_order_item_totals', array( $this, 'display_order_review_paid_in_store_credits' ), 10, 2 );

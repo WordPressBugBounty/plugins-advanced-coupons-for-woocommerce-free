@@ -337,8 +337,8 @@ msgid "Advanced Usage Limits"
 msgstr "Limites d’utilisation avancées"
 
 #: Models/Cart_Conditions.php:715
-msgid "After any price modifications or discounts"
-msgstr "Après d'éventuelles modifications de prix ou des réductions"
+msgid "After any price modifications"
+msgstr "Après d'éventuelles modifications de prix"
 
 #: Models/Edit_Coupon.php:1013
 msgid "All Categories"
@@ -940,7 +940,7 @@ msgstr "Interdiction"
 msgid "Disallowed Customer User Role"
 msgstr "Le client n'a pas un rôle interdit"
 
-#: Models/Store_Credits/Checkout.php:656
+#: Models/Store_Credits/Checkout.php:663
 msgid "Discount (Store Credit)"
 msgstr "Réduction (crédit boutique)"
 
@@ -1505,7 +1505,7 @@ msgstr "Installé"
 #: Models/BOGO/Admin.php:357
 #: Models/Cart_Conditions.php:597
 #: Models/Emails.php:263
-#: Models/Store_Credits/Checkout.php:930
+#: Models/Store_Credits/Checkout.php:937
 msgid "Invalid AJAX call"
 msgstr "Appel AJAX invalide"
 
@@ -1669,7 +1669,7 @@ msgstr "Message qui sera affiché lorsqu'un code promo a été appliquée avec s
 #: Models/BOGO/Admin.php:305
 #: Models/BOGO/Admin.php:367
 #: Models/Cart_Conditions.php:607
-#: Models/Store_Credits/Checkout.php:943
+#: Models/Store_Credits/Checkout.php:950
 msgid "Missing required post data"
 msgstr "Manque des données post"
 
@@ -1992,8 +1992,8 @@ msgstr "Payé le %1$s via %2$s"
 msgid "Paid via Store Credits"
 msgstr "Payé via Crédit Boutique"
 
-#: Models/Store_Credits/Checkout.php:707
-#: Models/Store_Credits/Checkout.php:745
+#: Models/Store_Credits/Checkout.php:714
+#: Models/Store_Credits/Checkout.php:752
 msgid "Paid with Store Credits"
 msgstr "Payé avec du Crédit Boutique"
 
@@ -2019,7 +2019,7 @@ msgstr "Restriction des modes de paiement"
 msgid "Payment Methods Restriction (Premium)"
 msgstr "Restriction des modes de paiement (Premium)"
 
-#: Models/Store_Credits/Checkout.php:754
+#: Models/Store_Credits/Checkout.php:761
 msgid "Pending Amount"
 msgstr "Montant en attente"
 
@@ -2237,7 +2237,7 @@ msgstr "URL de redirection si un code promo invalide est accédé"
 msgid "Refresh the page and try again."
 msgstr "Rafraîchissez la page et réessayez."
 
-#: Models/Store_Credits/Checkout.php:800
+#: Models/Store_Credits/Checkout.php:807
 msgid "Refund (Store Credits):"
 msgstr "Remboursement (Crédit Boutique):"
 
@@ -2621,11 +2621,11 @@ msgstr "Solde de crédit boutique"
 msgid "Store credit can be used to purchase items on this store."
 msgstr "Le crédit boutique peut être utilisé pour vos achats dans cette boutique."
 
-#: Models/Store_Credits/Checkout.php:958
+#: Models/Store_Credits/Checkout.php:965
 msgid "Store credit discount has been removed."
 msgstr "La réduction en crédit boutique a été supprimée."
 
-#: Models/Store_Credits/Checkout.php:957
+#: Models/Store_Credits/Checkout.php:964
 msgid "Store credit discount was applied successfully."
 msgstr "La réduction en crédit boutique a été appliquée avec succès."
 
@@ -2773,7 +2773,7 @@ msgid "The tools you need to run these deals in your WooCommerce store"
 msgstr "Les outils dont vous avez besoin pour mettre en œuvre ces offres dans votre boutique WooCommerce"
 
 #: Models/Objects/Blocks/Checkout_Integration.php:113
-#: Models/Store_Credits/Checkout.php:510
+#: Models/Store_Credits/Checkout.php:517
 msgid "The total of your order changed, please click here to <a class=\"acfw-reapply-sc-discount\" href=\"#\">reapply the store credit discount</a>."
 msgstr "Le total de votre commande a changé, veuillez cliquer ici pour <a class=\"acfw-reapply-sc-discount\" href=\"#\">réappliquer la réduction via crédit boutique</a>."
 
@@ -3267,7 +3267,7 @@ msgstr "Vous utilisez actuellement Advanced Coupons for WooCommerce Free sous li
 msgid "You are not allowed to do this"
 msgstr "Vous n'êtes pas autorisé à le faire"
 
-#: Models/Store_Credits/Checkout.php:938
+#: Models/Store_Credits/Checkout.php:945
 msgid "You are not allowed to do this."
 msgstr "Vous n’êtes pas autorisé à faire cela."
 

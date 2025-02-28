@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Advanced Coupons for WooCommerce Free plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Advanced Coupons for WooCommerce Free 4.6.5\n"
+"Project-Id-Version: Advanced Coupons for WooCommerce Free 4.6.5.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/code\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-01-27T00:58:39+00:00\n"
+"POT-Creation-Date: 2025-02-28T07:09:36+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: advanced-coupons-for-woocommerce-free\n"
@@ -1205,7 +1205,7 @@ msgstr ""
 #: Models/BOGO/Admin.php:357
 #: Models/Cart_Conditions.php:597
 #: Models/Emails.php:263
-#: Models/Store_Credits/Checkout.php:930
+#: Models/Store_Credits/Checkout.php:937
 msgid "Invalid AJAX call"
 msgstr ""
 
@@ -1241,7 +1241,7 @@ msgstr ""
 #: Models/BOGO/Admin.php:305
 #: Models/BOGO/Admin.php:367
 #: Models/Cart_Conditions.php:607
-#: Models/Store_Credits/Checkout.php:943
+#: Models/Store_Credits/Checkout.php:950
 msgid "Missing required post data"
 msgstr ""
 
@@ -1329,7 +1329,7 @@ msgid "Cart Subtotal"
 msgstr ""
 
 #: Models/Cart_Conditions.php:715
-msgid "After any price modifications or discounts"
+msgid "After any price modifications"
 msgstr ""
 
 #. Translators: %s: Currency symbol.
@@ -2195,7 +2195,7 @@ msgid "Pay with Store Credits"
 msgstr ""
 
 #: Models/Objects/Blocks/Checkout_Integration.php:113
-#: Models/Store_Credits/Checkout.php:510
+#: Models/Store_Credits/Checkout.php:517
 msgid "The total of your order changed, please click here to <a class=\"acfw-reapply-sc-discount\" href=\"#\">reapply the store credit discount</a>."
 msgstr ""
 
@@ -3082,32 +3082,32 @@ msgstr ""
 msgid "Store Credit Discount"
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:656
+#: Models/Store_Credits/Checkout.php:663
 msgid "Discount (Store Credit)"
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:707
-#: Models/Store_Credits/Checkout.php:745
+#: Models/Store_Credits/Checkout.php:714
+#: Models/Store_Credits/Checkout.php:752
 msgid "Paid with Store Credits"
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:754
+#: Models/Store_Credits/Checkout.php:761
 msgid "Pending Amount"
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:800
+#: Models/Store_Credits/Checkout.php:807
 msgid "Refund (Store Credits):"
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:938
+#: Models/Store_Credits/Checkout.php:945
 msgid "You are not allowed to do this."
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:957
+#: Models/Store_Credits/Checkout.php:964
 msgid "Store credit discount was applied successfully."
 msgstr ""
 
-#: Models/Store_Credits/Checkout.php:958
+#: Models/Store_Credits/Checkout.php:965
 msgid "Store credit discount has been removed."
 msgstr ""
 

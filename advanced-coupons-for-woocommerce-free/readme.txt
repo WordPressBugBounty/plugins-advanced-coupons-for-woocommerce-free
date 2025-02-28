@@ -3,7 +3,7 @@ Contributors: jkohlbach, RymeraWebCo, Rymera01, smub
 Tags: woocommerce coupons, bogo coupons, store credit, url coupons, bogo
 Requires at least: 5.2
 Tested up to: 6.7
-Stable tag: 4.6.5
+Stable tag: 4.6.5.1
 Requires PHP: 5.6
 License: GNU General Public License v2.0 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -367,6 +367,10 @@ Thanks,
 Josh Kohlbach (CEO of Rymera Web Co)
 
 == Changelog ==
+
+= 4.6.5.1 =
+- Bug Fix: Remove the string "or discount" from the cart subtotal coupon editor
+- Bug Fix: Store Credit not computing properly with WooCommerce Subscription
 
 = 4.6.5 =
 - Bug Fix: Coupon Template not working with "Total Customer Spend" cart condition

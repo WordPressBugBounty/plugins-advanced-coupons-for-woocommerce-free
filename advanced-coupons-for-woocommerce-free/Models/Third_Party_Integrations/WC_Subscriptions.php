@@ -202,12 +202,6 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
 
             // Checkout related hooks.
 
-            // Remove hook for applying after tax store credits.
-            remove_filter( 'woocommerce_calculated_total', array( $this->_sc_checkout, 'apply_store_credit_discount' ), 10, 2 );
-
-            // Re-add hook for applying after tax store credits but set to 1001 priority.
-            add_filter( 'woocommerce_calculated_total', array( $this->_sc_checkout, 'apply_store_credit_discount' ), 1001, 2 );
-
             // Prevent the after tax store credits from being applied to recurring carts.
             add_filter( 'acfw_validate_cart_before_apply_store_credits', array( $this, 'prevent_store_credits_apply_on_recurring_carts' ), 10, 3 );
 
