@@ -44,7 +44,7 @@ class Plugin_Constants {
     // Plugin configuration constants.
     const TOKEN               = 'acfwf';
     const INSTALLED_VERSION   = 'acfwf_installed_version';
-    const VERSION             = '4.6.5.1';
+    const VERSION             = '4.6.5.2';
     const TEXT_DOMAIN         = 'advanced-coupons-for-woocommerce-free';
     const THEME_TEMPLATE_PATH = 'advanced-coupons-for-woocommerce-free';
     const META_PREFIX         = '_acfw_';
@@ -58,15 +58,14 @@ class Plugin_Constants {
     const PREMIUM_LICENSE_STATUS_CACHE = 'acfw_premium_license_status_cache';
 
     // Notices.
-    const SHOW_GETTING_STARTED_NOTICE          = 'acfwf_show_getting_started_notice';
-    const UPRADE_NOTICE_CRON                   = 'acfwf_upgrade_to_premium_cron';
-    const SHOW_UPGRADE_NOTICE                  = 'acfwf_show_upgrade_to_premium_notice';
-    const PROMOTE_WWS_NOTICE_CRON              = 'acfwf_promote_wws_notice_cron';
-    const SHOW_PROMOTE_WWS_NOTICE              = 'acfwf_show_promote_wws_notice';
-    const SHOW_REVIEW_REQUEST_NOTICE           = 'acfwf_show_review_request_notice';
-    const NOTICES_CRON                         = 'acfwf_notices_cron';
-    const SHOW_ALLOW_USAGE_NOTICE              = 'acfwf_show_allow_usage_notice';
-    const SHOW_FUNNELKIT_STRIPE_PROMOTE_NOTICE = 'acfwf_show_funnelkit_stripe_promote_notice';
+    const SHOW_GETTING_STARTED_NOTICE = 'acfwf_show_getting_started_notice';
+    const UPRADE_NOTICE_CRON          = 'acfwf_upgrade_to_premium_cron';
+    const SHOW_UPGRADE_NOTICE         = 'acfwf_show_upgrade_to_premium_notice';
+    const PROMOTE_WWS_NOTICE_CRON     = 'acfwf_promote_wws_notice_cron';
+    const SHOW_PROMOTE_WWS_NOTICE     = 'acfwf_show_promote_wws_notice';
+    const SHOW_REVIEW_REQUEST_NOTICE  = 'acfwf_show_review_request_notice';
+    const NOTICES_CRON                = 'acfwf_notices_cron';
+    const SHOW_ALLOW_USAGE_NOTICE     = 'acfwf_show_allow_usage_notice';
 
     // WC Admin.
     const REGISTER_WC_ADMIN_NOTE = 'acfwf_register_wc_admin_note';
@@ -211,7 +210,6 @@ class Plugin_Constants {
     // 3rd party plugins
     const UNCANNY_AUTOMATOR_PLUGIN = 'uncanny-automator/uncanny-automator.php';
     const FUNNEL_BUILDER_PLUGIN    = 'funnel-builder/funnel-builder.php';
-    const FUNNELKIT_STRIPE         = 'funnelkit-stripe-woo-payment-gateway/funnelkit-stripe-woo-payment-gateway.php';
     const SPEED_OPTIMIZER_PLUGIN   = 'sg-cachepress/sg-cachepress.php';
     const WC_SUBSCRIPTIONS         = 'woocommerce-subscriptions/woocommerce-subscriptions.php';
     const PUSHENGAGE_PLUGIN        = 'pushengage/main.php';

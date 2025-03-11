@@ -4503,26 +4503,6 @@ msgstr ""
 msgid "Download QR Image"
 msgstr ""
 
-#: Models/Third_Party_Integrations/FunnelKit_Stripe.php:78
-msgid "ACCEPT PAYMENTS VIA STRIPE"
-msgstr ""
-
-#: Models/Third_Party_Integrations/FunnelKit_Stripe.php:80
-msgid "The free <strong>Stripe Payment Gateway for WooCommerce plugin</strong> by FunnelKit is available and will let you accept credit card, Google Pay, and Apple Pay payments on your store. It also supports product upselling during checkout via FunnelKit's Funnel Builder plugin. This plugin has been tested and works well with Advanced Coupons - click here to install FunnelKit's Stripe plugin and start accepting payments now."
-msgstr ""
-
-#: Models/Third_Party_Integrations/FunnelKit_Stripe.php:85
-msgid "STRIPE REPLACEMENT AVAILABLE"
-msgstr ""
-
-#: Models/Third_Party_Integrations/FunnelKit_Stripe.php:87
-msgid "We detected that you are using the <strong>WooCommerce Stripe Gateway plugin</strong>. A drop in replacement plugin, <strong>Stripe Payment Gateway for WooCommerce</strong> plugin by FunnelKit is available. This new Stripe plugin has better express payment support, accepts all cards, Google Pay, and Apple Pay. It supports product upselling during checkout via FunnelKit's Funnel Builder plugin. This plugin has been tested and works well with Advanced Coupons - click here to install now."
-msgstr ""
-
-#: Models/Third_Party_Integrations/FunnelKit_Stripe.php:114
-msgid "Install & Activate Free Plugin →"
-msgstr ""
-
 #: Models/Third_Party_Integrations/Wholesale_Suite.php:59
 msgid "Exclude wholesale items"
 msgstr ""

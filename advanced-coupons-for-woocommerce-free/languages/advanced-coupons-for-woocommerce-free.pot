@@ -3,13 +3,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Advanced Coupons for WooCommerce Free 4.6.5.1\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/code\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/advanced-coupons-for-woocommerce-free\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-02-28T07:09:36+00:00\n"
+"POT-Creation-Date: 2025-03-11T06:49:16+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: advanced-coupons-for-woocommerce-free\n"
@@ -3231,26 +3231,6 @@ msgstr ""
 #: Models/Third_Party_Integrations/FunnelKit.php:179
 #: Models/Upsell.php:1958
 msgid "Plugin installed and activated successfully!"
-msgstr ""
-
-#: Models/Third_Party_Integrations/FunnelKit_Stripe.php:78
-msgid "ACCEPT PAYMENTS VIA STRIPE"
-msgstr ""
-
-#: Models/Third_Party_Integrations/FunnelKit_Stripe.php:80
-msgid "The free <strong>Stripe Payment Gateway for WooCommerce plugin</strong> by FunnelKit is available and will let you accept credit card, Google Pay, and Apple Pay payments on your store. It also supports product upselling during checkout via FunnelKit's Funnel Builder plugin. This plugin has been tested and works well with Advanced Coupons - click here to install FunnelKit's Stripe plugin and start accepting payments now."
-msgstr ""
-
-#: Models/Third_Party_Integrations/FunnelKit_Stripe.php:85
-msgid "STRIPE REPLACEMENT AVAILABLE"
-msgstr ""
-
-#: Models/Third_Party_Integrations/FunnelKit_Stripe.php:87
-msgid "We detected that you are using the <strong>WooCommerce Stripe Gateway plugin</strong>. A drop in replacement plugin, <strong>Stripe Payment Gateway for WooCommerce</strong> plugin by FunnelKit is available. This new Stripe plugin has better express payment support, accepts all cards, Google Pay, and Apple Pay. It supports product upselling during checkout via FunnelKit's Funnel Builder plugin. This plugin has been tested and works well with Advanced Coupons - click here to install now."
-msgstr ""
-
-#: Models/Third_Party_Integrations/FunnelKit_Stripe.php:114
-msgid "Install & Activate Free Plugin →"
 msgstr ""
 
 #: Models/Third_Party_Integrations/PushEngage.php:113

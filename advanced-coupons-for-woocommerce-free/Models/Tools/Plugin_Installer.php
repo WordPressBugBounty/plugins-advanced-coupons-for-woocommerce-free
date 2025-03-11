@@ -145,11 +145,10 @@ class Plugin_Installer extends Base_Model implements Model_Interface, Initializa
     public function get_allowed_plugins() {
 
         $allowed_plugins = array(
-            'woocommerce'                          => 'woocommmerce/woocommerce.php',
-            'uncanny-automator'                    => Plugin_Constants::UNCANNY_AUTOMATOR_PLUGIN,
-            'funnel-builder'                       => Plugin_Constants::FUNNEL_BUILDER_PLUGIN,
-            'funnelkit-stripe-woo-payment-gateway' => Plugin_Constants::FUNNELKIT_STRIPE,
-            'pushengage'                           => Plugin_Constants::PUSHENGAGE_PLUGIN,
+            'woocommerce'       => 'woocommmerce/woocommerce.php',
+            'uncanny-automator' => Plugin_Constants::UNCANNY_AUTOMATOR_PLUGIN,
+            'funnel-builder'    => Plugin_Constants::FUNNEL_BUILDER_PLUGIN,
+            'pushengage'        => Plugin_Constants::PUSHENGAGE_PLUGIN,
         );
 
         // Allow other plugins to be installed but not let them overwrite the ones listed above.
