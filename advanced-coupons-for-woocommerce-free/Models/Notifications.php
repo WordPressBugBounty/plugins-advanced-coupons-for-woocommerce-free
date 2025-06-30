@@ -58,6 +58,13 @@ class Notifications extends Base_Model implements Model_Interface, Initializable
      * @return array Array of admin notifications.
      */
     public function get_all_admin_notifications( $notices ) {
+        $cached_notices = get_transient( Plugin_Constants::NOTIFICATIONS_CACHE );
+
+        // Return cached data if available.
+        if ( false !== $cached_notices ) {
+            return array_merge( $notices, $cached_notices );
+        }
+
         // Get WC Notes.
         $data_store  = \WC_Data_Store::load( 'admin-note' );
         $query_args  = array(
@@ -66,6 +73,8 @@ class Notifications extends Base_Model implements Model_Interface, Initializable
             'is_deleted' => 0,
         );
         $admin_notes = $data_store->get_notes( $query_args );
+
+        $cached_notices = array();
 
         // Parsing to ACFW Notes.
         foreach ( $admin_notes as $admin_note ) {
@@ -111,10 +120,13 @@ class Notifications extends Base_Model implements Model_Interface, Initializable
                 'nonce'                   => wp_create_nonce( 'acfw_dismiss_notice_' . $note->get_name() ),
             );
 
-            $notices[ $note->get_name() ] = $data;
+            $cached_notices[ $note->get_name() ] = $data;
         }
 
-        return $notices;
+        // Cache the results.
+        set_transient( Plugin_Constants::NOTIFICATIONS_CACHE, $cached_notices, DAY_IN_SECONDS );
+
+        return array_merge( $notices, $cached_notices );
     }
 
     /**

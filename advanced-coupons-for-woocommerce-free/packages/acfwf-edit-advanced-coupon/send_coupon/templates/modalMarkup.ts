@@ -1,6 +1,8 @@
 import labels from '../labels';
+import formState from '../state';
 import sendCouponToSectionMarkup from './sendCouponToSection';
 import customerDetailsSectionMarkup from './customerDetailsSection';
+import messageDetailsSectionMarkup from './messageDetailsSection';
 import confirmAndSendSection from './confirmAndSendSection';
 
 declare var jQuery: any;
@@ -37,6 +39,7 @@ export default function modalMarkup() {
       <div class="acfw-send-coupon-form-sections">
         ${getSectionRenderer('send_coupon_to')()}
         ${getSectionRenderer('customer_details')()}
+        ${getSectionRenderer('message_details')()}
         ${getSectionRenderer('confirm_and_send')()}
       </div>
     </div>
@@ -51,9 +54,26 @@ export default function modalMarkup() {
  * @param {string} section The section to rerender.
  */
 export function reRenderSection(section: string) {
-  const $modal = $('.acfw-send-coupon-modal');
+  const $container = $('.acfw-send-coupon-form-sections');
+  const $section = $container.find(`[data-section='${section}']`);
+  const newSection = getSectionRenderer(section)();
 
-  $modal.find(`[data-section='${section}']`).replaceWith(getSectionRenderer(section)());
+  // Remove message_details if formState.get('option') is not 'pushengage'
+  if (formState.get('option') !== 'pushengage') {
+    $container.find(`[data-section='message_details']`).remove();
+  }
+
+  // Find the "customer_details" section
+  const $customerDetails = $container.find(`[data-section='customer_details']`);
+
+  // If the section exists, replace it; otherwise, insert it after customer_details
+  if ($section.length) {
+    $section.replaceWith(newSection);
+  } else if ($customerDetails.length) {
+    $customerDetails.after(newSection);
+  } else {
+    $container.append(newSection);
+  }
 }
 
 /**
@@ -70,6 +90,8 @@ function getSectionRenderer(section: string) {
       return sendCouponToSectionMarkup;
     case 'customer_details':
       return customerDetailsSectionMarkup;
+    case 'message_details':
+      return messageDetailsSectionMarkup;
     case 'confirm_and_send':
       return confirmAndSendSection;
   }

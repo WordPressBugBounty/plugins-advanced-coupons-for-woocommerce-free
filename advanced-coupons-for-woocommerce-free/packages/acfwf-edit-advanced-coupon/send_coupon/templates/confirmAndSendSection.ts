@@ -14,7 +14,7 @@ export default function confirmAndSendSection() {
     formState.get('section') === 'confirm_and_send' ? 'current' : ''
   }" data-section="confirm_and_send">
     <div class="section-number">
-      <span>3</span>
+      <span>${formState.get('option') === 'email' ? '3' : '4'}</span>
     </div>
     <div class="section-inner">
       <h3>${labels.confirm_and_send}</h3>
@@ -91,9 +91,16 @@ function getSectionContent(option: string) {
         <p class="request-message"></p>`;
     case 'pushengage':
       var isDisabled = !formState.get('title') || !formState.get('message') || !formState.get('url') ? 'disabled' : '';
+      if ('subscribers' === formState.get('send_to')) {
+        isDisabled = isDisabled || formState.get('subscriber_ids') == 0 ? 'disabled' : '';
+      }
 
       return `<p>
-          <strong>${labels.pushengage.segment}:</strong> ${formState.get('segments') ?? ''}
+          <strong>${
+            'subscribers' === formState.get('send_to') ? labels.pushengage.subscribers : labels.pushengage.segments
+          }:</strong> ${
+        'subscribers' === formState.get('send_to') ? formState.get('subscribers') : formState.get('segments')
+      }
         </p>
         <p><a class="preview-pushengage-link ${isDisabled}" href="#">${
         labels.pushengage.preview_pushengage

@@ -107,7 +107,7 @@ class PushEngage extends Base_Model implements Model_Interface {
         $params = $this->_helper_functions->api_sanitize_query_parameters( $request->get_params() );
 
         // Invalidate request when the required parameters are missing.
-        if ( ! isset( $params['coupon_id'] ) || ! isset( $params['segment_ids'] ) || ! isset( $params['title'] ) || ! isset( $params['message'] ) || ! isset( $params['url'] ) ) {
+        if ( ! isset( $params['coupon_id'] ) || ! isset( $params['title'] ) || ! isset( $params['message'] ) || ! isset( $params['url'] ) ) {
             return new \WP_Error(
                 'acfw_missing_params',
                 __( 'There was an error in the process of sending the pushengage to the customer. Please try again.', 'advanced-coupons-for-woocommerce-free' ),
@@ -147,7 +147,7 @@ class PushEngage extends Base_Model implements Model_Interface {
         );
 
         // Add the segments filter to notification criteria.
-        if ( is_array( $params['segment_ids'] ) ) {
+        if ( is_array( $params['segment_ids'] ) && 'segments' === $params['send_to'] ) {
             $pushengage_params['include_segments']      = array_map( 'strval', $params['segment_ids'] );
             $pushengage_params['notification_criteria'] = array(
                 'filter' => array(
@@ -157,6 +157,32 @@ class PushEngage extends Base_Model implements Model_Interface {
                                 'field' => 'segments',
                                 'op'    => 'in',
                                 'value' => $pushengage_params['include_segments'],
+                            ),
+                        ),
+                    ),
+                ),
+            );
+        }
+
+        // Add the subscribers filter to notification criteria.
+        if ( is_array( $params['subscriber_ids'] ) && 'subscribers' === $params['send_to'] ) {
+            $subscriber_ids = array_map(
+                function ( $user_id ) {
+                    $meta_values = get_user_meta( $user_id, 'pushengage_subscriber_ids', false );
+                    return is_array( $meta_values ) ? array_column( $meta_values, 0 ) : array();
+                },
+                array_map( 'strval', (array) $params['subscriber_ids'] )
+            );
+            $subscriber_ids = array_merge( ...array_filter( $subscriber_ids ) );
+
+            $pushengage_params['notification_criteria'] = array(
+                'filter' => array(
+                    'value' => array(
+                        array(
+                            array(
+                                'field' => 'device_token_hash',
+                                'op'    => 'in',
+                                'value' => $subscriber_ids,
                             ),
                         ),
                     ),
@@ -176,8 +202,14 @@ class PushEngage extends Base_Model implements Model_Interface {
 
         return \rest_ensure_response(
             array(
-                /* Translators: %s: Segment. */
-                'message' => sprintf( __( 'The coupon has been successfully sent to %s.', 'advanced-coupons-for-woocommerce-free' ), implode( ', ', (array) $params['segments'] ) ),
+                'message' => sprintf(
+                    'segments' === $params['send_to']
+                        /* Translators: %s: Segment names. */
+                        ? __( 'The coupon has been successfully sent to segments: %s.', 'advanced-coupons-for-woocommerce-free' )
+                        /* Translators: %s: Subscriber IDs. */
+                        : __( 'The coupon has been successfully sent to subscribers: %s.', 'advanced-coupons-for-woocommerce-free' ),
+                    implode( ', ', (array) ( 'segments' === $params['send_to'] ? $params['segments'] : $params['subscribers'] ) )
+                ),
             )
         );
     }
@@ -259,6 +291,51 @@ class PushEngage extends Base_Model implements Model_Interface {
     }
 
     /**
+     * Search for PushEngage subscribed customers based on user input.
+     *
+     * @since 4.6.6
+     *
+     * @return void Outputs JSON response with matching customers.
+     */
+    public function search_pushengage_subscribed_customer() {
+        global $wpdb;
+
+        check_ajax_referer( 'acfw_pushengage_subscriber', 'nonce' );
+
+        $search = isset( $_GET['search'] ) ? sanitize_text_field( wp_unslash( $_GET['search'] ) ) : '';
+        $limit  = isset( $_GET['limit'] ) ? absint( $_GET['limit'] ) : 10;
+
+        $user_ids = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT user_id FROM {$wpdb->usermeta} 
+                WHERE meta_key = %s 
+                AND meta_value IS NOT NULL 
+                AND meta_value != '' 
+                ORDER BY user_id ASC 
+                LIMIT %d",
+                'pushengage_subscriber_ids',
+                $limit
+            )
+        );
+
+        $results = array();
+
+        if ( ! empty( $user_ids ) ) {
+            foreach ( $user_ids as $user_id ) {
+                $user = get_userdata( $user_id );
+                if ( $user && ( empty( $search ) || stripos( $user->user_email, $search ) !== false || stripos( $user->display_name, $search ) !== false ) ) {
+                    $results[] = array(
+                        'id'   => $user_id,
+                        'text' => sprintf( '%s - %s', $user->display_name, $user->user_email ),
+                    );
+                }
+            }
+        }
+
+        wp_send_json( $results );
+    }
+
+    /**
      * Execute PushEngage class.
      *
      * @since 4.6.4
@@ -272,5 +349,6 @@ class PushEngage extends Base_Model implements Model_Interface {
 
         add_action( 'acfw_after_install_activate_plugin', array( $this, 'update_pushengage_promote_after_install_activate_plugin' ), 10, 2 );
         add_filter( 'acfw_edit_advanced_coupon_localize', array( $this, 'register_pushengage_localized_data' ), 11, 1 );
+        add_filter( 'wp_ajax_acfw_pushengage_subscribed_customer_search', array( $this, 'search_pushengage_subscribed_customer' ) );
     }
 }

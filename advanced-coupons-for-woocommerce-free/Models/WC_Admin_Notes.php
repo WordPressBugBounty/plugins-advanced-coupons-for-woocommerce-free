@@ -2,16 +2,17 @@
 namespace ACFWF\Models;
 
 use ACFWF\Abstracts\Abstract_Main_Plugin_Class;
+use ACFWF\Abstracts\Base_Model;
 use ACFWF\Helpers\Helper_Functions;
 use ACFWF\Helpers\Plugin_Constants;
 use ACFWF\Interfaces\Activatable_Interface;
 use ACFWF\Interfaces\Initializable_Interface;
 use ACFWF\Interfaces\Model_Interface;
 
-if (!defined('ABSPATH')) {
+if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
-// Exit if accessed directly
+// Exit if accessed directly.
 
 /**
  * Model that houses the WC_Admin_Notes module logic.
@@ -19,42 +20,7 @@ if (!defined('ABSPATH')) {
  *
  * @since 1.2
  */
-class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activatable_Interface
-{
-
-    /*
-    |--------------------------------------------------------------------------
-    | Class Properties
-    |--------------------------------------------------------------------------
-     */
-
-    /**
-     * Property that holds the single main instance of URL_Coupon.
-     *
-     * @since 1.2
-     * @access private
-     * @var Cart_Conditions
-     */
-    private static $_instance;
-
-    /**
-     * Model that houses all the plugin constants.
-     *
-     * @since 1.2
-     * @access private
-     * @var Plugin_Constants
-     */
-    private $_constants;
-
-    /**
-     * Property that houses all the helper functions of the plugin.
-     *
-     * @since 1.2
-     * @access private
-     * @var Helper_Functions
-     */
-    private $_helper_functions;
-
+class WC_Admin_Notes extends Base_Model implements Model_Interface, Initializable_Interface, Activatable_Interface {
     /*
     |--------------------------------------------------------------------------
     | Class Methods
@@ -71,35 +37,11 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
      * @param Plugin_Constants           $constants        Plugin constants object.
      * @param Helper_Functions           $helper_functions Helper functions object.
      */
-    public function __construct(Abstract_Main_Plugin_Class $main_plugin, Plugin_Constants $constants, Helper_Functions $helper_functions)
-    {
+    public function __construct( Abstract_Main_Plugin_Class $main_plugin, Plugin_Constants $constants, Helper_Functions $helper_functions ) {
+        parent::__construct( $main_plugin, $constants, $helper_functions );
 
-        $this->_constants        = $constants;
-        $this->_helper_functions = $helper_functions;
-
-        $main_plugin->add_to_all_plugin_models($this);
-    }
-
-    /**
-     * Ensure that only one instance of this class is loaded or can be loaded ( Singleton Pattern ).
-     *
-     * @since 1.2
-     * @access public
-     *
-     * @param Abstract_Main_Plugin_Class $main_plugin      Main plugin object.
-     * @param Plugin_Constants           $constants        Plugin constants object.
-     * @param Helper_Functions           $helper_functions Helper functions object.
-     * @return Cart_Conditions
-     */
-    public static function get_instance(Abstract_Main_Plugin_Class $main_plugin, Plugin_Constants $constants, Helper_Functions $helper_functions)
-    {
-
-        if (!self::$_instance instanceof self) {
-            self::$_instance = new self($main_plugin, $constants, $helper_functions);
-        }
-
-        return self::$_instance;
-
+        $main_plugin->add_to_all_plugin_models( $this );
+        $main_plugin->add_to_public_models( $this );
     }
 
     /*
@@ -117,8 +59,7 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
      *
      * @return array Notes data.
      */
-    private function _notes_data()
-    {
+    private function _notes_data() {
 
         $notes         = array();
         $wwp_actions   = $this->_get_wwp_note_actions();
@@ -127,11 +68,11 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
         $notes['acfw-install-wwp'] = array(
             'days'      => 30,
             'name'      => 'acfw-install-wwp',
-            'title'     => __('Install Wholesale Prices (FREE PLUGIN)', 'advanced-coupons-for-woocommerce-free'),
-            'content'   => __('This free plugin lets you easily add wholesale pricing to your existing WooCommerce products. Install the free plugin now.', 'advanced-coupons-for-woocommerce-free'),
+            'title'     => __( 'Install Wholesale Prices (FREE PLUGIN)', 'advanced-coupons-for-woocommerce-free' ),
+            'content'   => __( 'This free plugin lets you easily add wholesale pricing to your existing WooCommerce products. Install the free plugin now.', 'advanced-coupons-for-woocommerce-free' ),
             'icon'      => 'cloud-download',
             'type'      => 'info',
-            'condition' => !empty($wwp_actions),
+            'condition' => ! empty( $wwp_actions ),
             'croncheck' => true,
             'actions'   => $wwp_actions,
         );
@@ -139,11 +80,11 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
         $notes['acfw-premium-upgrade'] = array(
             'days'      => 7,
             'name'      => 'acfw-premium-upgrade',
-            'title'     => __('Get Advanced Coupons Premium', 'advanced-coupons-for-woocommerce-free'),
-            'content'   => __('Get more advanced BOGO deals, premium cart conditions, auto-apply, 1-click coupons, free gifts & more with the best WooCommerce coupon plugin.', 'advanced-coupons-for-woocommerce-free'),
+            'title'     => __( 'Get Advanced Coupons Premium', 'advanced-coupons-for-woocommerce-free' ),
+            'content'   => __( 'Get more advanced BOGO deals, premium cart conditions, auto-apply, 1-click coupons, free gifts & more with the best WooCommerce coupon plugin.', 'advanced-coupons-for-woocommerce-free' ),
             'icon'      => 'trophy',
             'type'      => 'info',
-            'condition' => !empty($acfwp_actions),
+            'condition' => ! empty( $acfwp_actions ),
             'croncheck' => true,
             'actions'   => $acfwp_actions,
         );
@@ -151,14 +92,14 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
         $notes['wc-admin-wwp-join-store-owner-tips'] = array(
             'days'      => 45,
             'name'      => 'wc-admin-wwp-join-store-owner-tips',
-            'title'     => __('Join Store Owner Tips Facebook Group', 'advanced-coupons-for-woocommerce-free'),
-            'content'   => __('Want tips on how to grow your store? Come and join the Store Owner Tips Facebook group. Tips, articles and more, just for store owners.', 'advanced-coupons-for-woocommerce-free'),
+            'title'     => __( 'Join Store Owner Tips Facebook Group', 'advanced-coupons-for-woocommerce-free' ),
+            'content'   => __( 'Want tips on how to grow your store? Come and join the Store Owner Tips Facebook group. Tips, articles and more, just for store owners.', 'advanced-coupons-for-woocommerce-free' ),
             'icon'      => 'thumbs-up',
             'type'      => 'info',
             'condition' => true,
             'actions'   => array(
                 'join-store-owner-tips' => array(
-                    'text'    => __('Join Store Owner Tips on Facebook', 'advanced-coupons-for-woocommerce-free'),
+                    'text'    => __( 'Join Store Owner Tips on Facebook', 'advanced-coupons-for-woocommerce-free' ),
                     'link'    => 'https://www.facebook.com/groups/storeownertips',
                     'type'    => 'actioned',
                     'primary' => true,
@@ -169,14 +110,14 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
         $notes['wc-admin-acfw-youtube'] = array(
             'days'      => 60,
             'name'      => 'wc-admin-acfw-youtube',
-            'title'     => __('Follow Advanced Coupons on Youtube', 'advanced-coupons-for-woocommerce-free'),
-            'content'   => __('Get all the WooCommerce coupon tips, store growth tips & more at the Advanced Coupons Youtube channel. Click here to join.', 'advanced-coupons-for-woocommerce-free'),
+            'title'     => __( 'Follow Advanced Coupons on Youtube', 'advanced-coupons-for-woocommerce-free' ),
+            'content'   => __( 'Get all the WooCommerce coupon tips, store growth tips & more at the Advanced Coupons Youtube channel. Click here to join.', 'advanced-coupons-for-woocommerce-free' ),
             'icon'      => 'video',
             'type'      => 'info',
             'condition' => true,
             'actions'   => array(
                 'acfw-youtube' => array(
-                    'text'    => __('Advanced Coupons Youtube Channel', 'advanced-coupons-for-woocommerce-free'),
+                    'text'    => __( 'Advanced Coupons Youtube Channel', 'advanced-coupons-for-woocommerce-free' ),
                     'link'    => 'https://www.youtube.com/channel/UCPpM1oDXkgjQUkMYWKW7ccA',
                     'type'    => 'actioned',
                     'primary' => true,
@@ -187,14 +128,14 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
         $notes['acfw-review-plugin'] = array(
             'days'      => 14,
             'name'      => 'acfw-review-plugin',
-            'title'     => __('Review Advanced Coupons', 'advanced-coupons-for-woocommerce-free'),
-            'content'   => __('We notice you’ve been using Advanced Coupons for a couple of weeks now. We’d love to get your review on our plugin! Your review helps give others the confidence to try our plugin.', 'advanced-coupons-for-woocommerce-free'),
+            'title'     => __( 'Review Advanced Coupons', 'advanced-coupons-for-woocommerce-free' ),
+            'content'   => __( 'We notice you’ve been using Advanced Coupons for a couple of weeks now. We’d love to get your review on our plugin! Your review helps give others the confidence to try our plugin.', 'advanced-coupons-for-woocommerce-free' ),
             'icon'      => 'star',
             'type'      => 'info',
             'condition' => true,
             'actions'   => array(
                 'acfw-plugin-review' => array(
-                    'text'    => __('Review Advanced Coupons', 'advanced-coupons-for-woocommerce-free'),
+                    'text'    => __( 'Review Advanced Coupons', 'advanced-coupons-for-woocommerce-free' ),
                     'link'    => 'https://wordpress.org/support/plugin/advanced-coupons-for-woocommerce-free/reviews/#new-post',
                     'type'    => 'actioned',
                     'primary' => true,
@@ -214,11 +155,10 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
      * @param string $name Note name.
      * @return array|null Note data if exist, null otherwise.
      */
-    private function _get_note($name)
-    {
+    private function _get_note( $name ) {
 
         $notes = $this->_notes_data();
-        return isset($notes[$name]) ? $notes[$name] : null;
+        return isset( $notes[ $name ] ) ? $notes[ $name ] : null;
     }
 
     /**
@@ -229,28 +169,27 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
      *
      * @return array List of actions.
      */
-    private function _get_wwp_note_actions()
-    {
+    private function _get_wwp_note_actions() {
 
         $basename = 'woocommerce-wholesale-prices/woocommerce-wholesale-prices.bootstrap.php';
         $actions  = array();
 
         // if plugin already active, then return empty actions.
-        if ($this->_helper_functions->is_plugin_active($basename)) {
+        if ( $this->_helper_functions->is_plugin_active( $basename ) ) {
             return $actions;
         }
 
         $actions['wwp-learn-more'] = array(
-            'text'    => __('Learn more', 'advanced-coupons-for-woocommerce-free'),
-            'link'    => 'https://wholesalesuiteplugin.com/?utm_source=acfwf&utm_medium=wcinbox&utm_campaign=wcinboxwwplearnmorebutton',
+            'text'    => __( 'Learn more', 'advanced-coupons-for-woocommerce-free' ),
+            'link'    => $this->_helper_functions->get_utm_url( '', 'acfwf', 'wcinbox', 'wcinboxwwplearnmorebutton', false, 'https://wholesalesuiteplugin.com/' ),
             'type'    => 'unactioned',
             'primary' => false,
         );
 
-        if ($this->_helper_functions->is_plugin_installed($basename)) {
+        if ( $this->_helper_functions->is_plugin_installed( $basename ) ) {
 
             $actions['wwp-plugin-activate'] = array(
-                'text'    => __('Activate plugin', 'advanced-coupons-for-woocommerce-free'),
+                'text'    => __( 'Activate plugin', 'advanced-coupons-for-woocommerce-free' ),
                 'link'    => admin_url() . 'admin-ajax.php?action=acfw_admin_note_install_wwp&type=activate',
                 'type'    => 'actioned',
                 'primary' => true,
@@ -259,7 +198,7 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
         } else {
 
             $actions['wwp-plugin-install'] = array(
-                'text'    => __('Install now', 'advanced-coupons-for-woocommerce-free'),
+                'text'    => __( 'Install now', 'advanced-coupons-for-woocommerce-free' ),
                 'link'    => admin_url() . 'admin-ajax.php?action=acfw_admin_note_install_wwp&type=install',
                 'type'    => 'actioned',
                 'primary' => true,
@@ -277,20 +216,19 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
      *
      * @return array List of actions.
      */
-    private function _get_acfwp_note_actions()
-    {
+    private function _get_acfwp_note_actions() {
 
         $actions = array();
 
         // if plugin already active, then return empty actions.
-        if ($this->_helper_functions->is_plugin_active(Plugin_Constants::PREMIUM_PLUGIN)) {
+        if ( $this->_helper_functions->is_plugin_active( Plugin_Constants::PREMIUM_PLUGIN ) ) {
             return $actions;
         }
 
-        if ($this->_helper_functions->is_plugin_installed(Plugin_Constants::PREMIUM_PLUGIN)) {
+        if ( $this->_helper_functions->is_plugin_installed( Plugin_Constants::PREMIUM_PLUGIN ) ) {
 
             $actions['acfwp-plugin-activate'] = array(
-                'text'    => __('Activate plugin', 'advanced-coupons-for-woocommerce-free'),
+                'text'    => __( 'Activate plugin', 'advanced-coupons-for-woocommerce-free' ),
                 'link'    => admin_url() . 'admin-ajax.php?action=acfw_admin_note_install_acfwp&type=activate',
                 'type'    => 'actioned',
                 'primary' => true,
@@ -299,8 +237,8 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
         } else {
 
             $actions['acfwp-pricing'] = array(
-                'text'    => __('See features & pricing', 'advanced-coupons-for-woocommerce-free'),
-                'link'    => apply_filters('acfwp_upsell_link', 'https://advancedcouponsplugin.com/pricing/?utm_source=acfwf&utm_medium=wcinbox&utm_campaign=wcinboxpremiumupsell'),
+                'text'    => __( 'See features & pricing', 'advanced-coupons-for-woocommerce-free' ),
+                'link'    => apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'wcinbox', 'wcinboxpremiumupsell' ) ),
                 'type'    => 'actioned',
                 'primary' => true,
             );
@@ -315,57 +253,55 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
      * @since 1.2
      * @access public
      *
-     * @param string $note Name of admin note.
+     * @param string $name Name of admin note.
      */
-    public function register_admin_note($name)
-    {
+    public function register_admin_note( $name ) {
 
         // only run if WC Admin is active.
-        if (!$this->_helper_functions->is_wc_admin_active()) {
+        if ( ! $this->_helper_functions->is_wc_admin_active() ) {
             return;
         }
 
-        $data_store = \WC_Data_Store::load('admin-note');
-        $data       = $this->_get_note($name);
+        $data_store = \WC_Data_Store::load( 'admin-note' );
+        $data       = $this->_get_note( $name );
 
-        // check note condition
-        if (!$data['condition']) {
+        // check note condition.
+        if ( ! $data['condition'] ) {
             return;
         }
 
         // skip if note is already saved.
-        $note_ids = $data_store->get_notes_with_name($name);
-        if (!empty($note_ids)) {
+        $note_ids = $data_store->get_notes_with_name( $name );
+        if ( ! empty( $note_ids ) ) {
             return;
         }
 
         // create admin note instance.
         $note = $this->_wc_admin_note();
 
-        $note->set_title($data['title']);
-        $note->set_content($data['content']);
-        $note->set_type($data['type']);
-        $note->set_name($data['name']);
-        $note->set_content_data((object) array());
-        $note->set_source('woocommerce-admin');
+        $note->set_title( $data['title'] );
+        $note->set_content( $data['content'] );
+        $note->set_type( $data['type'] );
+        $note->set_name( $data['name'] );
+        $note->set_content_data( (object) array() );
+        $note->set_source( 'woocommerce-admin' );
 
         // As of WC 4.3 icon has been replaced with image.
         // We only apply the icon if set_image method is not available.
-        if (!is_callable(array($note, 'set_image'))) {
-            $note->set_icon($data['icon']);
+        if ( ! is_callable( array( $note, 'set_image' ) ) ) {
+            $note->set_icon( $data['icon'] );
         }
 
-        foreach ($data['actions'] as $key => $action) {
-            $note->add_action($key, $action['text'], $action['link'], $action['type'], $action['primary']);
+        foreach ( $data['actions'] as $key => $action ) {
+            $note->add_action( $key, $action['text'], $action['link'], $action['type'], $action['primary'] );
         }
 
         $note->save();
 
         // schedule hourly cron for notes that needs to be checked periodically for dismissal.
-        if (isset($data['croncheck']) && $data['croncheck'] && !wp_next_scheduled(Plugin_Constants::DISMISS_WC_ADMIN_NOTE, array($name))) {
-            wp_schedule_event(time(), 'hourly', Plugin_Constants::DISMISS_WC_ADMIN_NOTE, array($name));
+        if ( isset( $data['croncheck'] ) && $data['croncheck'] && ! wp_next_scheduled( Plugin_Constants::DISMISS_WC_ADMIN_NOTE, array( $name ) ) ) {
+            wp_schedule_event( time(), 'hourly', Plugin_Constants::DISMISS_WC_ADMIN_NOTE, array( $name ) );
         }
-
     }
 
     /**
@@ -374,10 +310,9 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
      * @since 1.2
      * @access private
      */
-    private function _schedule_admin_notes()
-    {
+    private function _schedule_admin_notes() {
         // only run if WC Admin is active.
-        if (!$this->_helper_functions->is_wc_admin_active()) {
+        if ( ! $this->_helper_functions->is_wc_admin_active() ) {
             return;
         }
 
@@ -386,25 +321,23 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
          * This is needed to prevent uncaught exception errors when the data store is invalid.
          */
         try {
-            $data_store = \WC_Data_Store::load('admin-note');
+            $data_store = \WC_Data_Store::load( 'admin-note' );
 
-            foreach ($this->_notes_data() as $name => $data) {
+            foreach ( $this->_notes_data() as $name => $data ) {
 
                 // if already scheduled, then skip.
-                if (wp_next_scheduled(Plugin_Constants::REGISTER_WC_ADMIN_NOTE, array($name))) {
+                if ( wp_next_scheduled( Plugin_Constants::REGISTER_WC_ADMIN_NOTE, array( $name ) ) ) {
                     continue;
                 }
 
-                $note_ids = $data_store->get_notes_with_name($name);
+                $note_ids = $data_store->get_notes_with_name( $name );
 
-                if (empty($note_ids) && $data['condition']) {
-                    wp_schedule_single_event(strtotime('+' . $data['days'] . " days"), Plugin_Constants::REGISTER_WC_ADMIN_NOTE, array($name));
+                if ( empty( $note_ids ) && $data['condition'] ) {
+                    wp_schedule_single_event( strtotime( '+' . $data['days'] . ' days' ), Plugin_Constants::REGISTER_WC_ADMIN_NOTE, array( $name ) );
                 }
-
             }
-
-        } catch (\Exception $e) {
-            // do nothing.
+        } catch ( \Exception $e ) {
+            unset( $e ); // do nothing.
         }
     }
 
@@ -414,38 +347,37 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
      * @since 1.2
      * @access public
      *
-     * @param string $note Name of admin note.
+     * @param string $name Name of admin note.
      */
-    public function check_dismissable_note($name)
-    {
+    public function check_dismissable_note( $name ) {
 
         // only run if WC Admin is active.
-        if (!$this->_helper_functions->is_wc_admin_active()) {
+        if ( ! $this->_helper_functions->is_wc_admin_active() ) {
             return;
         }
 
-        $data = $this->_get_note($name);
+        $data = $this->_get_note( $name );
 
         // don't proceed if note condition is still true.
-        if ($data['condition']) {
+        if ( $data['condition'] ) {
             return;
         }
 
-        $data_store = \WC_Data_Store::load('admin-note');
-        $note_ids   = $data_store->get_notes_with_name($name);
+        $data_store = \WC_Data_Store::load( 'admin-note' );
+        $note_ids   = $data_store->get_notes_with_name( $name );
 
-        if (!empty($note_ids)) {
+        if ( ! empty( $note_ids ) ) {
 
-            $note_id = current($note_ids);
-            $note    = $this->_wc_admin_note($note_id);
-            $note->set_status('actioned');
+            $note_id = current( $note_ids );
+            $note    = $this->_wc_admin_note( $note_id );
+            $note->set_status( 'actioned' );
             $note->save();
 
         }
 
         // remove scheduled cron for dismissing the current notice.
-        $timestamp = wp_next_scheduled(Plugin_Constants::DISMISS_WC_ADMIN_NOTE, array($name));
-        wp_unschedule_event($timestamp, Plugin_Constants::DISMISS_WC_ADMIN_NOTE, array($name));
+        $timestamp = wp_next_scheduled( Plugin_Constants::DISMISS_WC_ADMIN_NOTE, array( $name ) );
+        wp_unschedule_event( $timestamp, Plugin_Constants::DISMISS_WC_ADMIN_NOTE, array( $name ) );
     }
 
     /*
@@ -463,14 +395,13 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
      * @param mixed $data Note data, object or ID.
      * @return object Admin note.
      */
-    private function _wc_admin_note($data = '')
-    {
+    private function _wc_admin_note( $data = '' ) {
 
-        if (version_compare(WC()->version, '4.8.0', '>=')) {
-            return new \Automattic\WooCommerce\Admin\Notes\Note($data);
+        if ( version_compare( WC()->version, '4.8.0', '>=' ) ) {
+            return new \Automattic\WooCommerce\Admin\Notes\Note( $data );
         }
 
-        return new \Automattic\WooCommerce\Admin\Notes\WC_Admin_Note($data);
+        return new \Automattic\WooCommerce\Admin\Notes\WC_Admin_Note( $data );
     }
 
     /*
@@ -487,29 +418,27 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
      * @since 1.2
      * @access public
      */
-    public function ajax_redirect_install_wwp_plugin()
-    {
+    public function ajax_redirect_install_wwp_plugin() {
 
-        $basename   = plugin_basename('woocommerce-wholesale-prices/woocommerce-wholesale-prices.bootstrap.php');
+        $basename   = plugin_basename( 'woocommerce-wholesale-prices/woocommerce-wholesale-prices.bootstrap.php' );
         $plugin_key = 'woocommerce-wholesale-prices';
 
         if (
             $this->_helper_functions->is_wc_admin_active()
-            && current_user_can('install_plugins')
-            && !$this->_helper_functions->is_plugin_active($basename)
+            && current_user_can( 'install_plugins' )
+            && ! $this->_helper_functions->is_plugin_active( $basename )
         ) {
-
-            if ('activate' === $_REQUEST['type'] && $this->_helper_functions->is_plugin_installed($basename)) {
-                $url = htmlspecialchars_decode(wp_nonce_url(admin_url() . 'plugins.php?action=activate&amp;plugin=' . $basename . '&amp;plugin_status=all&amp;s', 'activate-plugin_' . $basename));
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.NonceVerification.Recommended
+            if ( 'activate' === $_REQUEST['type'] && $this->_helper_functions->is_plugin_installed( $basename ) ) {
+                $url = htmlspecialchars_decode( wp_nonce_url( admin_url() . 'plugins.php?action=activate&amp;plugin=' . $basename . '&amp;plugin_status=all&amp;s', 'activate-plugin_' . $basename ) );
             } else {
-                $url = htmlspecialchars_decode(wp_nonce_url(admin_url() . 'update.php?action=install-plugin&amp;plugin=' . $plugin_key, 'install-plugin_' . $plugin_key));
+                $url = htmlspecialchars_decode( wp_nonce_url( admin_url() . 'update.php?action=install-plugin&amp;plugin=' . $plugin_key, 'install-plugin_' . $plugin_key ) );
             }
-
         } else {
             $url = admin_url();
         }
 
-        wp_redirect($url);
+        wp_safe_redirect( $url );
         exit;
     }
 
@@ -521,26 +450,24 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
      * @since 1.2
      * @access public
      */
-    public function ajax_redirect_install_acfwp_plugin()
-    {
+    public function ajax_redirect_install_acfwp_plugin() {
 
-        $basename = plugin_basename(Plugin_Constants::PREMIUM_PLUGIN);
+        $basename = plugin_basename( Plugin_Constants::PREMIUM_PLUGIN );
 
         if (
             $this->_helper_functions->is_wc_admin_active()
-            && current_user_can('install_plugins')
-            && !$this->_helper_functions->is_plugin_active($basename)
+            && current_user_can( 'install_plugins' )
+            && ! $this->_helper_functions->is_plugin_active( $basename )
         ) {
-
-            if ('activate' === $_REQUEST['type'] && $this->_helper_functions->is_plugin_installed($basename)) {
-                $url = htmlspecialchars_decode(wp_nonce_url(admin_url() . 'plugins.php?action=activate&amp;plugin=' . $basename . '&amp;plugin_status=all&amp;s', 'activate-plugin_' . $basename));
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.NonceVerification.Recommended
+            if ( 'activate' === $_REQUEST['type'] && $this->_helper_functions->is_plugin_installed( $basename ) ) {
+                $url = htmlspecialchars_decode( wp_nonce_url( admin_url() . 'plugins.php?action=activate&amp;plugin=' . $basename . '&amp;plugin_status=all&amp;s', 'activate-plugin_' . $basename ) );
             }
-
         } else {
             $url = admin_url();
         }
 
-        wp_redirect($url);
+        wp_safe_redirect( $url );
         exit;
     }
 
@@ -557,9 +484,7 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
      * @access public
      * @implements ACFWF\Interfaces\Activatable_Interface
      */
-    public function activate()
-    {
-
+    public function activate() {
         $this->_schedule_admin_notes();
     }
 
@@ -570,11 +495,9 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
      * @access public
      * @implements ACFWF\Interfaces\Initializable_Interface
      */
-    public function initialize()
-    {
-
-        add_action('wp_ajax_acfw_admin_note_install_wwp', array($this, 'ajax_redirect_install_wwp_plugin'));
-        add_action('wp_ajax_acfw_admin_note_install_acfwp', array($this, 'ajax_redirect_install_acfwp_plugin'));
+    public function initialize() {
+        add_action( 'wp_ajax_acfw_admin_note_install_wwp', array( $this, 'ajax_redirect_install_wwp_plugin' ) );
+        add_action( 'wp_ajax_acfw_admin_note_install_acfwp', array( $this, 'ajax_redirect_install_acfwp_plugin' ) );
     }
 
     /**
@@ -584,12 +507,8 @@ class WC_Admin_Notes implements Model_Interface, Initializable_Interface, Activa
      * @access public
      * @inherit ACFWF\Interfaces\Model_Interface
      */
-    public function run()
-    {
-
-        add_action(Plugin_Constants::REGISTER_WC_ADMIN_NOTE, array($this, 'register_admin_note'));
-        add_action(Plugin_Constants::DISMISS_WC_ADMIN_NOTE, array($this, 'check_dismissable_note'));
-
+    public function run() {
+        add_action( Plugin_Constants::REGISTER_WC_ADMIN_NOTE, array( $this, 'register_admin_note' ) );
+        add_action( Plugin_Constants::DISMISS_WC_ADMIN_NOTE, array( $this, 'check_dismissable_note' ) );
     }
-
 }

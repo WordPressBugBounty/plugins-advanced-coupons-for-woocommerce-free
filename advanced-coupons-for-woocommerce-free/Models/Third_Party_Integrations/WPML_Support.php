@@ -717,6 +717,29 @@ class WPML_Support implements Model_Interface {
         return $woocommerce_wpml ? $woocommerce_wpml->get_multi_currency() : null;
     }
 
+    /**
+     * Dequeue WPML styles and scripts on AGC admin pages.
+     *
+     * @since 1.4
+     * @access public
+     *
+     * @param string $handle Unique identifier of the current backend page.
+     */
+    public function dequeue_wpml_styles_scripts_agc_admin( $handle ) {
+        if ( ! did_action( 'acfw_admin_app_enqueue_scripts_after' ) ) {
+            return;
+        }
+
+        wp_dequeue_script( 'wpml-select-2' );
+        wp_dequeue_style( 'sitepress-style' );
+        wp_dequeue_style( 'otgs-dialogs' );
+        wp_dequeue_style( 'wpml-dialog' );
+        wp_dequeue_style( 'otgs-dialogs' );
+        wp_dequeue_style( 'otgs-icons' );
+        wp_dequeue_style( 'wpml-wizard' );
+        wp_dequeue_script( 'sitepress-scripts-js' );
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Fulfill implemented interface contracts
@@ -764,5 +787,6 @@ class WPML_Support implements Model_Interface {
     public function run() {
         // priority is set to 110 so it runs after the WPML strings translation is loaded.
         add_action( 'wpml_loaded', array( $this, 'wpml_loaded' ), 110 );
+        add_action( 'admin_enqueue_scripts', array( $this, 'dequeue_wpml_styles_scripts_agc_admin' ), 999 );
     }
 }

@@ -62,9 +62,42 @@ class Store_API_Hooks extends Base_Model implements Model_Interface {
         woocommerce_store_api_register_update_callback(
             array(
                 'namespace' => 'acfwf_dummy_update',
-                'callback'  => function(){}, // Dummy callback.
+                'callback'  => function () {}, // Dummy callback.
             )
         );
+    }
+
+    /**
+     * Assign coupon category when creating/updating a coupon via the REST API.
+     *
+     * Hooked into 'woocommerce_rest_insert_shop_coupon_object'.
+     * This method reads the 'coupon_category' field from the REST API request
+     * and assigns the coupon to the specified term in the 'shop_coupon_cat' taxonomy.
+     *
+     * Accepts either a term ID or slug for the category.
+     *
+     * @since 4.6.7
+     * @access public
+     *
+     * @param \WC_Coupon       $coupon   The coupon object being inserted or updated.
+     * @param \WP_REST_Request $request  Full data from the REST API request.
+     * @param bool             $creating Whether this is a creation or update operation.
+     *
+     * @return \WC_Coupon The modified coupon object.
+     */
+    public function assign_coupon_category_from_rest( $coupon, $request, $creating ) {
+        if ( isset( $request['coupon_category'] ) ) {
+            $category = $request['coupon_category'];
+
+            $term = is_numeric( $category )
+                ? get_term_by( 'id', absint( $category ), 'shop_coupon_cat' )
+                : get_term_by( 'slug', sanitize_title( $category ), 'shop_coupon_cat' );
+
+            if ( $term && ! is_wp_error( $term ) ) {
+                wp_set_object_terms( $coupon->get_id(), array( (int) $term->term_id ), 'shop_coupon_cat', false );
+            }
+        }
+        return $coupon;
     }
 
     /**
@@ -76,5 +109,6 @@ class Store_API_Hooks extends Base_Model implements Model_Interface {
     public function run() {
         add_action( 'woocommerce_blocks_loaded', array( $this, 'extend_store_api_coupon_endpoint' ) );
         add_action( 'woocommerce_blocks_loaded', array( $this, 'extend_store_api_dummy_update' ) );
+        add_filter( 'woocommerce_rest_insert_shop_coupon_object', array( $this, 'assign_coupon_category_from_rest' ), 10, 3 );
     }
 }

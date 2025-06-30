@@ -1,6 +1,8 @@
 import labels from '../labels';
 import formState from '../state';
 
+declare var acfw_edit_coupon: any;
+
 /**
  * Get the html markup for the customer details section of the modal.
  *
@@ -20,9 +22,9 @@ export default function customerDetailsSectionMarkup() {
       <h3>${getSectionTitle(formState.get('option'))}</h3>
       <div class="section-content">
         ${getSectionContent(formState.get('option'))}
-        <button type="button" class="button-primary acfw-next-section-btn" data-next_section="confirm_and_send">${
-          labels.next
-        }</button>
+        <button type="button" class="button-primary acfw-next-section-btn" data-next_section="${
+          'pushengage' === formState.get('option') ? 'message_details' : 'confirm_and_send'
+        }">${labels.next}</button>
       </div>
     </div>
   </div>
@@ -32,7 +34,7 @@ export default function customerDetailsSectionMarkup() {
 /**
  * Get the title for the "details" section of the modal.
  *
- * @since 4.6.x
+ * @since 4.6.6
  *
  * @param {string} option The option to pass to the section renderer.
  * @returns {string} Section HTML markup.
@@ -42,7 +44,7 @@ function getSectionTitle(option: string) {
     case 'email':
       return labels.email.customer_details;
     case 'pushengage':
-      return labels.pushengage.details;
+      return labels.pushengage.customer_details;
   }
   return '';
 }
@@ -50,7 +52,7 @@ function getSectionTitle(option: string) {
 /**
  * Get the HTML markup for the "details" section of the modal.
  *
- * @since 4.6.x
+ * @since 4.6.6
  *
  * @param {string} option The option to pass to the section renderer.
  * @returns {string} Section HTML markup.
@@ -69,26 +71,39 @@ function getSectionContent(option: string) {
             <span>${labels.email.create_new_user_account}</span>
         </div>`;
     case 'pushengage':
-      return `<div class="message-form show">
-          <div>
-            <label>${labels.pushengage.title}</label>
-            <input type="text" placeholder="${labels.pushengage.title_placeholder}" value="${formState.get(
-        'title'
-      )}" name="acfw_send_coupon[title]" data-key="title" />
-          </div>
-          <div>
-            <label>${labels.pushengage.message}</label>
-            <input type="text" placeholder="${labels.pushengage.message_placeholder}" value="${formState.get(
-        'message'
-      )}" name="acfw_send_coupon[message]" data-key="message" />
-          </div>
-          <div>
-            <label>${labels.pushengage.url}</label>
-            <input type="text" placeholder="${labels.pushengage.url_placeholder}" value="${formState.get(
-        'url'
-      )}" name="acfw_send_coupon[url]" data-key="url" />
-          </div>
-      </div>`;
+      return `
+        <div class="customer-details-form segment-form show">
+          <select id="acfw-send-coupon-to-segments" class="condition-value wc-enhanced-select" multiple data-placeholder="${
+            labels.pushengage.segment_placeholder
+          }" data-key="segments">
+            ${segment_options()}
+          </select>
+        </div>
+        
+        <div class="customer-details-form subscriber-form">
+          <select data-placeholder="${
+            labels.pushengage.search
+          }" name="acfw_send_coupon[subscribers]" data-key="subscribers" class="wc-enhanced-select" multiple style="width:100%"></select>
+        </div>`;
   }
   return '';
+}
+
+/**
+ * Get segment options markup.
+ *
+ * @since 4.6.6
+ */
+function segment_options(): string {
+  const { segments }: { segments: { segment_id: number; segment_name: string }[] } =
+    acfw_edit_coupon.send_coupon.pushengage;
+  let markup: string = '';
+
+  for (const segment of segments) {
+    markup += `<option value="${segment.segment_id}-${segment.segment_name}">${segment.segment_name}</option>`;
+  }
+
+  markup += `<option value="create_new_segment">${labels.pushengage.create_new_segment}</option>`;
+
+  return markup;
 }

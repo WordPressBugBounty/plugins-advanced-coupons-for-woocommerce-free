@@ -1,8 +1,5 @@
 import labels from '../labels';
 import formState from '../state';
-import { selected_multiple } from '../../helper';
-
-declare var acfw_edit_coupon: any;
 
 /**
  * Get the html markup for the "send coupon to" section of the modal.
@@ -52,30 +49,14 @@ function getSectionContent(option: string) {
            <span>${labels.email.new_customer}<span>
         </label>`;
     case 'pushengage':
-      return `<select id="acfw-send-coupon-to-segments" class="condition-value wc-enhanced-select" multiple data-placeholder="${
-        labels.pushengage.segment_placeholder
-      }" data-key="segments">
-          ${segment_options()}
-        </select>`;
+      return `<label>
+        <input type="radio" name="acfw_send_coupon[to]" value="segments" data-key="send_to" checked />
+        <span>${labels.pushengage.segments}<span>
+      </label>
+      <label>
+        <input type="radio" name="acfw_send_coupon[to]" value="subscribers" data-key="send_to" />
+        <span>${labels.pushengage.subscribers}<span>
+      </label>`;
   }
   return '';
-}
-
-/**
- * Get segment options markup.
- *
- * @since 4.6.4
- */
-function segment_options(): string {
-  const { segments }: { segments: { segment_id: number; segment_name: string }[] } =
-    acfw_edit_coupon.send_coupon.pushengage;
-  let markup: string = '';
-
-  for (const segment of segments) {
-    markup += `<option value="${segment.segment_id}-${segment.segment_name}">${segment.segment_name}</option>`;
-  }
-
-  markup += `<option value="create_new_segment">${labels.pushengage.create_new_segment}</option>`;
-
-  return markup;
 }

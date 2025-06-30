@@ -213,6 +213,20 @@ class Editor_Blocks implements Model_Interface, Initializable_Interface {
         // map list of IDs to list of advanced coupon objects.
         $coupons = $this->_get_coupons_from_queried_ids( $query->posts );
 
+        // Filter out expired coupons.
+        $coupons = array_filter(
+            $coupons,
+            function ( $coupon ) {
+            $expiry_date = $coupon->get_date_expires( 'edit' );
+                if ( ! $expiry_date ) {
+                    return true; // Keep coupons with no expiry.
+                }
+
+                $current_time = $this->_helper_functions->get_datetime_with_site_timezone( current_time( 'mysql' ) );
+                return $expiry_date->getTimestamp() > $current_time->getTimestamp();
+            }
+        );
+
         /**
          * Sort coupons by expiration when order by is set to 'expire/desc'.
          * This needs to be handled via PHP so coupons with expiry are prioritized than coupons that have no expiry.
@@ -377,26 +391,27 @@ class Editor_Blocks implements Model_Interface, Initializable_Interface {
      * @param string $order   Sort order.
      */
     public function sort_coupons_list_by_expiry( &$coupons, $order ) {
+        // Sort remaining coupons.
         usort(
             $coupons,
             function ( $a, $b ) use ( $order ) {
-            $a_date = $a->get_date_expires( 'edit' );
-            $b_date = $b->get_date_expires( 'edit' );
+                $a_date = $a->get_date_expires( 'edit' );
+                $b_date = $b->get_date_expires( 'edit' );
 
-            if ( $a_date === $b_date ) {
-                return 0;
-            }
+                if ( $a_date === $b_date ) {
+                    return 0;
+                }
 
-            if ( ! $a_date && $b_date ) {
-                return 'desc' === $order ? -1 : 1;
-            }
+                if ( ! $a_date && $b_date ) {
+                    return 'desc' === $order ? -1 : 1;
+                }
 
-            if ( $a_date && ! $b_date ) {
-                return 'desc' === $order ? 1 : -1;
-            }
+                if ( $a_date && ! $b_date ) {
+                    return 'desc' === $order ? 1 : -1;
+                }
 
-            $condition = 'desc' === $order ? $a_date < $b_date : $a_date > $b_date;
-            return ( $condition ) ? 1 : -1;
+                $condition = 'desc' === $order ? $a_date < $b_date : $a_date > $b_date;
+                return ( $condition ) ? 1 : -1;
             }
         );
     }

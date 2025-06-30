@@ -81,7 +81,6 @@ class Registry implements Model_Interface {
 
         $main_plugin->add_to_all_plugin_models( $this, $this->_model_name );
         $main_plugin->add_to_public_models( $this, $this->_model_name );
-
     }
 
     /**
@@ -188,6 +187,15 @@ class Registry implements Model_Interface {
                         'label'               => __( 'View Order', 'advanced-coupons-for-woocommerce-free' ),
                         'admin_link_callback' => 'get_edit_post_link',
                         'link_callback'       => array( \ACFWF()->Helper_Functions, 'get_order_frontend_link' ),
+                    ),
+                ),
+                'imported_points' => array(
+                    'name'    => __( 'Imported points', 'advanced-coupons-for-woocommerce-free' ),
+                    'slug'    => 'imported_points',
+                    'related' => array(
+                        'object_type' => 'user_import',
+                        'admin_label' => '-',
+                        'label'       => '-',
                     ),
                 ),
             ),
@@ -342,5 +350,4 @@ class Registry implements Model_Interface {
      * @inherit ACFWF\Interfaces\Model_Interface
      */
     public function run() {     }
-
 }

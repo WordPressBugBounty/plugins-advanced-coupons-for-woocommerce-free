@@ -111,12 +111,7 @@ const CouponTemplates = (props: IProps) => {
       >
         <Logo hideUpgrade />
         <p>{labels.premium_modal_text}</p>
-        <Button
-          type="primary"
-          href="https://advancedcouponsplugin.com/pricing/?utm_source=acfwf&utm_medium=upsell&utm_campaign=coupontemplates"
-          size="large"
-          target="_blank"
-        >
+        <Button type="primary" href={acfwAdminApp.coupon_templates_page.link} size="large" target="_blank">
           {labels.premium_modal_btn}
         </Button>
       </Modal>

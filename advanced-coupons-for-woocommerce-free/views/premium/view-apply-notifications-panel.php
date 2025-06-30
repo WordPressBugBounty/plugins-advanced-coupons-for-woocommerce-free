@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             sprintf(
                 /* translators: %s: URL to the premium version of the plugin */
                 __( 'In the <a href="%s" target="_blank">Premium add-on of Advanced Coupons</a> you make coupons that are applied by clicking a notice message on the cart.', 'advanced-coupons-for-woocommerce-free' ),
-                apply_filters( 'acfwp_upsell_link', 'https://advancedcouponsplugin.com/pricing/?utm_source=acfwf&utm_medium=upsell&utm_campaign=oneclicknotifications' )
+                apply_filters( 'acfwp_upsell_link', \ACFWF()->Helper_Functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'oneclicknotifications' ) )
             )
         );
         ?>
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
         <p><?php esc_html_e( 'You can also combine this feature with cart conditions to only show the message when customers qualify.', 'advanced-coupons-for-woocommerce-free' ); ?></p>
 
-        <p><a class="button button-primary button-large" href="<?php echo esc_attr( apply_filters( 'acfwp_upsell_link', 'https://advancedcouponsplugin.com/pricing/?utm_source=acfwf&utm_medium=upsell&utm_campaign=oneclicknotifications' ) ); ?>" target="_blank">
+        <p><a class="button button-primary button-large" href="<?php echo esc_attr( apply_filters( 'acfwp_upsell_link', \ACFWF()->Helper_Functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'oneclicknotifications' ) ) ); ?>" target="_blank">
             <?php esc_html_e( 'See all features & pricing →', 'advanced-coupons-for-woocommerce-free' ); ?>
         </a></p>
     </div>

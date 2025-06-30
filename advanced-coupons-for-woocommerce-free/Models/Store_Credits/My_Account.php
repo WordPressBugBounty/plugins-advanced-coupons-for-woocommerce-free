@@ -222,6 +222,60 @@ class My_Account implements Model_Interface, Initializable_Interface {
         return wc_price( $user_balance );
     }
 
+    /**
+     * Shortcode: Render the full Store Credits UI via shortcode.
+     * This allows placing the Store Credits app on custom pages.
+     *
+     * Usage:
+     * [acfw_store_credit_my_account_page_content]
+     * [acfw_store_credit_my_account_page_content show_login_message="no"]
+     *
+     * @since 4.6.7
+     * @access public
+     *
+     * @param array $atts {
+     *     Optional. Shortcode attributes.
+     *
+     *     @type string $show_login_message Whether to show login message if user is not logged in. Accepts 'yes' or 'no'. Default 'yes'.
+     * }
+     * @return string Rendered output of the Store Credits app or login message.
+     */
+    public function display_store_credits_shortcode( $atts = array() ) {
+        $atts = shortcode_atts(
+            array(
+                'show_login_message' => 'yes',
+            ),
+            $atts
+        );
+
+        if ( ! is_user_logged_in() ) {
+            if ( 'yes' === $atts['show_login_message'] ) {
+                $login_message = sprintf(
+                    '<div class="acfw-store-credits-login-required"><p>%s <a href="%s">%s</a></p></div>',
+                    __( 'Please log in to view your store credits.', 'advanced-coupons-for-woocommerce-free' ),
+                    wp_login_url( get_permalink() ),
+                    __( 'Login here', 'advanced-coupons-for-woocommerce-free' )
+                );
+
+                /**
+                 * Filter the login message displayed when a non-logged-in user visits the shortcode.
+                 *
+                 * @since 4.6.7
+                 *
+                 * @param string $login_message The default login message HTML.
+                 * @param array  $atts          The shortcode attributes.
+                 */
+                return apply_filters( 'acfw_store_credits_shortcode_login_message', $login_message, $atts );
+            }
+
+            return '';
+        }
+
+        ob_start();
+        $this->display_store_credits_my_account_markup();
+        return ob_get_clean();
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Utility Functions
@@ -274,5 +328,6 @@ class My_Account implements Model_Interface, Initializable_Interface {
         add_filter( 'the_title', array( $this, 'store_credits_tab_endpoint_title' ) );
         add_action( 'woocommerce_account_' . $this->_get_store_credits_endpoint() . '_endpoint', array( $this, 'display_store_credits_my_account_markup' ) );
         add_shortcode( 'acfw_customer_store_credit_balance', array( $this, 'customer_store_credit_balance' ) );
+        add_shortcode( 'acfw_store_credit_my_account_page_content', array( $this, 'display_store_credits_shortcode' ) );
     }
 }

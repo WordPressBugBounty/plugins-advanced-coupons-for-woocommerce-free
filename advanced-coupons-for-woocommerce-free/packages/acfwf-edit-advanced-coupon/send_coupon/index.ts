@@ -87,7 +87,10 @@ function toggleCustomerDetailsForm() {
   // @ts-ignore
   const $radio = $(this);
   const sendTo = $radio.val().toString();
-  const formClassName = 'user' === sendTo ? '.user-form' : '.guest-form';
+  let formClassName = 'user' === sendTo ? '.user-form' : '.guest-form';
+  if ('pushengage' === formState.get('option')) {
+    formClassName = 'subscribers' === sendTo ? '.subscriber-form' : '.segment-form';
+  }
 
   $('.acfw-send-coupon-form-section .customer-details-form')
     .removeClass('show')
@@ -233,8 +236,11 @@ function sendCouponPushengage() {
     method: 'POST',
     data: {
       coupon_id: $('#post_ID').val(),
+      send_to: formState.get('send_to'),
       segments: formState.get('segments'),
       segment_ids: formState.get('segment_ids'),
+      subscribers: formState.get('subscribers'),
+      subscriber_ids: formState.get('subscriber_ids'),
       title: formState.get('title'),
       message: formState.get('message'),
       url: formState.get('url'),
@@ -275,6 +281,7 @@ function clearForm(state = 'confirm_and_send', option = 'email') {
     .find("input[name='acfw_send_coupon[message]']")
     .val(acfw_edit_coupon.send_coupon.pushengage.default_content.message)
     .trigger('change');
+  $('#acfw-send-coupon').find("select[name='acfw_send_coupon[subscribers]']").val(null).trigger('change');
 }
 
 /**
@@ -292,7 +299,7 @@ function displayResponseMessage(type: string, message: string) {
 /**
  * Updates the options for sending coupons based on the selected state.
  *
- * @since 4.6.x
+ * @since 4.6.6
  */
 function updateOptions() {
   let state = 'send_coupon_to';
@@ -326,17 +333,23 @@ function updateOptions() {
 
   $('#acfw-send-coupon .description').html(labels.description[option]);
 
+  formState.set('option', option);
+
   reRenderSection('send_coupon_to');
   reRenderSection('customer_details');
+  if ('pushengage' === option) {
+    reRenderSection('message_details');
+  }
   reRenderSection('confirm_and_send');
 
   $(document.body).trigger('wc-enhanced-select-init');
+  initSubscribers();
 }
 
 /**
  * Installs and activates the PushEngage plugin.
  *
- * @since 4.6.x
+ * @since 4.6.6
  */
 function installPushEngage() {
   // @ts-ignore
@@ -375,4 +388,26 @@ function installPushEngage() {
       $errorText.text(errorMessage).show();
       $button.prop('disabled', false);
     });
+}
+
+/**
+ * Initializes the Select2 dropdown for subscriber selection.
+ *
+ * @since 4.6.6
+ */
+function initSubscribers(): void {
+  $('select.wc-enhanced-select[data-key="subscribers"]').select2({
+    ajax: {
+      url: ajaxurl,
+      dataType: 'json',
+      data: (params: { term: string }) => ({
+        action: 'acfw_pushengage_subscribed_customer_search',
+        search: params.term,
+        nonce: acfw_edit_coupon.send_coupon.pushengage_subscriber_nonce,
+      }),
+      processResults: (data: { id: string; text: string }[]) => ({
+        results: data,
+      }),
+    },
+  });
 }

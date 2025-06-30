@@ -2,6 +2,7 @@
 namespace ACFWF\Models;
 
 use ACFWF\Abstracts\Abstract_Main_Plugin_Class;
+use ACFWF\Abstracts\Base_Model;
 use ACFWF\Helpers\Helper_Functions;
 use ACFWF\Helpers\Plugin_Constants;
 use ACFWF\Interfaces\Activatable_Interface;
@@ -20,39 +21,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.1
  */
-class Usage implements Model_Interface, Initializable_Interface, Activatable_Interface {
+class Usage extends Base_Model implements Model_Interface, Initializable_Interface, Activatable_Interface {
     /*
     |--------------------------------------------------------------------------
     | Class Properties
     |--------------------------------------------------------------------------
      */
-
-    /**
-     * Property that holds the single main instance of URL_Coupon.
-     *
-     * @since 1.1
-     * @access private
-     * @var Cart_Conditions
-     */
-    private static $_instance;
-
-    /**
-     * Model that houses all the plugin constants.
-     *
-     * @since 1.1
-     * @access private
-     * @var Plugin_Constants
-     */
-    private $_constants;
-
-    /**
-     * Property that houses all the helper functions of the plugin.
-     *
-     * @since 1.1
-     * @access private
-     * @var Helper_Functions
-     */
-    private $_helper_functions;
 
     /**
      * Property that houses all admin notices data.
@@ -80,29 +54,10 @@ class Usage implements Model_Interface, Initializable_Interface, Activatable_Int
      * @param Helper_Functions           $helper_functions Helper functions object.
      */
     public function __construct( Abstract_Main_Plugin_Class $main_plugin, Plugin_Constants $constants, Helper_Functions $helper_functions ) {
-        $this->_constants        = $constants;
-        $this->_helper_functions = $helper_functions;
+        parent::__construct( $main_plugin, $constants, $helper_functions );
 
         $main_plugin->add_to_all_plugin_models( $this );
-    }
-
-    /**
-     * Ensure that only one instance of this class is loaded or can be loaded ( Singleton Pattern ).
-     *
-     * @since 1.1
-     * @access public
-     *
-     * @param Abstract_Main_Plugin_Class $main_plugin      Main plugin object.
-     * @param Plugin_Constants           $constants        Plugin constants object.
-     * @param Helper_Functions           $helper_functions Helper functions object.
-     * @return Cart_Conditions
-     */
-    public static function get_instance( Abstract_Main_Plugin_Class $main_plugin, Plugin_Constants $constants, Helper_Functions $helper_functions ) {
-        if ( ! self::$_instance instanceof self ) {
-            self::$_instance = new self( $main_plugin, $constants, $helper_functions );
-        }
-
-        return self::$_instance;
+        $main_plugin->add_to_public_models( $this );
     }
 
     /*
@@ -570,7 +525,7 @@ class Usage implements Model_Interface, Initializable_Interface, Activatable_Int
             'desc'  => sprintf(
                 /* Translators: %s: Link to allow usage documentation. */
                 __( 'By allowing us to track usage data we can better help you because we know with which WordPress configurations, themes and plugins we should test. Complete documentation on usage tracking is available <a href="%s" target="_blank">here</a>.', 'advanced-coupons-for-woocommerce-free' ),
-                'https://advancedcouponsplugin.com/knowledgebase/usage-tracking/?utm_source=acfwf&utm_medium=kb&utm_campaign=allowusagesetting'
+                $this->_helper_functions->get_utm_url( 'knowledgebase/usage-tracking/', 'acfwf', 'kb', 'allowusagesetting' )
             ),
             'id'    => Plugin_Constants::USAGE_ALLOW,
         );
@@ -621,7 +576,7 @@ class Usage implements Model_Interface, Initializable_Interface, Activatable_Int
                     sprintf(
                         /* Translators: %s: Link to allow usage documentation. */
                         __( 'Allow Advanced Coupon to track plugin usage? Opt-in to let us track usage data so we know with which WordPress configurations, themes and plugins we should test with. Complete documentation on usage tracking is available <a href="%s">here</a>.', 'advanced-coupons-for-woocommerce-free' ),
-                        'https://advancedcouponsplugin.com/knowledgebase/usage-tracking/?utm_source=acfwf&utm_medium=kb&utm_campaign=allowusagenotice'
+                        $this->_helper_functions->get_utm_url( 'knowledgebase/usage-tracking/', 'acfwf', 'kb', 'allowusagenotice' )
                     ),
                 ),
                 'actions'        => array(

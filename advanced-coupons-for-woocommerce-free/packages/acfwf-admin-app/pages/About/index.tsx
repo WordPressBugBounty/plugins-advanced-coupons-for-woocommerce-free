@@ -6,6 +6,7 @@ import { Row, Col, Card, Button, Avatar } from 'antd';
 
 // Components
 import AdminHeader from '../../components/AdminHeader';
+import PluginInstallerButton from '../../components/PluginInstallerButton';
 
 // CSS
 import './index.scss';
@@ -29,6 +30,7 @@ interface IAboutAction {
   status: string;
   link: string;
   external: boolean;
+  plugin_slug?: string;
 }
 
 // #endregion [Interfaces]
@@ -56,19 +58,37 @@ const About = () => {
           <img src={main_card.image} alt="Rymera Team" />
         </Col>
       </Row>
-      <Row className="plugin-cards" gutter={10}>
+      <Row className="plugin-cards" gutter={[16, 16]}>
         {cards.map((card: IAboutCard, key: number) => (
           <Col key={key} span={12}>
             <Card
+              className="plugin-card"
+              bordered={true}
               actions={[
                 <>
                   <strong>{status}: </strong>
                   <span>{status_texts[card.action.status]}</span>
                 </>,
                 card.action.link ? (
-                  <Button type="primary" href={card.action.link} target={card.action.external ? `_blank` : undefined}>
-                    {button_texts[card.action.status]}
-                  </Button>
+                  (card.action.status === 'not_installed' || card.action.status === 'installed') &&
+                  !card.action.external &&
+                  card.action.plugin_slug ? (
+                    <PluginInstallerButton
+                      pluginSlug={card.action.plugin_slug}
+                      type="primary"
+                      size="middle"
+                      text={button_texts[card.action.status]}
+                      nonce={acfwAdminApp.nonces.install_plugin}
+                      successMessage={`${card.title} has been ${
+                        card.action.status === 'installed' ? 'activated' : 'installed'
+                      } successfully!`}
+                      isActivation={card.action.status === 'installed'}
+                    />
+                  ) : (
+                    <Button type="primary" href={card.action.link} target={card.action.external ? `_blank` : undefined}>
+                      {button_texts[card.action.status]}
+                    </Button>
+                  )
                 ) : null,
               ]}
             >

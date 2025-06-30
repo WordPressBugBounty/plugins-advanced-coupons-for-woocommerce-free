@@ -30,7 +30,7 @@ defined( 'ABSPATH' ) || exit;
                                                     <tr>
                                                         <td colspan="2" valign="middle" id="credit">
                                                             <?php if ( ! apply_filters( 'acfw_use_woocommerce_email_footer', false ) ) : ?>
-                                                                <a style="text-decoration: none;" href="https://advancedcouponsplugin.com/powered-by/?utm_source=acfwf&utm_medium=sendcouponemail&utm_campaign=sendcouponpoweredby" target="_blank" rel="nofollow">
+                                                                <a style="text-decoration: none;" href="<?php echo esc_url( \ACFWF()->Helper_Functions->get_utm_url( 'powered-by/', 'acfwf', 'sendcouponemail', 'sendcouponpoweredby' ) ); ?>" target="_blank" rel="nofollow">
                                                                     <span style="font-size: 0.7em"><?php esc_html_e( 'Powered by', 'advanced-coupons-for-woocommerce-free' ); ?></span>
                                                                     <img style="width: 80px; margin-left: 5px;" src="<?php echo esc_url( \ACFWF()->Plugin_Constants->IMAGES_ROOT_URL . 'acfw-logo.png' ); ?>" alt="Advanced Coupons logo" />
                                                                 </a>

@@ -2,7 +2,8 @@
 
 // Libraries
 import React from 'react';
-import { Table, Pagination } from 'antd';
+import { Table, Pagination, Popover } from 'antd';
+import { FileTextOutlined } from '@ant-design/icons';
 
 // Hooks
 import useStoreCreditEntries from './useStoreCreditEntries';
@@ -37,6 +38,16 @@ const StoreCreditsHistory = () => {
       title: labels.activity,
       dataIndex: 'activity',
       key: 'activity',
+      render: (text: string, record: IStoreCreditEntry) => {
+        return [
+          text,
+          record.note ? (
+            <Popover placement="top" content={record.note} trigger="click" overlayClassName="entry-note-popover">
+              <FileTextOutlined style={{ paddingLeft: '5px' }} />
+            </Popover>
+          ) : null,
+        ];
+      },
     },
     {
       title: labels.amount,
@@ -53,11 +64,7 @@ const StoreCreditsHistory = () => {
       render: (label: string, record: IStoreCreditEntry) => {
         if (!record.rel_link) return label;
 
-        return (
-          <a href={record.rel_link} target="_blank">
-            {label}
-          </a>
-        );
+        return <a href={record.rel_link}>{label}</a>;
       },
     },
   ];

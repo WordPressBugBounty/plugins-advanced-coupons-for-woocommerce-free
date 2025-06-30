@@ -712,6 +712,24 @@ class ACFW_Settings extends \WC_Settings_Page {
                 'default'  => 0,
             ),
 
+            array(
+                'title'    => __( 'Delete store credits on user deletion', 'advanced-coupons-for-woocommerce-free' ),
+                'type'     => 'checkbox',
+                'desc'     => __( 'When enabled, all store credit entries for a user will be deleted when the user is deleted.', 'advanced-coupons-for-woocommerce-free' ),
+                'desc_tip' => __( 'This helps maintain database cleanliness by removing store credit data for deleted users. Note that this action cannot be undone.', 'advanced-coupons-for-woocommerce-free' ),
+                'id'       => Plugin_Constants::STORE_CREDITS_DELETE_WITH_USER,
+                'default'  => 'no',
+            ),
+
+            array(
+                'title'    => __( 'Total paid deducted with store credit payments on completed orders', 'advanced-coupons-for-woocommerce-free' ),
+                'type'     => 'checkbox',
+                'desc'     => __( 'Enable this to deduct total paid with store credit amounts for completed orders.', 'advanced-coupons-for-woocommerce-free' ),
+                'desc_tip' => __( 'When enabled, the total paid amount shown for completed orders will include any portion paid using store credit.', 'advanced-coupons-for-woocommerce-free' ),
+                'id'       => Plugin_Constants::STORE_CREDITS_DEDUCT_TOTAL_PAID_ON_COMPLETED_ORDERS,
+                'default'  => 'no',
+            ),
+
         );
     }
 
@@ -790,7 +808,7 @@ class ACFW_Settings extends \WC_Settings_Page {
                     'type'      => 'acfw_help_resources_field',
                     'desc'      => __( 'Guides, troubleshooting, FAQ and more.', 'advanced-coupons-for-woocommerce-free' ),
                     'link_text' => __( 'Knowledge Base', 'advanced-coupons-for-woocommerce-free' ),
-                    'link_url'  => 'https://advancedcouponsplugin.com/knowledge-base/?utm_source=Plugin&utm_medium=Help&utm_campaign=Knowledge%20Base%20Link',
+                    'link_url'  => $this->_helper_functions->get_utm_url( 'knowledge-base/', 'Plugin', 'Help', 'Knowledge%20Base%20Link' ),
                 ),
 
                 array(
@@ -799,7 +817,7 @@ class ACFW_Settings extends \WC_Settings_Page {
                     'desc'      => __( 'Learn & grow your store – covering coupon marketing ideas, strategies, management, tutorials & more.', 'advanced-coupons-for-woocommerce-free' ),
                     'id'        => 'acfw_help_blog_link',
                     'link_text' => __( 'Advanced Coupons Marketing Blog', 'advanced-coupons-for-woocommerce-free' ),
-                    'link_url'  => 'https://advancedcouponsplugin.com/blog/?utm_source=Plugin&utm_medium=Help&utm_campaign=Blog%20Link',
+                    'link_url'  => $this->_helper_functions->get_utm_url( 'blog/', 'Plugin', 'Help', 'Blog%20Link' ),
                 ),
 
                 array(

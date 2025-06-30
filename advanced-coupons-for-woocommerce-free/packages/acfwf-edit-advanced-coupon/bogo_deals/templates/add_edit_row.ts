@@ -13,7 +13,7 @@ declare var acfw_edit_coupon: any;
  */
 export default function add_edit_row_template(
   type: string,
-  exclude: number[],
+  exclude: any[],
   is_deals: string,
   data: any = false
 ): string {
@@ -24,6 +24,9 @@ export default function add_edit_row_template(
   const option: string = typeof data == "object" ? get_option(type, data) : "";
   const priceCol: string = is_deals ? get_price_column(data) : "";
   const btnText: string = typeof data == "object" ? edit : add;
+
+  // Exclude gift card if requesting from customer gets
+  exclude = is_deals ? [...exclude, 'product_type_gift_card'] : exclude;
 
   return `
     <tr class="add-edit-form adding">

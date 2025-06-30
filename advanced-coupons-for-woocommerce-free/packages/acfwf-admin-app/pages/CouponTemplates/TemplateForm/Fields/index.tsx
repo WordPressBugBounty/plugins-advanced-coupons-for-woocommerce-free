@@ -14,6 +14,7 @@ import SelectProductCategories from './SelectProductCategories';
 import DateTimeField from './DateTimeField';
 import SelectCoupons from './SelectCoupons';
 import SelectCustomers from './SelectCustomers';
+import SelectProductAttributes from './SelectProductAttributes';
 
 const componentMap: Record<string, any> = {
   coupon_code: CouponCode,
@@ -26,6 +27,7 @@ const componentMap: Record<string, any> = {
   user_roles: UserRoles,
   products: SelectProducts,
   product_categories: SelectProductCategories,
+  product_attributes: SelectProductAttributes,
   date: DateTimeField,
   coupons: SelectCoupons,
   customers: SelectCustomers,

@@ -135,6 +135,7 @@ class Coupon_Templates extends Base_Model implements Model_Interface {
                 'search_product'          => __( 'Search Product', 'advanced-coupons-for-woocommerce-free' ),
             ),
             'enable_review_tab' => ( defined( 'ACFW_COUPON_TEMPLATES_REVIEWER' ) && ACFW_COUPON_TEMPLATES_REVIEWER ) || 'yes' === get_option( self::ENABLE_COUPON_TEMPLATES_REVIEWER ),
+            'link'              => $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'coupontemplates' ),
         );
 
         return $data;

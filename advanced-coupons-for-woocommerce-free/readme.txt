@@ -2,8 +2,8 @@
 Contributors: jkohlbach, RymeraWebCo, Rymera01, smub
 Tags: woocommerce coupons, bogo coupons, store credit, url coupons, bogo
 Requires at least: 5.2
-Tested up to: 6.7
-Stable tag: 4.6.5.2
+Tested up to: 6.8
+Stable tag: 4.6.7
 Requires PHP: 5.6
 License: GNU General Public License v2.0 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -37,6 +37,7 @@ We made WooCommerce coupons better so you can:
 1. Apply WooCommerce coupons with a URL easily (adds coupon URL capabilities)
 1. Restrict WooCommerce coupons by user role
 1. Show WooCommerce coupons on the quick order preview box
+1. Send coupons quickly via email or push notifications
 
 > <strong>ADVANCED COUPONS PREMIUM ADD-ON</strong><br />
 > This plugin is the free version of the highly rated Advanced Coupons Premium plugin. If you want more extended coupon features the premium version adds EVEN MORE to your WooCommerce coupons!<br /><br />Click here to compare features and purchase the <a href="https://advancedcouponsplugin.com/?utm_source=wprepo&utm_medium=link&utm_campaign=acfwf" rel="friend">Advanced Coupons for WooCommerce Premium Add-on</a>.
@@ -153,9 +154,15 @@ Advanced Coupons adds a list of the WooCommerce coupons that were used on that o
 
 These small but helpful enhancements speed up your processes dramatically. We're always looking for ways to improve people's workflow.
 
+= Send Coupons Quickly & Easily =
+
+It's now easy to send coupons to your customer quickly via the Send Coupon button at the top of each coupon's edit screen.
+
+Choose to send coupons via email (complete with a preview option so you can see what this looks like) or send coupons via push notification via our first-party PushEngage integration.
+
 = Advanced Coupons Is Compatible With Other Plugins =
 
-Not only is Advanced Coupons compatible with standard WooCommerce coupons, it's also compatible with lots of complementary plugins. Hundreds of shipping and payment gateways, WooCommerce Currency Switcher by Aelia (even with our free Advanced Coupons plugin!), Wholesale Suite, WPML, WooCommerce Subscriptions coupons, plus loads more.
+Not only is Advanced Coupons compatible with standard WooCommerce coupons, it's also compatible with lots of complementary plugins. Hundreds of shipping and payment gateways, WooCommerce Currency Switcher by Aelia (even with our free Advanced Coupons plugin!), Wholesale Suite, WPML, WooCommerce Subscriptions coupons, PushEngage push notifications, plus loads more.
 
 If you want WooCommerce coupons that are advanced AND compatible with all the existing tools you are using then Advanced Coupons is the tool for you.
 
@@ -340,6 +347,10 @@ You can also explore our other compatible extensions as well:
 * <a href="https://advancedcouponsplugin.com/pricing/loyalty/?utm_source=wprepo&utm_medium=link&utm_campaign=acfwf" rel="friend">Loyalty Program for WooCommerce</a>
 * <a href="https://advancedcouponsplugin.com/pricing/gift-cards/?utm_source=wprepo&utm_medium=link&utm_campaign=acfwf" rel="friend">Advanced Gift Cards</a>
 
+= How can I report security bugs? =
+
+You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team helps validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/9e5fb91f-72fc-4bfa-afe5-949d9d02c27e)
+
 == Screenshots ==
 
 1. Advanced Coupons Dashboard Statistics
@@ -368,6 +379,32 @@ Thanks,
 Josh Kohlbach (CEO of Rymera Web Co)
 
 == Changelog ==
+
+= 4.6.7 =
+* Bug Fix: Coupon's can't be saved when the Affiliate WP plugin is active
+* Bug Fix: Incorrect success message shown when store credit conditions are not met
+* Bug Fix: SSI Conflict: HTML Comment <!--#url_coupon_data--> Triggers Server Error on SSI-Enabled Apache Hosts
+* Bug Fix: Store Credit Not Recorded After Refunding Order to Store Credits
+* Improvement: Add way to assign a category to a coupon that is created/updated via the WC REST API endpoint
+* Improvement: Coupon templates: add support for product attributes usage restriction fields
+* Improvement: Create a shortcode for displaying the my account store credit page content
+* Improvement: Integration with WooCommerce Subscriptions
+* Improvement: Option To Use Parent Product Instead of Listing the Each Variants
+* Improvement: Option to enable deducting store credit payment value from the order total when fetched for accounting software
+
+= 4.6.6 =
+* Bug Fix: Always use regular price for "all coupon types" is not calculating discount when a discounted product from an add-product coupon applied
+* Bug Fix: Automatic refund email does not include refund type (Store Credits)
+* Bug Fix: BOGO: Critical error when "Customer Buys" products are removed from the cart while the BOGO coupon is still applied to the cart
+* Bug Fix: Can't use store credits with WooCommerce Subscription
+* Bug Fix: Duplicated Queries on in app notices
+* Bug Fix: Exclude gift card products from Customer Gets of BOGO - Specific Product/s
+* Bug Fix: Unclaimed store credits from deleted customers are not deducted from the unclaimed amount on the Store Credits dashboard
+* Feature: Add ability to send push to a specific user via Pushengage
+* Improvement: Display Store Credits notes icon on My Account and Store Credit Dashboard
+* Improvement: Getting started admin page
+* Improvement: Hide expired coupons in Advanced Coupons by Category gutenberg block
+* Improvement: Remove the target=“_blank” from the View Order link
 
 = 4.6.5.2 =
 * Improvement: Security and code improvements

@@ -27,29 +27,20 @@ const Logo = (props: IProps) => {
   const [premiumPage] = app_pages.filter((p: any) => 'acfw-premium' === p.slug);
 
   return (
-    <div className='acfw-logo-div'>
+    <div className="acfw-logo-div">
       {premiumPage ? (
         <>
-          <a
-            href='https://advancedcouponsplugin.com/pricing/?utm_source=acfwf&amp;utm_medium=upsell&amp;utm_campaign=logo'
-            target='_blank'
-            rel='noreferrer'
-          >
-            <img className='acfw-logo' src={acfwAdminApp.logo} alt='acfw logo' />
+          <a href={acfwAdminApp.link_logo} target="_blank" rel="noreferrer">
+            <img className="acfw-logo" src={acfwAdminApp.logo} alt="acfw logo" />
           </a>
           {!hideUpgrade && (
-            <a
-              className='acfw-header-upgrade-btn'
-              href='https://advancedcouponsplugin.com/pricing/?utm_source=acfwf&amp;utm_medium=upsell&amp;utm_campaign=upgrade'
-              target='_blank'
-              rel='noreferrer'
-            >
+            <a className="acfw-header-upgrade-btn" href={acfwAdminApp.link_upgrade} target="_blank" rel="noreferrer">
               {premium_page.upgrade}
             </a>
           )}
         </>
       ) : (
-        <img className='acfw-logo' src={acfwAdminApp.logo} alt='acfw logo' />
+        <img className="acfw-logo" src={acfwAdminApp.logo} alt="acfw logo" />
       )}
     </div>
   );

@@ -666,6 +666,10 @@ class Frontend extends Base_Model implements Model_Interface {
      * @return array BOGO discounts.
      */
     public function calculate_bogo_discounts_for_coupon( $coupon_code ) {
+        if ( ! $this->_calculation instanceof Calculation ) {
+            $this->_calculation = Calculation::get_instance();
+        }
+
         $deals     = $this->_calculation->get_entries_by_coupon( $coupon_code, 'deal' );
         $discounts = array();
 

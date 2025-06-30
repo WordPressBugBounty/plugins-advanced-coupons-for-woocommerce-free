@@ -122,7 +122,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         <h3><?php esc_html_e( "+ 100's of other premium features", 'advanced-coupons-for-woocommerce-free' ); ?></h3>
 
         <p>
-            <a class="acfw-upgrade-button" href="<?php echo esc_attr( apply_filters( 'acfwp_upsell_link', 'https://advancedcouponsplugin.com/pricing/?utm_source=acfwf&utm_medium=upsell&utm_campaign=upgradepage' ) ); ?>" target="_blank">
+            <a class="acfw-upgrade-button" href="<?php echo esc_attr( apply_filters( 'acfwp_upsell_link', \ACFWF()->Helper_Functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'upgradepage' ) ) ); ?>" target="_blank">
                 <?php esc_html_e( 'See the full feature list →', 'advanced-coupons-for-woocommerce-free' ); ?>
             </a>
         </p>

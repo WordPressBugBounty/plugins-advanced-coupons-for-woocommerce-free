@@ -20,9 +20,10 @@ class Helper_Functions {
     | Traits
     |--------------------------------------------------------------------------
      */
-    use \ACFWF\Traits\Singleton;
     use \ACFWF\Helpers\Traits\Block;
     use \ACFWF\Helpers\Traits\Coupon;
+    use \ACFWF\Helpers\Traits\DateTime;
+    use \ACFWF\Traits\Singleton;
 
     /*
     |--------------------------------------------------------------------------
@@ -99,82 +100,6 @@ class Helper_Functions {
         } else {
             return false;
         }
-    }
-
-    /**
-     * Returns the timezone string for a site, even if it's set to a UTC offset
-     *
-     * Adapted from http://www.php.net/manual/en/function.timezone-name-from-abbr.php#89155
-     *
-     * Reference:
-     * http://www.skyverge.com/blog/down-the-rabbit-hole-wordpress-and-timezones/
-     *
-     * @since 1.0
-     * @access public
-     *
-     * @return string Valid PHP timezone string
-     */
-    public function get_site_current_timezone() {
-        // if site timezone string exists, return it.
-        $timezone = trim( get_option( 'timezone_string' ) );
-        if ( $timezone ) {
-            return $timezone;
-        }
-
-        // get UTC offset, if it isn't set then return UTC.
-        $utc_offset = trim( get_option( 'gmt_offset', 0 ) );
-
-        if ( filter_var( $utc_offset, FILTER_VALIDATE_INT ) === 0 || '' === $utc_offset || is_null( $utc_offset ) ) {
-            return 'UTC';
-        }
-
-        return $this->convert_utc_offset_to_timezone( $utc_offset );
-    }
-
-    /**
-     * Conver UTC offset to timezone.
-     *
-     * @since 1.2.0
-     * @access public
-     *
-     * @param float/int/string $utc_offset UTC offset.
-     * @return string valid PHP timezone string
-     */
-    public function convert_utc_offset_to_timezone( $utc_offset ) {
-        // adjust UTC offset from hours to seconds.
-        $utc_offset *= 3600;
-
-        // attempt to guess the timezone string from the UTC offset.
-        $timezone = timezone_name_from_abbr( '', $utc_offset, 0 );
-        if ( $timezone ) {
-            return $timezone;
-        }
-
-        // last try, guess timezone string manually.
-        $is_dst = gmdate( 'I' );
-
-        foreach ( timezone_abbreviations_list() as $abbr ) {
-            foreach ( $abbr as $city ) {
-                if ( $city['dst'] === $is_dst && $city['offset'] === $utc_offset ) {
-                    return $city['timezone_id'];
-                }
-            }
-        }
-
-        // fallback to UTC.
-        return 'UTC';
-    }
-
-    /**
-     * Get default datetime format for display.
-     *
-     * @since 4.5.6
-     * @access public
-     *
-     * @return string Datetime format.
-     */
-    public function get_default_datetime_format() {
-        return sprintf( '%s %s', get_option( 'date_format', 'F j, Y' ), get_option( 'time_format', 'g:i a' ) );
     }
 
     /**
@@ -985,6 +910,11 @@ class Helper_Functions {
                     $sanitized[ $param ] = array_map( 'sanitize_text_field', (array) $value );
                     break;
 
+                case 'subscribers':
+                case 'subscriber_ids':
+                    $sanitized[ $param ] = array_map( 'sanitize_text_field', (array) $value );
+                    break;
+
                 default:
                     $sanitized[ $param ] = sanitize_text_field( $value );
             }
@@ -1288,7 +1218,7 @@ class Helper_Functions {
      */
     public function get_contact_support_link() {
         if ( $this->has_paid_plugin_active() ) {
-            return 'https://advancedcouponsplugin.com/support/?utm_source=acfwf&utm_medium=dashboard&utm_campaign=contactsupportlink';
+            return $this->get_utm_url( 'support/', 'acfwf', 'dashboard', 'contactsupportlink' );
         }
 
         return 'https://wordpress.org/support/plugin/advanced-coupons-for-woocommerce-free/';
@@ -1619,5 +1549,109 @@ class Helper_Functions {
             return html_entity_decode( $input );
         }
         return $input;
+    }
+
+    /**
+     * Get the URL with UTM parameters.
+     *
+     * @param string $url_path     URL path from main.
+     * @param string $utm_source   UTM source.
+     * @param string $utm_medium   UTM medium.
+     * @param string $utm_campaign UTM campaign.
+     * @param string $utm_term     UTM term.
+     * @param string $site_url     URL - defaults to `https://advancedcouponsplugin.com/`.
+     *
+     * @since 4.6.6
+     * @return string
+     */
+    public static function get_utm_url( $url_path = '', $utm_source = 'acfwf', $utm_medium = 'action', $utm_campaign = 'default', $utm_term = false, $site_url = Plugin_Constants::SITE_URL ) {
+
+        $utm_content = get_option( 'acfw_installed_by', false );
+        $url         = trailingslashit( $site_url ) . $url_path;
+
+        return add_query_arg(
+            array(
+                'utm_source'   => $utm_source,
+                'utm_medium'   => $utm_medium,
+                'utm_campaign' => $utm_campaign,
+                'utm_term'     => $utm_term,
+                'utm_content'  => $utm_content,
+            ),
+            trailingslashit( $url )
+        );
+    }
+
+    /**
+     * Get the WordPress.org plugin icon URL
+     *
+     * @param string $plugin_slug The plugin slug.
+     * @param int    $size        The icon size (default: 128).
+     *
+     * @since 2.2.1
+     * @access public
+     *
+     * @return string
+     */
+    public static function get_wp_org_plugin_icon_url( $plugin_slug, $size = 128 ) {
+        // Default fallback icon.
+        $default_icon = \ACFWF()->Plugin_Constants->IMAGES_ROOT_URL . 'acfw-icon.png';
+
+        // If the plugin doesn't exist on WordPress.org, return the default icon.
+        if ( ! self::plugin_exists_on_wporg( $plugin_slug ) ) {
+            return $default_icon;
+        }
+
+        // Known plugins with specific icon formats.
+        $icon_formats = array(
+            'invoice-gateway-for-woocommerce' => 'jpg',
+            // Add more as needed.
+        );
+
+        // Determine the file extension based on our known list or default to PNG.
+        $extension = isset( $icon_formats[ $plugin_slug ] ) ? $icon_formats[ $plugin_slug ] : 'png';
+
+        // Build the icon URL with dimensions.
+        $icon_url = sprintf(
+            'https://ps.w.org/%s/assets/icon-%dx%d.%s',
+            $plugin_slug,
+            $size,
+            $size,
+            $extension
+        );
+
+        return $icon_url;
+    }
+
+    /**
+     * Check if a plugin exists on WordPress.org
+     *
+     * @param string $plugin_slug The plugin slug.
+     *
+     * @since 2.2.1
+     * @access public
+     *
+     * @return bool
+     */
+    public static function plugin_exists_on_wporg( $plugin_slug ) {
+        // These plugins are known to exist on WordPress.org.
+        $known_plugins = array(
+            'woocommerce-wholesale-prices'         => true,
+            'wc-vendors'                           => true,
+            'storeagent-ai-for-woocommerce'        => true,
+            'invoice-gateway-for-woocommerce'      => true,
+            'woo-product-feed-pro'                 => true,
+            'funnelkit-stripe-woo-payment-gateway' => true,
+            'woocommerce-store-toolkit'            => true,
+            'woocommerce-exporter'                 => true,
+            // Add more as needed.
+        );
+
+        // If it's a known plugin, return true.
+        if ( isset( $known_plugins[ $plugin_slug ] ) ) {
+            return true;
+        }
+
+        // For unknown plugins, we'll assume they don't exist.
+        return false;
     }
 }

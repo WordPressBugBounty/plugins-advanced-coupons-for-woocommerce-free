@@ -141,7 +141,9 @@
         display: block;
       }
 
-      &.user-form {
+      &.user-form,
+      &.segment-form,
+      &.subscriber-form {
         margin-bottom: 1em;
       }
     }

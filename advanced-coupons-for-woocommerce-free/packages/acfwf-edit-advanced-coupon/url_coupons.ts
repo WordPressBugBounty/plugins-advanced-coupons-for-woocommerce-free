@@ -1,6 +1,6 @@
 declare var jQuery: any;
 declare var ClipboardJS: any;
-declare var QRCode: any;
+declare var ACFW_QRCode: any;
 declare var acfw_edit_coupon: any;
 var $: any = jQuery;
 
@@ -17,7 +17,7 @@ export default function url_coupon_events() {
   initCouponUrlClipboard();
 
   // If the QR code setting is disabled, then the QR code library will not be loaded from the backend.
-  if (typeof QRCode !== 'undefined') {
+  if (typeof ACFW_QRCode !== 'undefined') {
     initQRCode();
   }
 }
@@ -95,13 +95,13 @@ function generateQRCode() {
     let qrcodeContainer = $('#acfw-qr-code');
 
     try {
-      let qrcode = new QRCode(qrcodeContainer[0], {
+      let qrcode = new ACFW_QRCode(qrcodeContainer[0], {
         text: couponUrl,
         width: 200,
         height: 200,
         colorDark: '#000000',
         colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.L,
+        correctLevel: ACFW_QRCode.CorrectLevel.L,
       });
       qrcode.makeCode(couponUrl);
 

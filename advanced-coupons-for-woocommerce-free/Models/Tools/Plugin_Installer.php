@@ -48,17 +48,15 @@ class Plugin_Installer extends Base_Model implements Model_Interface, Initializa
     }
 
     /**
-     * Download and activate a given plugin.
+     * Download and activate a plugin.
      *
      * @since 4.5.5
      * @access public
      *
-     * @param string $plugin_slug Plugin slug.
-     * @param bool   $silently download plugin silently.
-     * @return bool|\WP_Error True if successful, WP_Error otherwise.
+     * @param string $plugin_slug The slug of the plugin to install.
+     * @return bool|\WP_Error True on success, WP_Error on failure.
      */
-    public function download_and_activate_plugin( $plugin_slug, $silently = false ) {
-
+    public function download_and_activate_plugin( $plugin_slug ) {
         // Check if the current user has the required permissions.
         if ( ! current_user_can( 'install_plugins' ) || ! current_user_can( 'activate_plugins' ) ) {
             return new \WP_Error( 'permission_denied', __( 'You do not have sufficient permissions to install and activate plugins.', 'advanced-coupons-for-woocommerce-free' ) );
@@ -75,63 +73,41 @@ class Plugin_Installer extends Base_Model implements Model_Interface, Initializa
         require_once ABSPATH . 'wp-admin/includes/file.php';
         require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 
+        $plugin_basename = $this->get_plugin_basename_by_slug( $plugin_slug );
+
+        // Check if the plugin is already active.
+        if ( is_plugin_active( $plugin_basename ) ) {
+            return new \WP_Error( 'acfw_plugin_already_active', __( 'The plugin is already installed and active.', 'advanced-coupons-for-woocommerce-free' ) );
+        }
+
+        // Check if the plugin is already installed but inactive, just activate it and return true.
+        if ( file_exists( WP_PLUGIN_DIR . '/' . $plugin_basename ) ) {
+            return $this->_activate_plugin( $plugin_basename, $plugin_slug );
+        }
+
         // Get the plugin info from WordPress.org's plugin repository.
         $api = plugins_api( 'plugin_information', array( 'slug' => $plugin_slug ) );
         if ( is_wp_error( $api ) ) {
             return $api;
         }
 
-        $plugin_basename = $this->get_plugin_basename_by_slug( $plugin_slug );
-
-        // Check if the plugin is already active.
-        if ( is_plugin_active( $plugin_basename ) ) {
-            return new \WP_Error( 'acfw_plugin_already_active', __( 'The plugin is already installed.', 'advanced-coupons-for-woocommerce-free' ) );
-        }
-
-        // Check if the plugin is already installed but inactive, just activate it and return true.
-        if ( $this->_helper_functions->is_plugin_installed( $plugin_basename ) ) {
-            return $this->_activate_plugin( $plugin_basename, $plugin_slug );
-        }
-
         // Download the plugin.
-        $skin     = $silently ? new \WP_Ajax_Upgrader_Skin() : new \Plugin_Installer_Skin(
-            array(
-                'type'  => 'web',
-                'title' => sprintf( 'Installing Plugin: %s', $api->name ),
-            )
-        );
+        $skin     = new \WP_Ajax_Upgrader_Skin();
         $upgrader = new \Plugin_Upgrader( $skin );
-
-        $result = $upgrader->install( $api->download_link );
+        $result   = $upgrader->install( $api->download_link );
 
         // Check if the plugin was installed successfully.
         if ( is_wp_error( $result ) ) {
             return $result;
         }
 
-        // Activate the plugin.
-        return $this->_activate_plugin( $plugin_basename, $plugin_slug );
-    }
-
-    /**
-     * Activate a plugin.
-     *
-     * @since 4.5.6
-     * @access private
-     *
-     * @param string $plugin_basename Plugin basename.
-     * @param string $plugin_slug     Plugin slug.
-     * @return bool|\WP_Error True if successful, WP_Error otherwise.
-     */
-    private function _activate_plugin( $plugin_basename, $plugin_slug ) {
-        $result = activate_plugin( $plugin_basename );
-
-        // Update uncanny automator source option.
-        if ( 'uncanny-automator' === $plugin_slug ) {
-            update_option( 'uncannyautomator_source', 'acoupons' );
+        if ( $skin->get_errors()->has_errors() ) {
+            $error = $skin->get_errors()->get_error_message();
+            return new \WP_Error( 'plugin_install_error', $error );
         }
 
-        return is_wp_error( $result ) ? $result : true;
+        // Activate the plugin.
+        return $this->_activate_plugin( $plugin_basename, $plugin_slug );
     }
 
     /**
@@ -145,16 +121,92 @@ class Plugin_Installer extends Base_Model implements Model_Interface, Initializa
     public function get_allowed_plugins() {
 
         $allowed_plugins = array(
-            'woocommerce'       => 'woocommmerce/woocommerce.php',
-            'uncanny-automator' => Plugin_Constants::UNCANNY_AUTOMATOR_PLUGIN,
-            'funnel-builder'    => Plugin_Constants::FUNNEL_BUILDER_PLUGIN,
-            'pushengage'        => Plugin_Constants::PUSHENGAGE_PLUGIN,
+            'woocommerce-wholesale-prices'    => Plugin_Constants::WWP_PLUGIN_BASENAME,
+            'uncanny-automator'               => Plugin_Constants::UNCANNY_AUTOMATOR_PLUGIN,
+            'funnel-builder'                  => Plugin_Constants::FUNNEL_BUILDER_PLUGIN,
+            'pushengage'                      => Plugin_Constants::PUSHENGAGE_PLUGIN,
+            'storeagent-ai-for-woocommerce'   => Plugin_Constants::STOREAGENT_AI_PLUGIN,
+            'woo-product-feed-pro'            => Plugin_Constants::PRODUCT_FEED_PRO_PLUGIN,
+            'wc-vendors'                      => Plugin_Constants::WC_VENDORS_PLUGIN,
+            'invoice-gateway-for-woocommerce' => Plugin_Constants::INVOICE_GATEWAY_PLUGIN,
+            'woocommerce-store-toolkit'       => Plugin_Constants::STORE_TOOLKIT_PLUGIN,
+            'woocommerce-exporter'            => Plugin_Constants::STORE_EXPORTER_PLUGIN,
         );
 
         // Allow other plugins to be installed but not let them overwrite the ones listed above.
         $extra_allowed_plugins = apply_filters( 'acfw_allowed_install_plugins', array() );
 
         return array_merge( $allowed_plugins, $extra_allowed_plugins );
+    }
+
+    /**
+     * Update plugin install information.
+     *
+     * @param string $plugin_slug The plugin slug.
+     *
+     * @since 2.2.1
+     * @access private
+     *
+     * @return void
+     */
+    private function _update_plugin_install_information( $plugin_slug ) {
+        // Update uncanny automator source option.
+        if ( 'uncanny-automator' === $plugin_slug ) {
+            update_option( 'uncannyautomator_source', 'acoupons' );
+        }
+
+        // Update StoreAgent AI source option when StoreAgent AI is installed.
+        if ( 'storeagent-ai-for-woocommerce' === $plugin_slug ) {
+            update_option( 'storeagent_installed_by', 'acfw' );
+        }
+
+        // Update WooCommerce Wholesale Prices source option when WooCommerce Wholesale Prices is installed.
+        if ( 'woocommerce-wholesale-prices' === $plugin_slug ) {
+            update_option( 'wwp_installed_by', 'acfw' );
+        }
+    }
+
+    /**
+     * Activate a plugin.
+     *
+     * @since 4.5.6
+     * @access private
+     *
+     * @param string $plugin_basename Plugin basename.
+     * @param string $plugin_slug     Plugin slug.
+     * @return bool|\WP_Error True if successful, WP_Error otherwise.
+     */
+    private function _activate_plugin( $plugin_basename, $plugin_slug ) {
+        // Verify the plugin exists before trying to activate.
+        if ( ! file_exists( WP_PLUGIN_DIR . '/' . $plugin_basename ) ) {
+            return new \WP_Error(
+                'plugin_not_found',
+                // translators: %s is the plugin basename.
+                sprintf( __( 'Cannot activate the plugin because the file %s does not exist.', 'advanced-coupons-for-woocommerce-free' ), $plugin_basename )
+            );
+        }
+
+        // Attempt activation.
+        $result = activate_plugin( $plugin_basename );
+
+        // Check for activation error.
+        if ( is_wp_error( $result ) ) {
+            return $result;
+        }
+
+        // Verify the plugin was actually activated.
+        if ( ! is_plugin_active( $plugin_basename ) ) {
+            return new \WP_Error(
+                'activation_failed',
+                // translators: %s is the plugin basename.
+                sprintf( __( 'The plugin was not activated. Plugin file: %s', 'advanced-coupons-for-woocommerce-free' ), $plugin_basename )
+            );
+        }
+
+        // Update plugin install information.
+        $this->_update_plugin_install_information( $plugin_slug );
+
+        return true;
     }
 
     /**
@@ -199,29 +251,86 @@ class Plugin_Installer extends Base_Model implements Model_Interface, Initializa
      * @access public
      */
     public function ajax_install_activate_plugin() {
+        try {
+            // Check nonce.
+            check_ajax_referer( 'acfw_install_plugin', 'nonce' );
 
-        // Check nonce.
-        check_ajax_referer( 'acfw_install_plugin', 'nonce' );
+            // Retrieve the plugin slug from the front-end.
+            $plugin_slug = isset( $_REQUEST['plugin_slug'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['plugin_slug'] ) ) : '';
 
-        // Retrieve the plugin slug from the front-end.
-        $plugin_slug = isset( $_REQUEST['plugin_slug'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['plugin_slug'] ) ) : '';
+            if ( empty( $plugin_slug ) ) {
+                wp_send_json_error( array( 'message' => 'Plugin slug is empty' ) );
+                return;
+            }
 
-        $silent = isset( $_REQUEST['silent'] ) ?? false;
-        $result = $this->download_and_activate_plugin( $plugin_slug, $silent );
+            if ( ! $this->_is_plugin_allowed_for_install( $plugin_slug ) ) {
+                $allowed_plugins = array_keys( $this->get_allowed_plugins() );
+                wp_send_json_error(
+                    array(
+                        'message' => sprintf(
+                            'Plugin %s is not in the allowed plugins list. Allowed plugins: %s',
+                            $plugin_slug,
+                            implode( ', ', $allowed_plugins )
+                        ),
+                    )
+                );
+                return;
+            }
 
-        do_action( 'acfw_after_install_activate_plugin', $plugin_slug, $result );
+            $plugin_basename = $this->get_plugin_basename_by_slug( $plugin_slug );
 
-        if ( isset( $_REQUEST['redirect'] ) ) {
-            wp_safe_redirect( admin_url( 'plugins.php' ) );
-        }
+            // Check if the plugin is already active.
+            if ( is_plugin_active( $plugin_basename ) ) {
+                $message = sprintf(
+                    /* translators: %s: plugin slug. */
+                    __( 'Plugin %s is already installed and active.', 'advanced-coupons-for-woocommerce-free' ),
+                    $plugin_slug
+                );
+                wp_send_json_success(
+                    array(
+                        'message'  => $message,
+                        'slug'     => $plugin_slug,
+                        'basename' => $plugin_basename,
+                    )
+                );
+                return;
+            }
 
-        // Check if the result is a WP_Error.
-        if ( is_wp_error( $result ) ) {
-            // If it is, return a JSON response indicating failure.
-            wp_send_json_error( $result->get_error_message() );
-        } else {
-            // If not, return a JSON response indicating success.
-            wp_send_json_success();
+            $result = $this->download_and_activate_plugin( $plugin_slug );
+
+            do_action( 'acfw_after_install_activate_plugin', $plugin_slug, $result );
+
+            if ( isset( $_REQUEST['redirect'] ) ) {
+                wp_safe_redirect( admin_url( 'plugins.php' ) );
+            }
+
+            // Check if the result is a WP_Error.
+            if ( is_wp_error( $result ) ) {
+                wp_send_json_error(
+                    array(
+                        'message' => $result->get_error_message(),
+                    )
+                );
+            } else {
+                $message = sprintf(
+                    /* translators: %s: plugin slug. */
+                    __( 'Plugin %s installed and activated successfully.', 'advanced-coupons-for-woocommerce-free' ),
+                    $plugin_slug
+                );
+                wp_send_json_success(
+                    array(
+                        'message'  => $message,
+                        'slug'     => $plugin_slug,
+                        'basename' => $plugin_basename,
+                    )
+                );
+            }
+        } catch ( \Exception $e ) {
+            wp_send_json_error(
+                array(
+                    'message' => $e->getMessage(),
+                )
+            );
         }
     }
 

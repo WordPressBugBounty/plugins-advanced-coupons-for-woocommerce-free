@@ -19,10 +19,18 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }?>
 
+<?php
+if ( ! isset( $display_order_total ) ) {
+    $display_order_total = true;
+}
+?>
+
+<?php if ( $display_order_total ) : ?>
 <tr class="acfw-order-total">
     <th><?php echo esc_html__( 'Order Total', 'advanced-coupons-for-woocommerce-free' ); ?></th>
     <td><strong><?php echo wc_price( $order_total ); ?></strong></td>
 </tr>
+<?php endif; ?>
 
 <tr class="acfw-store-credits-balance-row">
     <th><?php echo esc_html__( 'Pay with Store Credits', 'advanced-coupons-for-woocommerce-free' ); ?></th>

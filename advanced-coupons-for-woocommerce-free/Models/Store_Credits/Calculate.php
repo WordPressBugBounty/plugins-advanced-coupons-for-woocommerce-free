@@ -131,12 +131,12 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
      */
     public function calculate_credits_status_and_sources( $entries ) {
         $status = array(
-			'total'     => 0,
-			'unclaimed' => 0,
-			'claimed'   => 0,
-			'expired'   => 0,
-			'deducted'  => 0,
-		);
+            'total'     => 0,
+            'unclaimed' => 0,
+            'claimed'   => 0,
+            'expired'   => 0,
+            'deducted'  => 0,
+        );
 
         $sources = \ACFWF()->Store_Credits_Registry->get_initial_counters( 'increase' );
 
@@ -305,14 +305,14 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
     private function _calculate_customer_balance( $user_id, $skip_hooks = false ) {
         $total_earned = $this->_get_entries_sum(
             array(
-				'user_id' => $user_id,
-				'type'    => 'increase',
+                'user_id' => $user_id,
+                'type'    => 'increase',
             )
         );
         $total_used   = $this->_get_entries_sum(
             array(
-				'user_id' => $user_id,
-				'type'    => 'decrease',
+                'user_id' => $user_id,
+                'type'    => 'decrease',
             )
         );
 
@@ -530,14 +530,14 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
         $params = wp_parse_args(
             $params,
             array(
-				'user_id'      => 0,
-				'type'         => '',
+                'user_id'      => 0,
+                'type'         => '',
                 'action'       => '',
                 'object_id'    => 0,
-				'start_period' => '',
-				'end_period'   => '',
-				'precision'    => $this->get_decimal_precision(),
-				'decimals'     => wc_get_price_decimals(),
+                'start_period' => '',
+                'end_period'   => '',
+                'precision'    => $this->get_decimal_precision(),
+                'decimals'     => wc_get_price_decimals(),
             )
         );
         extract( $params ); // phpcs:ignore
@@ -679,6 +679,27 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
      */
     public function get_store_credit_expiry_days() {
         return apply_filters( 'acfw_store_credit_expiry_days', 365 );
+    }
+
+    /**
+     * Calculate recently imported points.
+     *
+     * @since 4.6.7
+     * @access public
+     *
+     * @param string $start_period Date to calculate points for.
+     * @param string $end_period   Optional end date to calculate points for.
+     * @return int Total points imported.
+     */
+    public function calculate_recently_imported_points( $start_period, $end_period = '' ) {
+        $end_period = $end_period ? $end_period : current_time( 'mysql', true );
+        $params     = array(
+            'action'       => 'imported_points',
+            'start_period' => $start_period,
+            'end_period'   => $end_period,
+        );
+
+        return $this->_get_entries_sum( $params );
     }
 
     /*

@@ -63,4 +63,22 @@ trait Block {
         // By examining the request uri, we can check whether this request is used on the WooCommerce block or not.
         return str_contains( $request_uri, '/wc/store/' );
     }
+
+    /**
+     * Retrieves the request path from the WooCommerce Blocks API request payload.
+     *
+     * This function reads the raw JSON input from `php://input`, decodes it,
+     * and extracts the request path from the first request in the batch.
+     *
+     * @since 4.6.6
+     * @access public
+     *
+     * @return string|null The request path if found, otherwise null.
+     */
+    public function get_request_path_using_wpjson_wc_api() {
+        $raw_input    = file_get_contents( 'php://input' );
+        $request_data = json_decode( $raw_input, true );
+
+        return isset( $request_data['requests'][0]['path'] ) ? $request_data['requests'][0]['path'] : null;
+    }
 }

@@ -110,7 +110,8 @@ class Send_Coupon extends Base_Model implements Model_Interface {
                     'send_email'                => __( 'Send Email', 'advanced-coupons-for-woocommerce-free' ),
                 ),
                 'pushengage'       => array(
-                    'details'             => __( 'Message', 'advanced-coupons-for-woocommerce-free' ),
+                    'customer_details'    => __( 'Customer details', 'advanced-coupons-for-woocommerce-free' ),
+                    'message_details'     => __( 'Message', 'advanced-coupons-for-woocommerce-free' ),
                     'title'               => __( 'Title', 'advanced-coupons-for-woocommerce-free' ),
                     'message'             => __( 'Message', 'advanced-coupons-for-woocommerce-free' ),
                     'url'                 => __( 'URL', 'advanced-coupons-for-woocommerce-free' ),
@@ -118,8 +119,10 @@ class Send_Coupon extends Base_Model implements Model_Interface {
                     'title_placeholder'   => __( 'Enter title ...', 'advanced-coupons-for-woocommerce-free' ),
                     'message_placeholder' => __( 'Enter message ...', 'advanced-coupons-for-woocommerce-free' ),
                     'url_placeholder'     => __( 'Enter URL ...', 'advanced-coupons-for-woocommerce-free' ),
-                    'segment'             => __( 'Segment', 'advanced-coupons-for-woocommerce-free' ),
+                    'segments'            => __( 'Segments', 'advanced-coupons-for-woocommerce-free' ),
                     'create_new_segment'  => __( 'Create new segment', 'advanced-coupons-for-woocommerce-free' ),
+                    'subscribers'         => __( 'Subscribers', 'advanced-coupons-for-woocommerce-free' ),
+                    'search'              => __( 'Search', 'advanced-coupons-for-woocommerce-free' ),
                     'confirm_and_send'    => __( 'Confirm & send', 'advanced-coupons-for-woocommerce-free' ),
                     'preview_pushengage'  => __( 'Preview Push Notification', 'advanced-coupons-for-woocommerce-free' ),
                     'send_pushengage'     => __( 'Send PushEngage', 'advanced-coupons-for-woocommerce-free' ),
@@ -130,6 +133,7 @@ class Send_Coupon extends Base_Model implements Model_Interface {
             'is_pushengage_site_connected' => $is_pushengage_site_connected,
             'pushengage_download_nonce'    => wp_create_nonce( 'acfw_install_plugin' ),
             'pushengage_segment_page'      => admin_url( 'admin.php?page=pushengage#/audience/segments' ),
+            'pushengage_subscriber_nonce'  => wp_create_nonce( 'acfw_pushengage_subscriber' ),
         );
 
         return $data;

@@ -88,12 +88,14 @@ class Admin extends Base_Model implements Model_Interface, Activatable_Interface
     private function _create_db_table() {
         global $wpdb;
 
-        if ( get_option( Plugin_Constants::STORE_CREDITS_DB_CREATED ) === 'yes' ) {
+        $store_credits_db = $wpdb->prefix . Plugin_Constants::STORE_CREDITS_DB_NAME;
+
+        // Check if the table exists in the database before proceeding.
+        if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $store_credits_db ) ) === $store_credits_db ) {
             return;
         }
 
-        $store_credits_db = $wpdb->prefix . Plugin_Constants::STORE_CREDITS_DB_NAME;
-        $charset_collate  = $wpdb->get_charset_collate();
+        $charset_collate = $wpdb->get_charset_collate();
 
         $sql = "CREATE TABLE $store_credits_db (
             entry_id bigint(20) NOT NULL AUTO_INCREMENT,
@@ -228,6 +230,10 @@ class Admin extends Base_Model implements Model_Interface, Activatable_Interface
                 $order->get_date_paid()->date_i18n( get_option( 'date_format' ) ),
                 $order->get_payment_method_title()
             );
+
+            if ( 'yes' === get_option( Plugin_Constants::STORE_CREDITS_DEDUCT_TOTAL_PAID_ON_COMPLETED_ORDERS, 'no' ) ) {
+                $sc_data['cart_total'] = $non_sc_amount;
+            }
         } else {
             $non_sc_label = __( 'Pending amount to be paid', 'advanced-coupons-for-woocommerce-free' );
         }
@@ -241,18 +247,18 @@ class Admin extends Base_Model implements Model_Interface, Activatable_Interface
      * @since 4.0
      * @since 4.2   Add hook to trigger actions based on user's new balance after an order was refunded.
      * @since 4.5.1 Save store credit entry ID to the refund order post meta.
+     * @since 4.6.6 Change hook from `woocommerce_order_refunded` to `woocommerce_create_refund`.
      * @access public
      *
-     * @param int $order_id  Order ID.
-     * @param int $refund_id Refund ID.
+     * @param \WC_Order_Refund $refund  Refund order object.
+     * @param array            $args    Refund arguments.
      */
-    public function manual_refund_via_store_credits( $order_id, $refund_id ) {
+    public function manual_refund_via_store_credits( $refund, $args ) {
         if ( ! isset( $_POST['acfw_store_credits'] ) || ! $_POST['acfw_store_credits'] ) { // phpcs:ignore
             return;
         }
 
-        $refund             = new \WC_Order_Refund( $refund_id );
-        $order              = wc_get_order( $order_id );
+        $order              = wc_get_order( $args['order_id'] );
         $store_credit_entry = new Store_Credit_Entry();
 
         // filter for currency conversion, converting from order currency to site currency.
@@ -403,6 +409,33 @@ class Admin extends Base_Model implements Model_Interface, Activatable_Interface
         }
     }
 
+    /**
+     * Delete store credit entries when a user is deleted.
+     *
+     * @since 4.6.0
+     * @access public
+     *
+     * @param int $user_id ID of the deleted user.
+     */
+    public function delete_user_store_credit_entries( $user_id ) {
+        // Skip if setting is not enabled.
+        if ( 'yes' !== get_option( Plugin_Constants::STORE_CREDITS_DELETE_WITH_USER, 'no' ) ) {
+            return;
+        }
+
+        global $wpdb;
+
+        // Delete all store credit entries for this user.
+        $wpdb->delete(
+            $wpdb->prefix . Plugin_Constants::STORE_CREDITS_DB_NAME,
+            array( 'user_id' => $user_id ),
+            array( '%d' )
+        );
+
+        // Delete user balance meta.
+        delete_user_meta( $user_id, Plugin_Constants::STORE_CREDIT_USER_BALANCE );
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Fulfill implemented interface contracts
@@ -450,8 +483,9 @@ class Admin extends Base_Model implements Model_Interface, Activatable_Interface
         }
 
         add_action( 'user_register', array( $this, 'set_zero_balance_for_new_registered_user' ) );
+        add_action( 'deleted_user', array( $this, 'delete_user_store_credit_entries' ) );
         add_action( 'woocommerce_admin_order_totals_after_tax', array( $this, 'display_store_credits_discount_on_edit_order' ) );
-        add_action( 'woocommerce_order_refunded', array( $this, 'manual_refund_via_store_credits' ), 10, 2 );
+        add_action( 'woocommerce_create_refund', array( $this, 'manual_refund_via_store_credits' ), 10, 2 );
         add_action( 'woocommerce_after_order_refund_item_name', array( $this, 'append_store_credits_to_refund_item_name' ) );
         add_action( 'woocommerce_order_after_calculate_totals', array( $this, 'order_recalculate_store_credit_discounts' ), 90, 2 ); // run late so it's calculated last.
         add_action( 'woocommerce_admin_order_totals_after_tax', array( $this, 'display_paid_in_store_credits_row' ) );

@@ -17,9 +17,9 @@ const formState = new Map();
 export function initFormState(section = 'send_coupon_to', option = 'email') {
   formState.set('section', section);
   formState.set('option', option);
+  formState.set('send_to', option === 'pushengage' ? 'segments' : option === 'user' ? 'user' : '');
 
   // Email.
-  formState.set('send_to', option === 'user' ? 'user' : '');
   formState.set('user_id', '0');
   formState.set('name', '');
   formState.set('email', '');
@@ -27,7 +27,9 @@ export function initFormState(section = 'send_coupon_to', option = 'email') {
 
   // PushEngage.
   formState.set('segment_ids', '0');
+  formState.set('subscriber_ids', '0');
   formState.set('segments', labels.pushengage.segment_placeholder);
+  formState.set('subscribers', '—');
   formState.set('title', acfw_edit_coupon.send_coupon.pushengage.default_content.title);
   formState.set('message', acfw_edit_coupon.send_coupon.pushengage.default_content.message);
   formState.set('url', acfw_edit_coupon.send_coupon.pushengage.default_content.url);
@@ -109,6 +111,17 @@ export function updateStateFromInput() {
 
       formState.set('segment_ids', segment_ids);
       formState.set('segments', segments);
+      break;
+
+    case 'subscribers':
+      const subscriberIds: string[] = value ? value.toString().split(',') : [];
+      formState.set('subscriber_ids', subscriberIds);
+
+      const $selectedSubscribers = $input.find('option:selected');
+      const subscriberNames: string[] = Array.from($selectedSubscribers).map((el) => $(el).text());
+
+      formState.set('subscribers', subscriberNames);
+      formState.get('subscribers');
       break;
 
     default:

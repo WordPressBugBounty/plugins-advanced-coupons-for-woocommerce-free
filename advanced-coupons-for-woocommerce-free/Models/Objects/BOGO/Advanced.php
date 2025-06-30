@@ -138,9 +138,18 @@ class Advanced extends Abstract_BOGO_Deal {
 
         switch ( $type ) {
             case 'specific-products':
-                $item_id = isset( $cart_item['variation_id'] ) && $cart_item['variation_id'] ? $cart_item['variation_id'] : $cart_item['product_id'];
-                $item_id = apply_filters( 'acfw_filter_cart_item_product_id', $item_id ); // filter for WPML support.
-                return in_array( $item_id, $entry['ids'], true ) ? $item_id : false;
+                $ids_to_check = ! empty( $cart_item['variation_id'] )
+                    ? array( $cart_item['variation_id'], $cart_item['product_id'] ) // should check the parent product.
+                    : array( $cart_item['product_id'] );
+
+                foreach ( $ids_to_check as $item_id ) {
+                    $filtered_id = apply_filters( 'acfw_filter_cart_item_product_id', $item_id );
+                    if ( in_array( $filtered_id, $entry['ids'], true ) ) {
+                        return $filtered_id;
+                    }
+                }
+
+                return false;
 
             default:
                 return apply_filters( 'acfw_bogo_is_cart_item_match_entries', false, $cart_item, $entry, $is_deal, $type, $this );

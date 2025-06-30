@@ -44,7 +44,7 @@ class Plugin_Constants {
     // Plugin configuration constants.
     const TOKEN               = 'acfwf';
     const INSTALLED_VERSION   = 'acfwf_installed_version';
-    const VERSION             = '4.6.5.2';
+    const VERSION             = '4.6.7';
     const TEXT_DOMAIN         = 'advanced-coupons-for-woocommerce-free';
     const THEME_TEMPLATE_PATH = 'advanced-coupons-for-woocommerce-free';
     const META_PREFIX         = '_acfw_';
@@ -52,6 +52,7 @@ class Plugin_Constants {
     const LOYALTY_PLUGIN      = 'loyalty-program-for-woocommerce/loyalty-program-for-woocommerce.php';
     const GIFT_CARDS_PLUGIN   = 'advanced-gift-cards-for-woocommerce/advanced-gift-cards-for-woocommerce.php';
     const INSTALLATION_DATE   = 'acfwf_plugin_installation_date';
+    const SITE_URL            = 'https://advancedcouponsplugin.com/';
 
     // License.
     const LICENSE_ACTIVATION_URL       = 'https://advancedcouponsplugin.com/wp-admin/admin-ajax.php?action=slmw_activate_license';
@@ -96,6 +97,7 @@ class Plugin_Constants {
     const STORE_CREDIT_API_NAMESPACE    = 'store-credits/v1';
     const STORE_CREDIT_USER_BALANCE     = 'acfw_store_credit_balance';
     const STORE_CREDIT_WC_API_NAMESPACE = 'wc-store-credits/v1';
+    const TOOLS_API_NAMESPACE           = 'acfw-tools/v1';
 
     // Store Credits.
     const STORE_CREDITS_SESSION                    = 'acfw_store_credits_discount';
@@ -114,6 +116,7 @@ class Plugin_Constants {
     const REFUND_STORE_CREDIT_DISCOUNT_ENTRY       = 'acfw_refund_store_credit_discount_entry_id';
     const DISPLAY_STORE_CREDITS_REDEEM_FORM        = 'acfw_display_store_credits_redeem_form';
     const AUTO_DISPLAY_STORE_CREDITS_REDEEM_FORM   = 'acfw_auto_display_store_credits_redeem_form';
+    const ALLOW_STORE_CREDITS_FOR_RENEWAL          = 'acfw_allow_store_credits_for_renewal';
 
     // Settings Constants.
 
@@ -172,9 +175,15 @@ class Plugin_Constants {
     const USAGE_LIMITS_CRON = 'acfw_advanced_usage_limits_cron';
 
     // Store Credits.
-    const STORE_CREDITS_DB_CREATED        = 'acfw_store_credits_db_created';
-    const STORE_CREDITS_DB_NAME           = 'acfw_store_credits';
-    const STORE_CREDITS_EXPIRY_CHECK_DATE = 'acfw_store_credits_expiry_check_date';
+    const STORE_CREDITS_DB_CREATED                            = 'acfw_store_credits_db_created';
+    const STORE_CREDITS_DB_NAME                               = 'acfw_store_credits';
+    const STORE_CREDITS_EXPIRY_CHECK_DATE                     = 'acfw_store_credits_expiry_check_date';
+    const STORE_CREDITS_DELETE_WITH_USER                      = 'acfw_store_credits_delete_with_user';
+    const STORE_CREDITS_DEDUCT_TOTAL_PAID_ON_COMPLETED_ORDERS = 'acfw_store_credits_deduct_total_paid_on_completed_order';
+
+    // Store Credits importer.
+    const IMPORT_POINTS_SCHEDULE_HOOK   = 'acfw_import_third_party_points';
+    const IMPORT_POINTS_PROCESS_RUNNING = 'acfw_import_points_process_data';
 
     // Cache options.
     const AUTO_APPLY_COUPONS       = 'acfw_auto_apply_coupons';
@@ -213,9 +222,20 @@ class Plugin_Constants {
     const SPEED_OPTIMIZER_PLUGIN   = 'sg-cachepress/sg-cachepress.php';
     const WC_SUBSCRIPTIONS         = 'woocommerce-subscriptions/woocommerce-subscriptions.php';
     const PUSHENGAGE_PLUGIN        = 'pushengage/main.php';
+    const STOREAGENT_AI_PLUGIN     = 'storeagent-ai-for-woocommerce/storeagent-ai-for-woocommerce.php';
+    const PRODUCT_FEED_PRO_PLUGIN  = 'woo-product-feed-pro/woocommerce-sea.php';
+    const WC_VENDORS_PLUGIN        = 'wc-vendors/class-wc-vendors.php';
+    const INVOICE_GATEWAY_PLUGIN   = 'invoice-gateway-for-woocommerce/invoice-gateway-for-woocommerce.php';
+    const STORE_TOOLKIT_PLUGIN     = 'woocommerce-store-toolkit/store-toolkit.php';
+    const STORE_EXPORTER_PLUGIN    = 'woocommerce-exporter/exporter.php';
 
     // Notifications.
     const NOTIFICATIONS_SCHEDULE_HOOK = 'acfwf_fetch_notifications';
+    const NOTIFICATIONS_CACHE         = 'acfw_admin_notifications_cache';
+
+    // Getting Started.
+    const GETTING_STARTED_SHOW = 'acfw_admin_notice_getting_started_show';
+    const GETTING_STARTED_URL  = 'getting-started-with-advanced-coupons-for-woocommerce';
 
     // Others.
     const DISPLAY_DATE_FORMAT = 'F j, Y g:i a';

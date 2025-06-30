@@ -1,5 +1,5 @@
-import linksListTemplate, { ILink } from "./links_list_template";
-import { ISearchArgs } from "./search_widget_template";
+import linksListTemplate, { ILink } from './links_list_template';
+import { ISearchArgs } from './search_widget_template';
 
 declare var acfw_edit_coupon: any;
 
@@ -29,20 +29,20 @@ export interface IHelpModalArguments {
  * @param {IHelpModalArguments} args
  */
 export default function modalTemplate(args: IHelpModalArguments) {
-  const { labels, images_url, is_premium } = acfw_edit_coupon.help_modal;
+  const { labels, images_url, is_premium, link_logo, link_upgrade } = acfw_edit_coupon.help_modal;
   const {
     target,
     left: { title, content, videos },
     right: { links, kbs, tutorials },
   } = args;
   const kbSearchArgs: ISearchArgs = {
-    slug: "kb-articles",
-    action: "acfw_search_help_kb_articles",
+    slug: 'kb-articles',
+    action: 'acfw_search_help_kb_articles',
     placeholder: labels.search_placeholder,
   };
-  const source = is_premium ? "acfwp" : "acfwf";
-  const upgradeLink = `https://advancedcouponsplugin.com/pricing/?utm_source=acfwf&utm_medium=help_modal&utm_campaign=help_modal_${target}_upgrade_link`;
-  const logoUrl = `https://advancedcouponsplugin.com/?utm_source=${source}&utm_medium=help_modal&utm_campaign=help_brand_link_${target}`;
+
+  const upgradeLink = `${link_upgrade}&utm_campaign=help_modal_${target}_upgrade_link`;
+  const logoUrl = `${link_logo}&utm_campaign=help_brand_link_${target}`;
 
   return `
     <div class="header">
@@ -59,7 +59,7 @@ export default function modalTemplate(args: IHelpModalArguments) {
           </a>
         </div>
       `
-          : ""
+          : ''
       }
     </div>
     <main>
@@ -70,24 +70,24 @@ export default function modalTemplate(args: IHelpModalArguments) {
       ${
         videos.length
           ? `<div class="video-gallery-placeholder"><img src="${images_url}spinner-2x.gif" alt="Loading videos" /><p>${labels.loading_videos}</p></div>`
-          : ""
+          : ''
       }
     </main>
     <aside>
       ${linksListTemplate({
         title: labels.rel_links,
-        className: "relevant-links",
+        className: 'relevant-links',
         links: links,
       })}
       ${linksListTemplate({
         title: labels.kb_articles,
-        className: "knowledge-base-articles",
+        className: 'knowledge-base-articles',
         links: kbs,
         search: kbSearchArgs,
       })}
       ${linksListTemplate({
         title: labels.tut_guides,
-        className: "tutorials-guides",
+        className: 'tutorials-guides',
         links: tutorials,
       })}
     </aside>

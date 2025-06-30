@@ -211,7 +211,7 @@ class Notices implements Model_Interface, Initializable_Interface, Activatable_I
             'actions'        => array(
                 array(
                     'key'         => 'primary',
-                    'link'        => 'https://advancedcouponsplugin.com/knowledgebase/advanced-coupon-for-woocommerce-free-getting-started-guide/?utm_source=acfwf&utm_medium=kb&utm_campaign=acfwfgettingstarted',
+                    'link'        => $this->_helper_functions->get_utm_url( 'knowledgebase/advanced-coupon-for-woocommerce-free-getting-started-guide/', 'acfwf', 'kb', 'acfwfgettingstarted' ),
                     'text'        => __( 'Read The Getting Started Guide →', 'advanced-coupons-for-woocommerce-free' ),
                     'is_external' => true,
                 ),

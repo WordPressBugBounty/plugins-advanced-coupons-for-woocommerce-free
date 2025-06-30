@@ -34,4 +34,4 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <?php do_action( 'acfw_after_scheduler_panel', $coupon ); ?>
 
-</div><!--#url_coupon_data-->
+</div><!-- url_coupon_data -->

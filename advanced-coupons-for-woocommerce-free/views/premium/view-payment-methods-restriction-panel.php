@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             sprintf(
                 /* translators: %s: URL to the premium version of the plugin */
                 __( 'In the <a href="%s" target="_blank">Premium add-on of Advanced Coupons</a> you can make coupons that automatically filter the available payment gateways visible on the checkout.', 'advanced-coupons-for-woocommerce-free' ),
-                apply_filters( 'acfwp_upsell_link', 'https://advancedcouponsplugin.com/pricing/?utm_source=acfwf&utm_medium=upsell&utm_campaign=paymentmethodsrestriction' )
+                apply_filters( 'acfwp_upsell_link', \ACFWF()->Helper_Functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'paymentmethodsrestriction' ) )
             )
         );
         ?>
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
         <p><?php esc_html_e( 'If the coupon is applied, the list of gateways is filtered, effectively restricting which payment options are allowed to be used when alongside this coupon.', 'advanced-coupons-for-woocommerce-free' ); ?></p>
 
-        <p><a class="button button-primary button-large" href="<?php echo esc_attr( apply_filters( 'acfwp_upsell_link', 'https://advancedcouponsplugin.com/pricing/?utm_source=acfwf&utm_medium=upsell&utm_campaign=paymentmethodsrestriction' ) ); ?>" target="_blank">
+        <p><a class="button button-primary button-large" href="<?php echo esc_attr( apply_filters( 'acfwp_upsell_link', \ACFWF()->Helper_Functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'paymentmethodsrestriction' ) ) ); ?>" target="_blank">
             <?php esc_html_e( 'See all features & pricing →', 'advanced-coupons-for-woocommerce-free' ); ?>
         </a></p>
 

@@ -313,7 +313,7 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
         $additional_classes = 'toggle-enable-fields';
         $title              = __( 'URL Coupons', 'advanced-coupons-for-woocommerce-free' );
         /* Translators: %s: Learn more link. */
-        $kb_link = sprintf( __( '<a href="%s" target="_blank">Learn more.</a>', 'advanced-coupons-for-woocommerce-free' ), 'https://advancedcouponsplugin.com/knowledgebase/how-to-use-the-coupon-url/?utm_source=acfwf&utm_medium=help_modal&utm_campaign=kb_article&utm_term=how-to-use-the-coupon-url' );
+        $kb_link = sprintf( __( '<a href="%s" target="_blank">Learn more.</a>', 'advanced-coupons-for-woocommerce-free' ), $this->_helper_functions->get_utm_url( 'knowledgebase/how-to-use-the-coupon-url/', 'acfwf', 'help_modal', 'aboutpageupgradebutton', 'how-to-use-the-coupon-url' ) );
         $fields  = apply_filters(
             'acfw_url_coupons_admin_data_panel_fields',
             array(
@@ -1445,6 +1445,11 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
             wp_die();
         }
 
+        // Exclude gift card if requesting from customer gets.
+        $allow_gift_card = isset( $_GET['exclude'] ) && in_array( 'product_type_gift_card', (array) $_GET['exclude'], true ) ? false : true;
+        if ( ! $allow_gift_card ) {
+            $_GET['exclude'] = array_diff( array_map( 'sanitize_text_field', wp_unslash( (array) $_GET['exclude'] ) ), array( 'product_type_gift_card' ) );
+        }
         // get coupon_id.
         $exclude_ids     = isset( $_GET['exclude'] ) && is_array( $_GET['exclude'] ) ? array_map( 'intval', $_GET['exclude'] ) : array();
         $exclude_ids_str = is_array( $exclude_ids ) ? implode( ',', $exclude_ids ) : '';
@@ -1464,7 +1469,7 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
                 OR posts.post_content LIKE '$like_term'
                 OR postmeta.meta_value LIKE '$like_term'
             )
-            AND ( posts.post_type = 'product_variation' OR ( posts.post_type = 'product' AND posts.post_parent = 0 AND ( SELECT COUNT(posts2.ID) FROM {$wpdb->posts} posts2 WHERE posts2.post_parent = posts.ID AND posts2.post_type IN ( 'product' , 'product_variation' ) ) = 0 ) )
+            AND ( posts.post_type = 'product_variation' OR ( posts.post_type = 'product' AND posts.post_parent = 0 ) )
             AND posts.post_status IN ('" . implode( "','", $post_statuses ) . "')
             $exclude_query
             ORDER BY posts.post_parent ASC, posts.post_title ASC"
@@ -1475,13 +1480,23 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
 
         $product_objects = array_filter( array_map( 'wc_get_product', $ids ), 'wc_products_array_filter_editable' );
         $products        = array();
-        $supported_types = apply_filters( 'acfw_product_search_allowed_types', array( 'simple', 'variation', 'subscription', 'subscription_variation', 'advanced_gift_card' ) );
+
+        // Filter supported product types.
+        $types = array( 'simple', 'variable', 'variation', 'subscription', 'subscription_variation' );
+        if ( $allow_gift_card ) {
+            $types = array_merge( $types, array( 'advanced_gift_card', 'advanced_gift_card_variation' ) );
+        }
+        $supported_types = apply_filters( 'acfw_product_search_allowed_types', $types );
 
         foreach ( $product_objects as $product_object ) {
-            if ( in_array( $product_object->get_type(), $supported_types, true ) ) {
-                $products[ $product_object->get_id() ] = wc_clean( rawurldecode( $product_object->get_formatted_name() ) );
+            $product_id   = $product_object->get_id();
+            $product_name = $product_object->get_formatted_name();
+            $product_type = $product_object->get_type();
+
+            if ( in_array( $product_type, $supported_types, true ) ) {
+                $products[ $product_id ] = wc_clean( rawurldecode( $product_name ) );
             }
-}
+        }
 
         wp_send_json( apply_filters( 'acfw_json_search_products_response', $products, $product_objects, $_GET ) );
     }

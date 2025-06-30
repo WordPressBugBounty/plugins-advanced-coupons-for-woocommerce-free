@@ -245,6 +245,8 @@ class Script_Loader extends Base_Model implements Model_Interface {
             $edit_coupon_vite->enqueue();
 
             wp_add_inline_script( 'acfw-edit-advanced-coupon', 'vex.defaultOptions.className = "vex-theme-plain"', 'after' );
+            wp_add_inline_script( 'acfw-qrcode', 'window.ACFW_QRCode = window.QRCode;', 'after' );
+
             wp_localize_script(
                 'acfw-edit-advanced-coupon',
                 'acfw_edit_coupon',
@@ -338,6 +340,8 @@ class Script_Loader extends Base_Model implements Model_Interface {
                         'cart_condition_fields'           => array(),
                         'help_modal'                      => array(
                             'is_premium'    => function_exists( 'ACFWP' ),
+                            'link_logo'     => $this->_helper_functions->get_utm_url( '', function_exists( 'ACFWP' ) ? 'acfwp' : 'acfwf', 'help_modal', false ),
+                            'link_upgrade'  => $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'help_modal', false ),
                             'allow_fetch'   => get_option( Plugin_Constants::ALLOW_FETCH_CONTENT_REMOTE ) === 'yes',
                             'help_text'     => __( 'Help', 'advanced-coupons-for-woocommerce-free' ),
                             'images_url'    => $this->_constants->IMAGES_ROOT_URL,
@@ -424,6 +428,7 @@ class Script_Loader extends Base_Model implements Model_Interface {
      */
     public function load_frontend_scripts() {
         global $wp_query;
+        global $post;
 
         // jquery webui popover.
         wp_register_style( 'jquery-webui-popover', $this->_constants->JS_ROOT_URL . 'lib/webui-popover/jquery.webui-popover.min.css', array(), Plugin_Constants::VERSION, 'all' );
@@ -459,9 +464,10 @@ class Script_Loader extends Base_Model implements Model_Interface {
             wp_enqueue_style( 'acfwf-my-account', $this->_constants->CSS_ROOT_URL . 'acfw-my-account.css', array(), Plugin_Constants::VERSION, 'all' );
         }
 
-        $is_store_credits_endpoint = isset( $wp_query->query_vars[ apply_filters( 'acfw_store_credits_endpoint', Plugin_Constants::STORE_CREDITS_ENDPOINT ) ] );
+        $is_store_credits_endpoint  = isset( $wp_query->query_vars[ apply_filters( 'acfw_store_credits_endpoint', Plugin_Constants::STORE_CREDITS_ENDPOINT ) ] );
+        $is_store_credits_shortcode = has_shortcode( $post->post_content, 'acfw_store_credit_my_account_page_content' ) && is_user_logged_in();
 
-        if ( ( $is_store_credits_endpoint && is_account_page() && ! is_admin() ) || $force_load ) {
+        if ( ( $is_store_credits_endpoint && is_account_page() && ! is_admin() ) || $is_store_credits_shortcode || $force_load ) {
             wp_enqueue_script( 'acfw-axios', $this->_constants->JS_ROOT_URL . '/lib/axios/axios.min.js', array(), Plugin_Constants::VERSION, true );
             $sc_frontend_vite = new Vite_App(
                 'acfwf-store-credits-frontend',
@@ -573,7 +579,7 @@ class Script_Loader extends Base_Model implements Model_Interface {
                 'premiumUpsellMessage'         => sprintf(
                     /* Translators: %s: Advanced Coupons premium pricing page URL. */
                     __( 'This block is only available in the <a href="%s" target="_blank" rel="noopener noreferer">Premium add-on for Advanced Coupons.</a>', 'advanced-coupons-for-woocommerce-free' ),
-                    'https://advancedcouponsplugin.com/pricing/?utm_source=acfwf&utm_medium=upsell&utm_campaign=gutenberg'
+                    $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'gutenberg' )
                 ),
 
                 'emptyCouponSearch'            => __( 'No coupons found.', 'advanced-coupons-for-woocommerce-free' ),

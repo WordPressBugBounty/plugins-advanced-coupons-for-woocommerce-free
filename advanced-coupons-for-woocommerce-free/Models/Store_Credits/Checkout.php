@@ -74,19 +74,6 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
      */
 
     /**
-     * Display store credits redeem form in checkout page.
-     *
-     * @deprecated 4.5.7
-     *
-     * @since 4.0
-     * @since 4.2 Hide when customer has no balance and setting is on.
-     * @access public
-     */
-    public function display_store_credits_checkout_redeem_form() {
-        wc_deprecated_function( __METHOD__, '1.8.4' );
-    }
-
-    /**
      * Display store credits discount row.
      *
      * @since 4.0
@@ -189,6 +176,33 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
             );
         }
 
+        /**
+         * Hook to check if the store credits redeem amount is valid.
+         *
+         * @since 4.6.7
+         *
+         * @param bool $is_valid True if the store credits redeem amount is valid, false otherwise.
+         * @param float $amount The amount of store credits to redeem.
+         * @param float $cart_total The total cart amount.
+         */
+        $is_valid = apply_filters( 'acfw_is_valid_store_credits_redeem_amount', true, $amount, $cart_total );
+
+        if ( true !== $is_valid ) {
+            // Return custom error message if the filter returns a WP_Error object.
+            if ( is_wp_error( $is_valid ) ) {
+                return $is_valid;
+            }
+
+            return new \WP_Error(
+                'acfw_store_credits_invalid_redeem_amount',
+                __( 'The provided amount is invalid or the store credits balance is insufficient.', 'advanced-coupons-for-woocommerce-free' ),
+                array(
+                    'status' => 400,
+                    'amount' => $amount,
+                )
+            );
+        }
+
         $amount = apply_filters( 'acfw_store_credits_redeem_amount', min( $amount, $cart_total ), $cart_total );
 
         // minimum order total allowed after store credit deduction.
@@ -206,7 +220,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
             $this->clear_store_credit_session();
         } else {
             \WC()->session->set(
-                $is_apply_coupon ? Plugin_Constants::STORE_CREDITS_COUPON_SESSION : Plugin_Constants::STORE_CREDITS_SESSION,
+                $this->get_store_credit_session_name(),
                 apply_filters(
                     'acfw_store_credits_discount_session',
                     array(
@@ -369,7 +383,11 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
             return;
         }
 
-        $this->clear_store_credit_session();
+        $should_clear = apply_filters( 'acfw_should_clear_store_credit_session', true, $coupon_code );
+
+        if ( $should_clear ) {
+            $this->clear_store_credit_session();
+        }
     }
 
     /**
@@ -1104,6 +1122,18 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
         $store_credit_entry->save();
 
         return $store_credit_entry;
+    }
+
+    /**
+     * Get store credit session name.
+     *
+     * @since 4.6.0
+     *
+     * @return string Store credit session name.
+     */
+    public function get_store_credit_session_name() {
+        $is_apply_coupon = 'coupon' === get_option( Plugin_Constants::STORE_CREDIT_APPLY_TYPE, 'coupon' );
+        return $is_apply_coupon ? Plugin_Constants::STORE_CREDITS_COUPON_SESSION : Plugin_Constants::STORE_CREDITS_SESSION;
     }
 
     /**

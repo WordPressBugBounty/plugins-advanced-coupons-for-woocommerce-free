@@ -735,6 +735,8 @@ class API_Coupon_Templates extends Base_Model implements Model_Interface {
             )
         );
 
+        $value = $this->_maybe_cleanup_meta_data_array_value( $value );
+
         if ( in_array( $key, $not_unique_keys, true ) ) {
             foreach ( $value as $item_value ) {
                 $coupon->add_meta_data( $key, $item_value, false );
@@ -742,6 +744,28 @@ class API_Coupon_Templates extends Base_Model implements Model_Interface {
         } else {
             $coupon->add_meta_data( $key, $value, true );
         }
+    }
+
+    /**
+     * Maybe cleanup the meta data array value.
+     *
+     * @since 4.6.7
+     * @access private
+     *
+     * @param mixed $value Meta data value.
+     * @return mixed Cleaned meta data value.
+     */
+    private function _maybe_cleanup_meta_data_array_value( $value ) {
+        if ( ! is_array( $value ) ) {
+            return $value;
+        }
+
+        // check if the array has a label key.
+        if ( isset( $value[0] ) && isset( $value[0]['label'] ) ) {
+            return array_column( $value, 'value' );
+        }
+
+        return $value;
     }
 
     /**

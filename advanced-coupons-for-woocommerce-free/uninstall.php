@@ -68,6 +68,9 @@ function acfw_plugin_cleanup() {
 
     // Delete other options with different prefixes.
     delete_option( Plugin_Constants::AFTER_APPLY_COUPON_REDIRECT_URL );
+
+    // Delete getting started.
+    delete_option( Plugin_Constants::GETTING_STARTED_SHOW );
 }
 
 if ( function_exists( 'is_multisite' ) && is_multisite() ) {

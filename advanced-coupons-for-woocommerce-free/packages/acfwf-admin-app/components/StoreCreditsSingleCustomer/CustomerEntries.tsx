@@ -73,11 +73,7 @@ const CustomerEntries = (props: IProps) => {
       render: (label: string, record: IStoreCreditEntry) => {
         if (!record.rel_link) return label;
 
-        return (
-          <a href={record.rel_link} target="_blank">
-            {label}
-          </a>
-        );
+        return <a href={record.rel_link}>{label}</a>;
       },
     },
   ];

@@ -82,6 +82,11 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
      */
     public function prevent_store_credits_apply_on_recurring_carts( $is_valid, $cart_total, $cart ) {
 
+        // If store credits are not allowed on renewal, return the original validation result.
+        if ( apply_filters( 'acfw_allow_store_credits_on_renewal', false ) ) {
+            return $is_valid;
+        }
+
         // Return false if the cart is a recurring one.
         if ( isset( $cart->recurring_cart_key ) ) {
             $is_valid = false;
@@ -100,6 +105,11 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
      * @param \WC_Order|\WC_Subscription $order The order object.
      */
     public function disable_apply_store_credits_order_in_subscription( $is_enabled, $order ) {
+
+        if ( apply_filters( 'acfw_allow_store_credits_on_renewal', false ) ) {
+            return $is_enabled;
+        }
+
         if ( $order instanceof \WC_Subscription ) {
             $is_enabled = false;
         }
@@ -117,7 +127,12 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
      * @return array The modified renewal order data.
      */
     public function unset_excluded_meta_keys_for_renewal_order( $order_data ) {
-        // Remove excluded meta keys from the order data if they exist.
+
+        if ( apply_filters( 'acfw_allow_store_credits_on_renewal', false ) ) {
+            return $order_data;
+        }
+
+        // Remove excluded meta keys.
         foreach ( $this->_excluded_meta_keys as $meta_key ) {
             unset( $order_data[ $meta_key ] );
         }
@@ -135,7 +150,7 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
      * @param \WC_Subscription $subscription The subscription object associated with the renewal order.
      */
     public function update_renewal_order_total( $renewal_order, $subscription ) {
-        // Re-Calculate the totals based on the current state of the renewal order.
+
         $renewal_order->calculate_totals();
         $renewal_order->save();
 
@@ -154,6 +169,10 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
      * @param \WC_Cart         $cart          The current cart object.
      */
     public function remove_excluded_meta_keys_from_subscription( $subscription, $posted_data, $order, $cart ) {
+        if ( apply_filters( 'acfw_allow_store_credits_on_renewal', false ) ) {
+            return;
+        }
+
         // Remove specified meta keys.
         foreach ( $this->_excluded_meta_keys as $meta_key ) {
             if ( $subscription->meta_exists( $meta_key ) ) {
@@ -172,6 +191,10 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
      * @param \WC_Order|\WC_Subscription $order The order object.
      */
     public function remove_excluded_meta_keys_from_subscription_on_recalculate( $and_taxes, $order ) {
+        if ( apply_filters( 'acfw_allow_store_credits_on_renewal', false ) ) {
+            return;
+        }
+
         if ( ! $order instanceof \WC_Subscription ) {
             return;
         }
@@ -182,6 +205,34 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
                 $order->delete_meta_data( $meta_key );
             }
         }
+    }
+
+    /**
+     * Determines whether the store credit session should be cleared when a coupon is removed.
+     *
+     * @since 4.6.6
+     * @access public
+     *
+     * @param bool $should_clear Whether the store credit session should be cleared.
+     *
+     * @return bool True if the store credit session should be cleared, otherwise false.
+     */
+    public function should_clear_store_credit_session( $should_clear ) {
+        // Safely check the request path.
+        $request_path = $this->_helper_functions->get_request_path_using_wpjson_wc_api();
+        if ( is_string( $request_path ) && strpos( $request_path, 'remove-coupon' ) !== false ) {
+            return $should_clear;
+        }
+
+        if ( ( isset( $_GET['wc-ajax'] ) && 'remove_coupon' === $_GET['wc-ajax'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            return $should_clear;
+        }
+
+        if ( \WC_Subscriptions_Cart::cart_contains_subscription() ) {
+            return false;
+        }
+
+        return $should_clear;
     }
 
     /*
@@ -211,13 +262,16 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
             // Update the renewal WooCommerce Subscriptions order total after it's created.
             add_filter( 'wcs_renewal_order_created', array( $this, 'update_renewal_order_total' ), 10, 2 );
 
+            // Prevents WooCommerce Subscriptions from removing the store credit coupon.
+            add_action( 'acfw_should_clear_store_credit_session', array( $this, 'should_clear_store_credit_session' ), 10, 1 );
+
             // Admin related hooks.
 
             // Disable the application of store credits on subscription orders.
             add_filter( 'acfw_enable_apply_store_credits_order', array( $this, 'disable_apply_store_credits_order_in_subscription' ), 10, 2 );
 
             // Renewal order related hooks.
-            add_filter( 'wc_subscriptions_renewal_order_data', array( $this, 'unset_excluded_meta_keys_for_renewal_order' ), 10, 1 );
+            add_filter( 'wc_subscriptions_renewal_order_data', array( $this, 'unset_excluded_meta_keys_for_renewal_order' ), 1, 1 );
 
             // Add hooks to remove excluded meta keys from subscriptions on recalculate.
             add_action( 'woocommerce_order_before_calculate_totals', array( $this, 'remove_excluded_meta_keys_from_subscription_on_recalculate' ), 10, 2 );

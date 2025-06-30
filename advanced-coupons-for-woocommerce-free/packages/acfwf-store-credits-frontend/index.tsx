@@ -8,7 +8,7 @@ import ReactDOM from 'react-dom';
 import App from './pages/App';
 
 // CSS
-// import 'antd/dist/antd.css';
+import 'antd/lib/popover/style/index.css';
 import 'antd/lib/empty/style/index.css';
 import 'antd/lib/icon/style/index.css';
 import 'antd/lib/spin/style/index.css';
