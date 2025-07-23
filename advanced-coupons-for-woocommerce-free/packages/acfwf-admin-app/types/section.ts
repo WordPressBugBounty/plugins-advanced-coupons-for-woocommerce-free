@@ -24,6 +24,8 @@ export interface ISectionField {
   format: string;
   min?: number;
   max?: number;
+  labels?: any;
+  data?: any;
 }
 
 export interface INoticeData {

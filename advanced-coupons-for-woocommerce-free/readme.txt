@@ -3,7 +3,7 @@ Contributors: jkohlbach, RymeraWebCo, Rymera01, smub
 Tags: woocommerce coupons, bogo coupons, store credit, url coupons, bogo
 Requires at least: 5.2
 Tested up to: 6.8
-Stable tag: 4.6.7
+Stable tag: 4.6.8
 Requires PHP: 5.6
 License: GNU General Public License v2.0 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -380,6 +380,14 @@ Josh Kohlbach (CEO of Rymera Web Co)
 
 == Changelog ==
 
+= 4.6.8 =
+* Bug Fix: BOGO discount is not applied on wholesale product until page is refreshed
+* Bug Fix: BOGO price is not updated when the coupon is removed on the legacy cart
+* Bug Fix: BOGO causing wrong calculation in cart when WWPP quantity based wholesale feature is set
+* Bug Fix: PHP Warning: Attempt to read property "post_content" on null
+* Feature: Store credits 3rd party importer tool
+* Improvement: Add support for the new WC email improvements
+
 = 4.6.7 =
 * Bug Fix: Coupon's can't be saved when the Affiliate WP plugin is active
 * Bug Fix: Incorrect success message shown when store credit conditions are not met
@@ -388,7 +396,6 @@ Josh Kohlbach (CEO of Rymera Web Co)
 * Improvement: Add way to assign a category to a coupon that is created/updated via the WC REST API endpoint
 * Improvement: Coupon templates: add support for product attributes usage restriction fields
 * Improvement: Create a shortcode for displaying the my account store credit page content
-* Improvement: Integration with WooCommerce Subscriptions
 * Improvement: Option To Use Parent Product Instead of Listing the Each Variants
 * Improvement: Option to enable deducting store credit payment value from the order total when fetched for accounting software
 

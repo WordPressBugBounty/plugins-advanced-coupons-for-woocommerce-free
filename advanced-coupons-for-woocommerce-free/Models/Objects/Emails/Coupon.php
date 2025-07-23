@@ -12,6 +12,22 @@ use ACFWF\Models\Objects\Advanced_Coupon;
 class Coupon extends \WC_Email {
 
     /**
+     * The advanced coupon object used in the email.
+     *
+     * @since 4.6.8
+     * @var Advanced_Coupon
+     */
+    protected $coupon;
+
+    /**
+     * The customer object associated with the coupon email.
+     *
+     * @since 4.6.8
+     * @var \WC_Customer
+     */
+    protected $customer;
+
+    /**
      * Class constructor.
      *
      * @since 4.5.3
@@ -186,28 +202,28 @@ class Coupon extends \WC_Email {
     }
 
     /**
-	 * Get email heading.
+     * Get email heading.
      *
      * @since 4.5.3
      * @access public
-	 *
-	 * @return string
-	 */
-	public function get_message() {
-		return apply_filters( 'acfw_email_heading_' . $this->id, $this->format_string( $this->get_option( 'message', $this->get_default_message() ) ), $this->object, $this );
-	}
+     *
+     * @return string
+     */
+    public function get_message() {
+        return apply_filters( 'acfw_email_heading_' . $this->id, $this->format_string( $this->get_option( 'message', $this->get_default_message() ) ), $this->object, $this );
+    }
 
     /**
-	 * Get button text.
+     * Get button text.
      *
      * @since 4.5.3
      * @access public
-	 *
-	 * @return string
-	 */
-	public function get_button_text() {
-		return apply_filters( 'acfw_email_heading_' . $this->id, $this->format_string( $this->get_option( 'button_text', $this->get_default_button_text() ) ), $this->object, $this );
-	}
+     *
+     * @return string
+     */
+    public function get_button_text() {
+        return apply_filters( 'acfw_email_heading_' . $this->id, $this->format_string( $this->get_option( 'button_text', $this->get_default_button_text() ) ), $this->object, $this );
+    }
 
     /**
      * Get email content html.
@@ -223,8 +239,8 @@ class Coupon extends \WC_Email {
         \ACFWF()->Helper_Functions->load_template(
             $this->template_html,
             array(
-                'coupon'             => $this->coupon,
-                'customer'           => $this->customer,
+                'coupon'             => $this->get_coupon(),
+                'customer'           => $this->get_customer(),
                 'email_heading'      => $this->get_heading(),
                 'additional_content' => $this->get_additional_content(),
                 'email'              => $this,
@@ -248,8 +264,8 @@ class Coupon extends \WC_Email {
         \ACFWF()->Helper_Functions->load_template(
             $this->template_plain,
             array(
-                'coupon'             => $this->coupon,
-                'customer'           => $this->customer,
+                'coupon'             => $this->get_coupon(),
+                'customer'           => $this->get_customer(),
                 'email_heading'      => $this->get_heading(),
                 'additional_content' => $this->get_additional_content(),
                 'email'              => $this,
@@ -257,6 +273,52 @@ class Coupon extends \WC_Email {
         );
 
         return ob_get_clean();
+    }
+
+    /**
+     * Get the coupon object. If the coupon is not set, this will create and set a dummy coupon.
+     *
+     * @since 4.6.8
+     * @access public
+     *
+     * @return Advanced_Coupon The advanced coupon object.
+     */
+    public function get_coupon() {
+        if ( ! $this->coupon ) {
+            $advanced_coupon = new Advanced_Coupon( 0 );
+
+            $this->set_coupon( $advanced_coupon );
+        }
+
+        return $this->coupon;
+    }
+
+    /**
+     * Get the customer object. If the customer is not set, this will create and set a dummy customer.
+     *
+     * @since 4.6.8
+     * @access public
+     *
+     * @return \WC_Customer The WooCommerce customer object.
+     */
+    public function get_customer() {
+        if ( ! $this->customer ) {
+            $address = array(
+                'first_name' => 'John',
+                'last_name'  => 'Doe',
+                'company'    => 'Company',
+                'email'      => 'john@company.com',
+                'phone'      => '555-555-5555',
+                'address_1'  => '123 Fake Street',
+            );
+
+            $customer = new \WC_Customer();
+            $customer->set_props( $address );
+
+            $this->set_customer( $customer );
+        }
+
+        return $this->customer;
     }
 
     /**

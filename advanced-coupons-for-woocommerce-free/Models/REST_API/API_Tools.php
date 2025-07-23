@@ -7,6 +7,7 @@ use ACFWF\Helpers\Helper_Functions;
 use ACFWF\Helpers\Plugin_Constants;
 use ACFWF\Interfaces\Model_Interface;
 use ACFWF\Models\Tools\Import_WCSC;
+use ACFWF\Models\Tools\Import_WTSC;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -32,7 +33,7 @@ class API_Tools extends Base_Model implements Model_Interface {
      * @access private
      * @var string
      */
-    private $_base = 'importpoints';
+    private $_base = 'import-store-credits';
 
     /**
      * Property that holds the import schedules data.
@@ -76,6 +77,7 @@ class API_Tools extends Base_Model implements Model_Interface {
         // Register import tools.
         $this->tools = array(
             Import_WCSC::PLUGIN_ID => new Import_WCSC(),
+            Import_WTSC::PLUGIN_ID => new Import_WTSC(),
         );
     }
 
@@ -93,18 +95,18 @@ class API_Tools extends Base_Model implements Model_Interface {
      */
     public function register_routes() {
         \register_rest_route(
-            Plugin_Constants::TOOLS_API_NAMESPACE,
+            Plugin_Constants::REST_API_NAMESPACE,
             '/' . $this->_base,
             array(
                 array(
                     'methods'             => \WP_REST_Server::READABLE,
                     'permission_callback' => array( $this, 'get_admin_permissions_check' ),
-                    'callback'            => array( $this, 'check_import_points_progress' ),
+                    'callback'            => array( $this, 'check_import_store_credits_progress' ),
                 ),
                 array(
                     'methods'             => \WP_REST_Server::CREATABLE,
                     'permission_callback' => array( $this, 'get_admin_permissions_check' ),
-                    'callback'            => array( $this, 'initialize_import_points_tool' ),
+                    'callback'            => array( $this, 'initialize_import_store_credits_tool' ),
                 ),
             ),
         );
@@ -157,7 +159,7 @@ class API_Tools extends Base_Model implements Model_Interface {
      */
 
     /**
-     * Check import points progress for a given 3rd party plugin.
+     * Check import store credits progress for a given 3rd party plugin.
      *
      * @since 4.6.7
      * @access public
@@ -165,9 +167,9 @@ class API_Tools extends Base_Model implements Model_Interface {
      * @param WP_REST_Request $request Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
-    public function check_import_points_progress( $request ) {
+    public function check_import_store_credits_progress( $request ) {
         $plugin  = sanitize_text_field( $request->get_param( 'plugin' ) );
-        $results = $this->_check_import_points_tool_progress( $plugin );
+        $results = $this->_check_import_store_credits_tool_progress( $plugin );
 
         // Skip if the returned results value is an error.
         if ( is_wp_error( $results ) ) {
@@ -183,7 +185,7 @@ class API_Tools extends Base_Model implements Model_Interface {
             );
         }
 
-        $data     = get_transient( Plugin_Constants::IMPORT_POINTS_PROCESS_RUNNING );
+        $data     = get_transient( Plugin_Constants::IMPORT_STORE_CREDITS_PROCESS_RUNNING );
         $response = array(
             'status'  => 'success',
             'message' => '',
@@ -193,12 +195,12 @@ class API_Tools extends Base_Model implements Model_Interface {
         // Import process completed.
         if ( 0 >= $results['pending'] ) {
 
-            $response['summary']      = $this->_calculate_import_summary_data( $plugin, $data );
-            $response['total_points'] = \ACFWF()->Store_Credits_Calculate->calculate_recently_imported_points( $data['time'] );
-            $response['message']      = __( 'Points have been imported successfully!', 'advanced-coupons-for-woocommerce-free' );
-            $importer                 = $this->_get_plugin_importer_object( $plugin );
+            $response['summary']             = $this->_calculate_import_summary_data( $plugin, $data );
+            $response['total_store_credits'] = \ACFWF()->Store_Credits_Calculate->calculate_recently_imported_store_credits( $data['time'] );
+            $response['message']             = __( 'Store credits have been imported successfully!', 'advanced-coupons-for-woocommerce-free' );
+            $importer                        = $this->_get_plugin_importer_object( $plugin );
 
-            delete_transient( Plugin_Constants::IMPORT_POINTS_PROCESS_RUNNING );
+            delete_transient( Plugin_Constants::IMPORT_STORE_CREDITS_PROCESS_RUNNING );
 
             // Deactivate the plugin when the checkbox was checked after the import process is completed.
             if ( isset( $data['deactivate'] ) && $data['deactivate'] && ! is_wp_error( $importer ) ) {
@@ -206,11 +208,11 @@ class API_Tools extends Base_Model implements Model_Interface {
             }
         }
 
-        return \rest_ensure_response( apply_filters( 'acfw_check_import_points_progress', $response ) );
+        return \rest_ensure_response( apply_filters( 'acfw_check_import_store_credits_progress', $response ) );
     }
 
     /**
-     * Initialize import points tool.
+     * Initialize import store credits tool.
      *
      * @since 4.6.7
      * @access public
@@ -218,7 +220,7 @@ class API_Tools extends Base_Model implements Model_Interface {
      * @param WP_REST_Request $request Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
-    public function initialize_import_points_tool( $request ) {
+    public function initialize_import_store_credits_tool( $request ) {
 
         $plugin     = sanitize_text_field( $request->get_param( 'plugin' ) );
         $deactivate = (bool) intval( $request->get_param( 'deactivate' ) );
@@ -238,7 +240,7 @@ class API_Tools extends Base_Model implements Model_Interface {
         }
 
         set_transient(
-            Plugin_Constants::IMPORT_POINTS_PROCESS_RUNNING,
+            Plugin_Constants::IMPORT_STORE_CREDITS_PROCESS_RUNNING,
             array(
                 'plugin'     => $plugin,
                 'time'       => $time,
@@ -249,15 +251,15 @@ class API_Tools extends Base_Model implements Model_Interface {
 
         $response = array(
             'status'  => 'success',
-            'message' => __( 'Importing customer points...', 'advanced-coupons-for-woocommerce-free' ),
+            'message' => __( 'Importing customer store credits...', 'advanced-coupons-for-woocommerce-free' ),
             'data'    => array( 'schedules' => $schedules ),
         );
 
-        return \rest_ensure_response( apply_filters( 'acfw_initialize_import_points_tool', $response ) );
+        return \rest_ensure_response( apply_filters( 'acfw_initialize_import_store_credits_tool', $response ) );
     }
 
     /**
-     * Run the import points process single batch process.
+     * Run the import store credits process single batch process.
      *
      * @since 4.6.7
      * @access public
@@ -265,7 +267,7 @@ class API_Tools extends Base_Model implements Model_Interface {
      * @param string $plugin Plugin ID.
      * @param int[]  $user_ids List of user IDs.
      */
-    public function run_import_points_batch_process( $plugin, $user_ids ) {
+    public function run_import_store_credits_batch_process( $plugin, $user_ids ) {
         $importer = $this->_get_plugin_importer_object( $plugin );
 
         // Skip if plugin importer is not valid.
@@ -273,9 +275,9 @@ class API_Tools extends Base_Model implements Model_Interface {
             return;
         }
 
-        // Loop through each user IDs and import points.
+        // Loop through each user IDs and import store credits.
         foreach ( $user_ids as $user_id ) {
-            $importer->import_points_for_customer( $user_id );
+            $importer->import_store_credits_for_customer( $user_id );
         }
     }
 
@@ -323,7 +325,7 @@ class API_Tools extends Base_Model implements Model_Interface {
     }
 
     /**
-     * Check the progress of the import points tool for a given plugin.
+     * Check the progress of the import store credits tool for a given plugin.
      *
      * @since 4.6.7
      * @access private
@@ -331,8 +333,8 @@ class API_Tools extends Base_Model implements Model_Interface {
      * @param string $plugin Plugin key.
      * @return array Import progress data.
      */
-    private function _check_import_points_tool_progress( $plugin ) {
-        $data = get_transient( Plugin_Constants::IMPORT_POINTS_PROCESS_RUNNING );
+    private function _check_import_store_credits_tool_progress( $plugin ) {
+        $data = get_transient( Plugin_Constants::IMPORT_STORE_CREDITS_PROCESS_RUNNING );
 
         if ( ! isset( $data['plugin'] ) || $data['plugin'] !== $plugin ) {
             return new \WP_Error( 'acfw_invalid_plugin_import_check', __( 'Import process for the selected plugin is not yet running.', 'advanced-coupons-for-woocommerce-free' ) );
@@ -341,13 +343,13 @@ class API_Tools extends Base_Model implements Model_Interface {
         // Query all scheduled actions for the current import process.
         $results = $this->_query_import_action_schedules( $plugin, $data );
 
-        // Force Action Scheduler to run the next batch of the scheduled import points action.
+        // Force Action Scheduler to run the next batch of the scheduled import store credits action.
         if ( ! empty( $results ) && class_exists( '\ActionScheduler_QueueRunner' ) ) {
             $as_runner = \ActionScheduler_QueueRunner::instance();
 
             foreach ( $results as $row ) {
                 if ( 'pending' === $row['status'] ) {
-                    $as_runner->process_action( $row['action_id'], __( 'Advanced Coupons: points importer', 'advanced-coupons-for-woocommerce-free' ) );
+                    $as_runner->process_action( $row['action_id'], __( 'Advanced Coupons: store credits importer', 'advanced-coupons-for-woocommerce-free' ) );
                     break;
                 }
             }
@@ -389,7 +391,7 @@ class API_Tools extends Base_Model implements Model_Interface {
                 AND (args LIKE %s OR extended_args LIKE %s)
                 AND CONVERT(scheduled_date_gmt, DATETIME) >= CONVERT(%s, DATETIME)
                 ORDER BY scheduled_date_gmt ASC",
-                Plugin_Constants::IMPORT_POINTS_SCHEDULE_HOOK,
+                Plugin_Constants::IMPORT_STORE_CREDITS_SCHEDULE_HOOK,
                 '%' . $plugin . '%',
                 '%' . $plugin . '%',
                 $data['time'] ?? current_time( 'mysql', true ),
@@ -463,7 +465,9 @@ class API_Tools extends Base_Model implements Model_Interface {
         $default_options = array();
 
         foreach ( $this->tools as $plugin ) {
-            $default_options[] = $plugin->get_default_api_setting_options();
+            if ( $plugin->is_plugin_active() ) {
+                $default_options[] = $plugin->get_default_api_setting_options();
+            }
         }
 
         return $default_options;
@@ -484,6 +488,6 @@ class API_Tools extends Base_Model implements Model_Interface {
      */
     public function run() {
         add_action( 'rest_api_init', array( $this, 'register_routes' ) );
-        add_action( Plugin_Constants::IMPORT_POINTS_SCHEDULE_HOOK, array( $this, 'run_import_points_batch_process' ), 10, 2 );
+        add_action( Plugin_Constants::IMPORT_STORE_CREDITS_SCHEDULE_HOOK, array( $this, 'run_import_store_credits_batch_process' ), 10, 2 );
     }
 }

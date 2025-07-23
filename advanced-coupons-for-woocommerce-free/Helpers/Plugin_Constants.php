@@ -44,7 +44,7 @@ class Plugin_Constants {
     // Plugin configuration constants.
     const TOKEN               = 'acfwf';
     const INSTALLED_VERSION   = 'acfwf_installed_version';
-    const VERSION             = '4.6.7';
+    const VERSION             = '4.6.8';
     const TEXT_DOMAIN         = 'advanced-coupons-for-woocommerce-free';
     const THEME_TEMPLATE_PATH = 'advanced-coupons-for-woocommerce-free';
     const META_PREFIX         = '_acfw_';
@@ -97,7 +97,6 @@ class Plugin_Constants {
     const STORE_CREDIT_API_NAMESPACE    = 'store-credits/v1';
     const STORE_CREDIT_USER_BALANCE     = 'acfw_store_credit_balance';
     const STORE_CREDIT_WC_API_NAMESPACE = 'wc-store-credits/v1';
-    const TOOLS_API_NAMESPACE           = 'acfw-tools/v1';
 
     // Store Credits.
     const STORE_CREDITS_SESSION                    = 'acfw_store_credits_discount';
@@ -182,8 +181,8 @@ class Plugin_Constants {
     const STORE_CREDITS_DEDUCT_TOTAL_PAID_ON_COMPLETED_ORDERS = 'acfw_store_credits_deduct_total_paid_on_completed_order';
 
     // Store Credits importer.
-    const IMPORT_POINTS_SCHEDULE_HOOK   = 'acfw_import_third_party_points';
-    const IMPORT_POINTS_PROCESS_RUNNING = 'acfw_import_points_process_data';
+    const IMPORT_STORE_CREDITS_SCHEDULE_HOOK   = 'acfw_import_third_party_store_credits';
+    const IMPORT_STORE_CREDITS_PROCESS_RUNNING = 'acfw_import_store_credits_process_data';
 
     // Cache options.
     const AUTO_APPLY_COUPONS       = 'acfw_auto_apply_coupons';

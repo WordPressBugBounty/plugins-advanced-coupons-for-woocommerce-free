@@ -278,7 +278,7 @@ class Frontend extends Base_Model implements Model_Interface {
 
             // Get prices.
             $price            = array();
-            $price['regular'] = $this->_helper_functions->get_price( $cart_item['data'] );
+            $price['regular'] = $this->_helper_functions->get_price( $cart_item['data'], array( 'cart_item' => $cart_item ) );
 
             $total_discount     = 0.0;
             $total_discount_qty = 0;
@@ -306,7 +306,13 @@ class Frontend extends Base_Model implements Model_Interface {
             // NOTE: this will only be false when $discount value is 0.
             if ( (bool) $total_discount ) {
                 // get BOGO Buys price.
-                $price['buy'] = $this->_helper_functions->get_price( $cart_item['data'], array( 'ignore_always_use_regular_price' => 'all_valid' !== get_option( Plugin_Constants::ALWAYS_USE_REGULAR_PRICE ) ) ); // ignore always use regular price option, because BOGO Buys should always use the sale price if present.
+                $price['buy'] = $this->_helper_functions->get_price(
+                    $cart_item['data'],
+                    array(
+                        'ignore_always_use_regular_price' => 'all_valid' !== get_option( Plugin_Constants::ALWAYS_USE_REGULAR_PRICE ), // ignore always use regular price option, because BOGO Buys should always use the sale price if present.
+                        'cart_item'                       => $cart_item,
+                    )
+                );
 
                 // Calculate new_price, to get total price of the item.
                 // new_price is the average price of the item after discount.
@@ -359,6 +365,32 @@ class Frontend extends Base_Model implements Model_Interface {
 
             $price = $this->_helper_functions->get_price( $cart_item['data'], array( 'ignore_always_use_regular_price' => 'all_valid' !== get_option( Plugin_Constants::ALWAYS_USE_REGULAR_PRICE ) ) );
             $cart_item['data']->set_price( apply_filters( 'acfw_bogo_set_trigger_item_price', $price, $cart_item ) );
+        }
+    }
+
+    /**
+     * Reset BOGO deal item prices to their original values.
+     *
+     * This method is used to undo any price modifications applied by the BOGO logic
+     * when conditions are not met or the coupon becomes invalid.
+     * It skips items already recorded in the internal `_price_display` array to prevent
+     * overwriting already discounted items, and resets the remaining deal item prices to their base value.
+     *
+     * @since 4.6.7
+     * @access public
+     */
+    public function reset_bogo_deals_prices() {
+        foreach ( \WC()->cart->get_cart_contents() as $cart_item ) {
+
+            $key = $cart_item['key'];
+
+            if ( isset( $this->_price_display[ $key ] ) ) {
+                continue;
+            }
+
+            $price = $this->_helper_functions->get_price( $cart_item['data'], array( 'ignore_always_use_regular_price' => 'all_valid' !== get_option( Plugin_Constants::ALWAYS_USE_REGULAR_PRICE ) ) );
+            $cart_item['data']->set_price( apply_filters( 'acfw_bogo_reset_deal_item_price', $price, $cart_item ) );
+            $this->_price_display = array();
         }
     }
 

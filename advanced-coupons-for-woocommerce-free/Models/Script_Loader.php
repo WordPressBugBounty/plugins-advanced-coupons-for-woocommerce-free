@@ -465,7 +465,7 @@ class Script_Loader extends Base_Model implements Model_Interface {
         }
 
         $is_store_credits_endpoint  = isset( $wp_query->query_vars[ apply_filters( 'acfw_store_credits_endpoint', Plugin_Constants::STORE_CREDITS_ENDPOINT ) ] );
-        $is_store_credits_shortcode = has_shortcode( $post->post_content, 'acfw_store_credit_my_account_page_content' ) && is_user_logged_in();
+        $is_store_credits_shortcode = ( $post && has_shortcode( $post->post_content, 'acfw_store_credit_my_account_page_content' ) ) && is_user_logged_in();
 
         if ( ( $is_store_credits_endpoint && is_account_page() && ! is_admin() ) || $is_store_credits_shortcode || $force_load ) {
             wp_enqueue_script( 'acfw-axios', $this->_constants->JS_ROOT_URL . '/lib/axios/axios.min.js', array(), Plugin_Constants::VERSION, true );

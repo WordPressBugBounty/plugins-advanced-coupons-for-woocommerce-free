@@ -610,7 +610,7 @@ class Helper_Functions {
      * @return float Product price.
      */
     public function get_price( $product, $settings = array() ) {
-        global $wc_wholesale_prices;
+        global $wc_wholesale_prices, $wc_wholesale_prices_premium;
 
         $settings = wp_parse_args(
             $settings,
@@ -627,6 +627,30 @@ class Helper_Functions {
             if ( is_array( $wwp_wholesale_roles ) && ! empty( $wwp_wholesale_roles ) && method_exists( 'WWP_Wholesale_Prices', 'get_product_wholesale_price_on_shop_v3' ) ) {
 
                 $data = \WWP_Wholesale_Prices::get_product_wholesale_price_on_shop_v3( $product->get_id(), $wwp_wholesale_roles );
+
+                // Get Product level mapping price.
+                if ( class_exists( 'WWPP_Helper_Functions' ) && $settings['cart_item'] ) {
+                    $quantity_discount = \WWPP_Helper_Functions::get_quantity_discount_mapping_price( $product, $wwp_wholesale_roles, $settings['cart_item'] );
+                    if ( ! empty( $quantity_discount ) ) {
+                        $data = $quantity_discount;
+                    }
+
+                    // Get Category level mapping price.
+                    if ( is_cart() ) {
+                        $cart_object           = \WC()->cart;
+                        $product_category_data = array(
+                            'source'                   => 'product_category_level_qty_based',
+                            'wholesale_price_with_tax' => 0,
+                            'discount'                 => 0,
+                            'wholesale_price'          => 0,
+                        );
+                        $category_discount     = $wc_wholesale_prices_premium->wwpp_wholesale_price_product_category->apply_product_category_level_wholesale_discount( $product_category_data, $product->get_id(), $wwp_wholesale_roles, $settings['cart_item'], $cart_object, true );
+
+                        if ( ! empty( $category_discount ) ) {
+                            $data = $category_discount;
+                        }
+                    }
+                }
 
                 // Use wholesale_price_with_tax when setting tax is set to yes and tax display cart is excl.
                 if ( $data['wholesale_price_with_tax'] && \wc_tax_enabled() && 'yes' === get_option( 'woocommerce_prices_include_tax' ) && 'excl' === get_option( 'woocommerce_tax_display_cart' ) ) {

@@ -682,19 +682,19 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
     }
 
     /**
-     * Calculate recently imported points.
+     * Calculate recently imported store credits.
      *
      * @since 4.6.7
      * @access public
      *
-     * @param string $start_period Date to calculate points for.
-     * @param string $end_period   Optional end date to calculate points for.
-     * @return int Total points imported.
+     * @param string $start_period Date to calculate store credits for.
+     * @param string $end_period   Optional end date to calculate store credits for.
+     * @return int Total store credits imported.
      */
-    public function calculate_recently_imported_points( $start_period, $end_period = '' ) {
+    public function calculate_recently_imported_store_credits( $start_period, $end_period = '' ) {
         $end_period = $end_period ? $end_period : current_time( 'mysql', true );
         $params     = array(
-            'action'       => 'imported_points',
+            'action'       => 'imported_sc',
             'start_period' => $start_period,
             'end_period'   => $end_period,
         );

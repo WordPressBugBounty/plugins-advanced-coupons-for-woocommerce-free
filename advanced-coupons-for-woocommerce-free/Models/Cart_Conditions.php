@@ -507,6 +507,11 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initializab
             }
 
             if ( ! $condition_value ) {
+
+                if ( $coupon->is_type( 'acfw_bogo' ) ) {
+                    \ACFWF()->BOGO_Frontend->reset_bogo_deals_prices();
+                }
+
                 throw new \Exception( wp_kses_post( $this->_get_cart_condition_notice( $coupon ) ) );
             }
         }

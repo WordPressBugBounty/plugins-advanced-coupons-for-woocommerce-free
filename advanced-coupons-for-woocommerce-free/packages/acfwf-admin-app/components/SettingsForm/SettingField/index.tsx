@@ -8,6 +8,7 @@ import { validateURL } from '../../../helpers/utils';
 
 // Components
 import FunnelKitUpsell from './FunnelKitUpsell';
+import ImportStoreCreditsField from './ImportStoreCreditsField';
 
 // Styles
 import './index.scss';
@@ -82,6 +83,11 @@ const SettingField = (props: IProps) => {
   // FunnelKit upsell.
   if ('funnelkit_upsell' === type && field?.noticeData) {
     return <FunnelKitUpsell noticeData={field?.noticeData} />;
+  }
+
+  // store credits importer field.
+  if ('acfw_store_credits_importer' === id) {
+    return <ImportStoreCreditsField field={field} />;
   }
 
   // return empty

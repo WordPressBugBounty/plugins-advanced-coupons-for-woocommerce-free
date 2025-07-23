@@ -730,6 +730,28 @@ class ACFW_Settings extends \WC_Settings_Page {
                 'default'  => 'no',
             ),
 
+            array(
+                'title'       => __( 'Import store credits data from other plugins', 'advanced-coupons-for-woocommerce-free' ),
+                'type'        => 'select',
+                'id'          => 'acfw_store_credits_importer',
+                'desc'        => __( 'Choose a plugin to migrate customers’ store credits data to Advanced Coupons for WooCommerce.', 'advanced-coupons-for-woocommerce-free' ),
+                'placeholder' => __( 'Select a plugin...', 'advanced-coupons-for-woocommerce-free' ),
+                'options'     => \ACFWF()->API_Tools->get_tools_default_api_setting_options(),
+                'data'        => get_transient( Plugin_Constants::IMPORT_STORE_CREDITS_PROCESS_RUNNING ),
+                'labels'      => array(
+                    'import_btn'                   => __( 'Import', 'advanced-coupons-for-woocommerce-free' ),
+                    'no_plugins_found'             => __( 'No compatible third-party plugins found. Please install one to enable store credit imports.', 'advanced-coupons-for-woocommerce-free' ),
+                    /* Translators: %s: Plugin name to import store credits from. */
+                    'progress_text'                => __( 'Import progress for %s plugin', 'advanced-coupons-for-woocommerce-free' ),
+                    'deactivate_plugin'            => __( 'Deactivate plugin after importing', 'advanced-coupons-for-woocommerce-free' ),
+                    'processed'                    => __( 'Processed', 'advanced-coupons-for-woocommerce-free' ),
+                    'failed'                       => __( 'Failed', 'advanced-coupons-for-woocommerce-free' ),
+                    'users'                        => __( 'users', 'advanced-coupons-for-woocommerce-free' ),
+                    'store_credits'                => __( 'store credits', 'advanced-coupons-for-woocommerce-free' ),
+                    'total_imported_store_credits' => __( 'Total imported store credits', 'advanced-coupons-for-woocommerce-free' ),
+                ),
+            ),
+
         );
     }
 

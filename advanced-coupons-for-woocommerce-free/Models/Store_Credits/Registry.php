@@ -189,9 +189,9 @@ class Registry implements Model_Interface {
                         'link_callback'       => array( \ACFWF()->Helper_Functions, 'get_order_frontend_link' ),
                     ),
                 ),
-                'imported_points' => array(
-                    'name'    => __( 'Imported points', 'advanced-coupons-for-woocommerce-free' ),
-                    'slug'    => 'imported_points',
+                'imported_sc'     => array(
+                    'name'    => __( 'Imported store credits', 'advanced-coupons-for-woocommerce-free' ),
+                    'slug'    => 'imported_sc',
                     'related' => array(
                         'object_type' => 'user_import',
                         'admin_label' => '-',

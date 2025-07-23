@@ -8,9 +8,10 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$base       = get_option( 'woocommerce_email_base_color' );
-$base_text  = wc_light_or_dark( $base, '#202020', '#ffffff' );
-$coupon_url = 'yes' !== $coupon->get_advanced_prop( 'disable_url_coupon' ) ? $coupon->get_coupon_url() : get_permalink( wc_get_page_id( 'shop' ) );
+$base        = get_option( 'woocommerce_email_base_color' );
+$base_text   = wc_light_or_dark( $base, '#202020', '#ffffff' );
+$coupon_url  = 'yes' !== $coupon->get_advanced_prop( 'disable_url_coupon' ) ? $coupon->get_coupon_url() : get_permalink( wc_get_page_id( 'shop' ) );
+$coupon_code = $coupon->get_id() === 0 ? apply_filters( 'acfw_woocommerce_email_preview_dummy_coupon', 'dummy-coupon' ) : $coupon->get_code();
 
 do_action( 'acfw_email_header', $email_heading, $email );?>
 
@@ -18,7 +19,7 @@ do_action( 'acfw_email_header', $email_heading, $email );?>
 
 <h3 style="text-align: center; text-transform: uppercase">
     <span style="display:inline-block; padding: 10px 20px; margin: 0 auto 20px; border: 1px dotted #636363; ">
-        <?php echo esc_html( $coupon->get_code() ); ?>
+        <?php echo esc_html( $coupon_code ); ?>
     </span>
 </h3>
 

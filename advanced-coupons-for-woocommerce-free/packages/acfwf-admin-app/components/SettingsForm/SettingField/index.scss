@@ -101,3 +101,32 @@ p.acfw-funnelkit-upsell-notice {
     }
   }
 }
+
+.import-store-credits-form-wrapper {
+  margin-bottom: 1em;
+
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+
+  .deactivate-plugin-checkbox {
+    margin-top: 10px;
+  }
+
+  .ant-btn-primary {
+    float: right;
+    margin-top: 10px;
+  }
+}
+
+.import-store-credits-progress-wrapper {
+  p {
+    margin: 0;
+  }
+
+  .ant-descriptions {
+    margin-top: 1.5em;
+  }
+}

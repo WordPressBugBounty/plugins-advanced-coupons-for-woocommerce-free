@@ -10,16 +10,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Tool for importing earned store credits from the WCSC plugin.
+ * Tool for importing earned store credits from the WTSC plugin.
  *
- * Extends the abstract import tool to provide support for WooCommerce Store Credit (WCSC) data imports.
+ * Extends the abstract import tool to provide support for WooCommerce Store Credit (WTSC) data imports.
  *
  * @since 4.6.7
  */
-class Import_WCSC extends Abstract_Import_Store_Credits_Tool {
+class Import_WTSC extends Abstract_Import_Store_Credits_Tool {
 
-    const PLUGIN_ID   = 'wcsc';
-    const PLUGIN_NAME = 'WooCommerce Smart Coupons by StoreApps';
+    const PLUGIN_ID   = 'wtsc';
+    const PLUGIN_NAME = 'Smart Coupons for WooCommerce by WebToffee';
 
     /*
     |--------------------------------------------------------------------------
@@ -28,7 +28,7 @@ class Import_WCSC extends Abstract_Import_Store_Credits_Tool {
     */
 
     /**
-     * Create a new WCSC Import tool object instance.
+     * Create a new WTSC Import tool object instance.
      *
      * @since 4.6.7
      * @access public
@@ -37,13 +37,13 @@ class Import_WCSC extends Abstract_Import_Store_Credits_Tool {
         $this->_data = array(
             'plugin_id'                       => self::PLUGIN_ID,
             'plugin_name'                     => self::PLUGIN_NAME,
-            'imported_store_credits_meta_key' => 'acfw_imported_store_credits_from_wcsc',
-            'plugin_basename'                 => 'woocommerce-smart-coupons/woocommerce-smart-coupons.php',
+            'imported_store_credits_meta_key' => 'acfw_imported_store_credits_from_wtsc',
+            'plugin_basename'                 => 'wt-smart-coupon-pro/wt-smart-coupon-pro.php',
         );
     }
 
     /**
-     * Get users with store credits based on the WCSC database table.
+     * Get users with store credits based on the WTSC database table.
      *
      * @since 4.6.7
      * @access protected
@@ -65,7 +65,7 @@ class Import_WCSC extends Abstract_Import_Store_Credits_Tool {
                 AND p.post_status = 'publish'
             INNER JOIN {$wpdb->postmeta} pm_type ON pm_type.post_id = p.ID 
                 AND pm_type.meta_key = 'discount_type'
-                AND pm_type.meta_value = 'smart_coupon'
+                AND pm_type.meta_value = 'store_credit'
             INNER JOIN {$wpdb->postmeta} pm_amount ON pm_amount.post_id = p.ID 
                 AND pm_amount.meta_key = 'coupon_amount'
                 AND pm_amount.meta_value > 0
@@ -76,7 +76,7 @@ class Import_WCSC extends Abstract_Import_Store_Credits_Tool {
     }
 
     /**
-     * Get the customer's total store credits for WCSC plugin.
+     * Get the customer's total store credits for WTSC plugin.
      *
      * @since 4.6.7
      * @access protected
@@ -103,7 +103,7 @@ class Import_WCSC extends Abstract_Import_Store_Credits_Tool {
                     AND p.post_status = 'publish'
                 INNER JOIN {$wpdb->postmeta} pm_type ON pm_type.post_id = pm_email.post_id 
                     AND pm_type.meta_key = 'discount_type' 
-                    AND pm_type.meta_value = 'smart_coupon'
+                    AND pm_type.meta_value = 'store_credit'
                 INNER JOIN {$wpdb->postmeta} pm_amount ON pm_amount.post_id = pm_email.post_id 
                     AND pm_amount.meta_key = 'coupon_amount'
                 WHERE pm_email.meta_key = 'customer_email' 
