@@ -9,43 +9,44 @@ export const layoutDefaults = {
 };
 
 export const orderByOptions = [
-  { value: "date/desc", label: orderTypeFieldTexts.options.newestToOldest },
-  { value: "date/asc", label: orderTypeFieldTexts.options.oldestToNewest },
-  { value: "title/asc", label: orderTypeFieldTexts.options.aToZ },
-  { value: "title/desc", label: orderTypeFieldTexts.options.zToA },
-  { value: "expire/asc", label: orderTypeFieldTexts.options.earliestToExpire },
+  { value: 'date/desc', label: orderTypeFieldTexts.options.newestToOldest },
+  { value: 'date/asc', label: orderTypeFieldTexts.options.oldestToNewest },
+  { value: 'title/asc', label: orderTypeFieldTexts.options.aToZ },
+  { value: 'title/desc', label: orderTypeFieldTexts.options.zToA },
+  { value: 'expire/asc', label: orderTypeFieldTexts.options.earliestToExpire },
 ];
 
 export const layoutAtts = {
   order_by: {
-    type: "string",
-    default: "date/desc",
+    type: 'string',
+    default: 'date/desc',
   },
 
   columns: {
-    type: "number",
+    type: 'number',
     default: 3,
   },
 
   count: {
-    type: "number",
+    type: 'number',
     default: 10,
   },
 };
 
 const sharedAtts = {
   contentVisibility: {
-    type: "object",
+    type: 'object',
     default: {
       discount_value: true,
       description: true,
       usage_limit: true,
       schedule: true,
+      expired_coupons: true,
     },
   },
 
   isPreview: {
-    type: "boolean",
+    type: 'boolean',
     default: false,
   },
 };

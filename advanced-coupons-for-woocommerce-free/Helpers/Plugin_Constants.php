@@ -44,7 +44,7 @@ class Plugin_Constants {
     // Plugin configuration constants.
     const TOKEN               = 'acfwf';
     const INSTALLED_VERSION   = 'acfwf_installed_version';
-    const VERSION             = '4.6.8';
+    const VERSION             = '4.6.9';
     const TEXT_DOMAIN         = 'advanced-coupons-for-woocommerce-free';
     const THEME_TEMPLATE_PATH = 'advanced-coupons-for-woocommerce-free';
     const META_PREFIX         = '_acfw_';
@@ -99,23 +99,24 @@ class Plugin_Constants {
     const STORE_CREDIT_WC_API_NAMESPACE = 'wc-store-credits/v1';
 
     // Store Credits.
-    const STORE_CREDITS_SESSION                    = 'acfw_store_credits_discount';
-    const STORE_CREDITS_SESSION_CHANGED_NOTICE     = 'acfw_store_credits_changed_notice';
-    const STORE_CREDITS_COUPON_SESSION             = 'acfw_store_credits_coupon_discount';
-    const STORE_CREDITS_ORDER_META                 = 'acfw_store_credits_order_discount';
-    const STORE_CREDITS_ORDER_COUPON_META          = 'acfw_store_credits_order_coupon_meta';
-    const STORE_CREDITS_ORDER_PAID                 = 'acfw_store_credits_order_paid';
-    const STORE_CREDITS_VERSION                    = 'acfw_store_credits_version';
-    const STORE_CREDITS_ENDPOINT                   = 'store-credit';
-    const STORE_CREDITS_HIDE_CHECKOUT_ZERO_BALANCE = 'acfw_store_credits_hide_checkout_zero_balance';
-    const STORE_CREDIT_APPLY_TYPE                  = 'acfw_store_credit_apply_type';
-    const STORE_CREDIT_EXPIRY                      = 'acfw_store_credit_expiry';
-    const STORE_CREDIT_MIN_ORDER_TOTAL_ALLOWED     = 'acfw_store_credit_minimal_order_total_allowed';
-    const REFUND_ORDER_STORE_CREDIT_ENTRY          = 'acfw_refund_order_store_credit_entry_id';
-    const REFUND_STORE_CREDIT_DISCOUNT_ENTRY       = 'acfw_refund_store_credit_discount_entry_id';
-    const DISPLAY_STORE_CREDITS_REDEEM_FORM        = 'acfw_display_store_credits_redeem_form';
-    const AUTO_DISPLAY_STORE_CREDITS_REDEEM_FORM   = 'acfw_auto_display_store_credits_redeem_form';
-    const ALLOW_STORE_CREDITS_FOR_RENEWAL          = 'acfw_allow_store_credits_for_renewal';
+    const STORE_CREDITS_SESSION                      = 'acfw_store_credits_discount';
+    const STORE_CREDITS_SESSION_CHANGED_NOTICE       = 'acfw_store_credits_changed_notice';
+    const STORE_CREDITS_COUPON_SESSION               = 'acfw_store_credits_coupon_discount';
+    const STORE_CREDITS_ORDER_META                   = 'acfw_store_credits_order_discount';
+    const STORE_CREDITS_ORDER_COUPON_META            = 'acfw_store_credits_order_coupon_meta';
+    const STORE_CREDITS_ORDER_PAID                   = 'acfw_store_credits_order_paid';
+    const STORE_CREDITS_VERSION                      = 'acfw_store_credits_version';
+    const STORE_CREDITS_ENDPOINT                     = 'store-credit';
+    const STORE_CREDITS_HIDE_CHECKOUT_ZERO_BALANCE   = 'acfw_store_credits_hide_checkout_zero_balance';
+    const STORE_CREDITS_HIDE_MY_ACCOUNT_ZERO_BALANCE = 'acfw_store_credits_hide_my_account_zero_balance';
+    const STORE_CREDIT_APPLY_TYPE                    = 'acfw_store_credit_apply_type';
+    const STORE_CREDIT_EXPIRY                        = 'acfw_store_credit_expiry';
+    const STORE_CREDIT_MIN_ORDER_TOTAL_ALLOWED       = 'acfw_store_credit_minimal_order_total_allowed';
+    const REFUND_ORDER_STORE_CREDIT_ENTRY            = 'acfw_refund_order_store_credit_entry_id';
+    const REFUND_STORE_CREDIT_DISCOUNT_ENTRY         = 'acfw_refund_store_credit_discount_entry_id';
+    const DISPLAY_STORE_CREDITS_REDEEM_FORM          = 'acfw_display_store_credits_redeem_form';
+    const AUTO_DISPLAY_STORE_CREDITS_REDEEM_FORM     = 'acfw_auto_display_store_credits_redeem_form';
+    const ALLOW_STORE_CREDITS_FOR_RENEWAL            = 'acfw_allow_store_credits_for_renewal';
 
     // Settings Constants.
 
@@ -235,6 +236,10 @@ class Plugin_Constants {
     // Getting Started.
     const GETTING_STARTED_SHOW = 'acfw_admin_notice_getting_started_show';
     const GETTING_STARTED_URL  = 'getting-started-with-advanced-coupons-for-woocommerce';
+
+    // Feature Custom Taxonomy.
+    const FEATURE_CUSTOM_TAXONOMY     = 'advanced_coupon_features';
+    const BULK_UPDATE_COUPON_FEATURES = 'acfw_bulk_update_coupon_features';
 
     // Others.
     const DISPLAY_DATE_FORMAT = 'F j, Y g:i a';

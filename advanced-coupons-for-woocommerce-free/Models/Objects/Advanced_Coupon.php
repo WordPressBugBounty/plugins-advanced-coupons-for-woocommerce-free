@@ -737,6 +737,9 @@ class Advanced_Coupon extends \WC_Coupon {
         $this->advanced_read = false;
         $this->advanced_read();
 
+        // Fire action after advanced coupon data is saved.
+        do_action( 'acfw_after_advanced_coupon_save', $this->id, $this->advanced_changes, $this );
+
         return $this->id;
     }
 

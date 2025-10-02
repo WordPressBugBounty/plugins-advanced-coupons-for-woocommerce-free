@@ -1,14 +1,20 @@
 .coupon-templates-page {
   .coupon-templates-list {
     width: 100%;
-    display: flex;
-    flex-flow: row wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 25px 20px;
-    justify-content: baseline;
+
+    @media (max-width: 1200px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
 
     .coupon-template-card {
       transition: all 0.3s ease-in-out;
-      width: calc(33.3333333333% - 15px);
       box-shadow: 0 4px 4px 0px rgba(0, 0, 0, 0.1);
       cursor: pointer;
       border-radius: 5px;
@@ -153,6 +159,91 @@
     p {
       font-size: 1.1em;
       margin-bottom: 2em;
+    }
+  }
+}
+
+// Search Filter Styles
+.coupon-templates-search-filter {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  .ant-input-affix-wrapper {
+    border-radius: 6px;
+    
+    &:hover, &:focus {
+      border-color: #1890ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+  }
+
+  .ant-select {
+    .ant-select-selector {
+      border-radius: 6px;
+      
+      &:hover, &:focus {
+        border-color: #1890ff;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+      }
+    }
+  }
+}
+
+// Sort Control Styles
+.coupon-templates-sort-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .sort-label {
+    font-size: 13px;
+    color: #666;
+    white-space: nowrap;
+  }
+
+  .ant-select {
+    min-width: 120px;
+
+    .ant-select-selection-item {
+      font-size: 13px;
+    }
+  }
+
+  .sort-order-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: #40a9ff;
+      color: #40a9ff;
+    }
+
+    &.asc {
+      .anticon {
+        color: #1890ff;
+      }
+    }
+
+    &.desc {
+      .anticon {
+        color: #1890ff;
+      }
+    }
+
+    .anticon {
+      font-size: 14px;
+      transition: color 0.2s;
     }
   }
 }

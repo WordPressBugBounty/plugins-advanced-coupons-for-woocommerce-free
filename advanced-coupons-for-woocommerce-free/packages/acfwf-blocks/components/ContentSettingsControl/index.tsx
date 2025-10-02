@@ -4,16 +4,14 @@
 import { ToggleControl } from '@wordpress/components';
 
 // Types
-import {IContentVisibility, IAttributes} from "../../types/settings";
+import { IContentVisibility, IAttributes } from '../../types/settings';
 
 // #endregion [Imports]
 
 // #region [Variables] =================================================================================================
 
 declare var acfwfBlocksi18n: any;
-const {
-  contentDisplaySettings
-} = acfwfBlocksi18n;
+const { contentDisplaySettings } = acfwfBlocksi18n;
 
 // #endregion [Variables]
 
@@ -29,34 +27,39 @@ interface IProps {
 // #region [Component] =================================================================================================
 
 const ContentSettingsControl = (props: IProps) => {
-  const {onChange, settings} = props;
-  const {discount_value, description, usage_limit, schedule} = settings;
+  const { onChange, settings } = props;
+  const { discount_value, description, usage_limit, schedule, expired_coupons } = settings;
 
   return (
     <>
-      <ToggleControl 
+      <ToggleControl
         label={contentDisplaySettings.displayDiscountValue}
         checked={discount_value}
-        onChange={ () => onChange({...settings, discount_value: !discount_value}) }
+        onChange={() => onChange({ ...settings, discount_value: !discount_value })}
       />
-      <ToggleControl 
+      <ToggleControl
         label={contentDisplaySettings.displayDescription}
         checked={description}
-        onChange={ () => onChange({...settings, description: !description}) }
+        onChange={() => onChange({ ...settings, description: !description })}
       />
-      <ToggleControl 
+      <ToggleControl
         label={contentDisplaySettings.displayUsageLimit}
         checked={usage_limit}
-        onChange={ () => onChange({...settings, usage_limit: !usage_limit}) }
+        onChange={() => onChange({ ...settings, usage_limit: !usage_limit })}
       />
-      <ToggleControl 
+      <ToggleControl
         label={contentDisplaySettings.displaySchedule}
         checked={schedule}
-        onChange={ () => onChange({...settings, schedule: !schedule}) }
+        onChange={() => onChange({ ...settings, schedule: !schedule })}
+      />
+      <ToggleControl
+        label={contentDisplaySettings.hideExpiredCoupons}
+        checked={expired_coupons}
+        onChange={() => onChange({ ...settings, expired_coupons: !expired_coupons })}
       />
     </>
   );
-}
+};
 
 export default ContentSettingsControl;
 

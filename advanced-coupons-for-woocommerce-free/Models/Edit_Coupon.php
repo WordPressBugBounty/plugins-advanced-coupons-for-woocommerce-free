@@ -1451,30 +1451,34 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
             $_GET['exclude'] = array_diff( array_map( 'sanitize_text_field', wp_unslash( (array) $_GET['exclude'] ) ), array( 'product_type_gift_card' ) );
         }
         // get coupon_id.
-        $exclude_ids     = isset( $_GET['exclude'] ) && is_array( $_GET['exclude'] ) ? array_map( 'intval', $_GET['exclude'] ) : array();
-        $exclude_ids_str = is_array( $exclude_ids ) ? implode( ',', $exclude_ids ) : '';
-        $exclude_query   = $exclude_ids_str ? 'AND posts.ID NOT IN ( ' . $exclude_ids_str . ' )' : '';
+        $exclude_ids = isset( $_GET['exclude'] ) && is_array( $_GET['exclude'] ) ? array_map( 'intval', $_GET['exclude'] ) : array();
+        $exclude_ids = array_filter( $exclude_ids ); // Remove any zero values.
 
         $term          = isset( $_REQUEST['term'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['term'] ) ) : '';
         $like_term     = '%' . $wpdb->esc_like( wc_clean( stripslashes( $term ) ) ) . '%';
         $post_statuses = current_user_can( 'edit_private_products' ) ? array( 'private', 'publish' ) : array( 'publish' );
 
-        // NOTE: the custom query here can't be "prepared" as we are using imploded IN statement here.
-        // phpcs:disable
-        $product_ids = $wpdb->get_col(
-            "SELECT DISTINCT posts.ID FROM {$wpdb->posts} posts
-            LEFT JOIN {$wpdb->postmeta} postmeta ON ( posts.ID = postmeta.post_id AND postmeta.meta_key = '_sku' )
-            WHERE (
-                posts.post_title LIKE '$like_term'
-                OR posts.post_content LIKE '$like_term'
-                OR postmeta.meta_value LIKE '$like_term'
-            )
-            AND ( posts.post_type = 'product_variation' OR ( posts.post_type = 'product' AND posts.post_parent = 0 ) )
-            AND posts.post_status IN ('" . implode( "','", $post_statuses ) . "')
-            $exclude_query
-            ORDER BY posts.post_parent ASC, posts.post_title ASC"
-        );
-        // phpcs:enable
+        // Build the query with exclusions.
+        $exclude_clause = '';
+        if ( ! empty( $exclude_ids ) ) {
+            $exclude_ids_str = implode( ',', array_map( 'absint', $exclude_ids ) );
+            $exclude_clause  = "AND posts.ID NOT IN ( {$exclude_ids_str} )";
+        }
+
+        $query = "SELECT DISTINCT posts.ID FROM {$wpdb->posts} posts
+                  LEFT JOIN {$wpdb->postmeta} postmeta ON ( posts.ID = postmeta.post_id AND postmeta.meta_key = '_sku' )
+                  WHERE (
+                      posts.post_title LIKE %s
+                      OR posts.post_content LIKE %s
+                      OR postmeta.meta_value LIKE %s
+                  )
+                  AND ( posts.post_type = 'product_variation' OR ( posts.post_type = 'product' AND posts.post_parent = 0 ) )
+                  AND posts.post_status IN ('" . implode( "','", array_map( 'esc_sql', $post_statuses ) ) . "')
+                  {$exclude_clause}
+                  ORDER BY posts.post_parent ASC, posts.post_title ASC";
+
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        $product_ids = $wpdb->get_col( $wpdb->prepare( $query, $like_term, $like_term, $like_term ) );
 
         $ids = wp_parse_id_list( $product_ids );
 

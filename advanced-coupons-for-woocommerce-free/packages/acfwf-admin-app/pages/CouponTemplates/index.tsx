@@ -76,17 +76,17 @@ const CouponTemplates = (props: IProps) => {
         <Tabs defaultActiveKey={currentTab} className="coupon-templates-tabs" onTabClick={handleTabClick}>
           <Tabs.TabPane tab={labels.recently_used_templates} key="recent">
             <Row gutter={16}>
-              <Col span={18}>
+              <Col xs={24} sm={24} md={18} lg={18} xl={18}>
                 <RecentTemplates />
               </Col>
             </Row>
           </Tabs.TabPane>
           <Tabs.TabPane tab={labels.available_templates} key="main">
             <Row gutter={16}>
-              <Col span={18}>
+              <Col xs={24} sm={24} md={18} lg={18} xl={18}>
                 <QueriedTemplates />
               </Col>
-              <Col span={6}>
+              <Col xs={24} sm={24} md={6} lg={6} xl={6}>
                 <Sidebar />
               </Col>
             </Row>
@@ -94,7 +94,7 @@ const CouponTemplates = (props: IProps) => {
           {enable_review_tab && (
             <Tabs.TabPane tab={labels.review_templates} key="review">
               <Row gutter={16}>
-                <Col span={18}>
+                <Col xs={24} sm={24} md={18} lg={18} xl={18}>
                   <ReviewTemplates />
                 </Col>
               </Row>

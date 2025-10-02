@@ -14,6 +14,8 @@ import {
   ISetCouponTemplatesPayload,
   IUnsetRecentCouponTemplatePayload,
   ITogglePremiumModalPayload,
+  ISetSearchFiltersPayload,
+  ISetSortOptionsPayload,
 } from '../actions/couponTemplates';
 
 import { cloneDeep } from 'lodash';
@@ -34,6 +36,14 @@ const reducer = (
     categories: [],
     formResponse: null,
     premiumModal: false,
+    searchFilters: {
+      searchTerm: '',
+      licenseFilter: 'all',
+    },
+    sortOptions: {
+      sortBy: 'title',
+      sortOrder: 'asc',
+    },
   },
   action: { type: string; payload: any }
 ): ICouponTemplatesStore => {
@@ -177,6 +187,16 @@ const reducer = (
     case ECouponTemplatesActionTypes.TOGGLE_PREMIUM_MODAL: {
       const { show } = action.payload as ITogglePremiumModalPayload;
       return { ...state, premiumModal: show };
+    }
+
+    case ECouponTemplatesActionTypes.SET_SEARCH_FILTERS: {
+      const { searchTerm, licenseFilter } = action.payload as ISetSearchFiltersPayload;
+      return { ...state, searchFilters: { searchTerm, licenseFilter } };
+    }
+
+    case ECouponTemplatesActionTypes.SET_SORT_OPTIONS: {
+      const { sortBy, sortOrder } = action.payload as ISetSortOptionsPayload;
+      return { ...state, sortOptions: { sortBy, sortOrder } };
     }
   }
 

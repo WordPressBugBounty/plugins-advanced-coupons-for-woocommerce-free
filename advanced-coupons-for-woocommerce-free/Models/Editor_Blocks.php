@@ -216,9 +216,15 @@ class Editor_Blocks implements Model_Interface, Initializable_Interface {
         // Filter out expired coupons.
         $coupons = array_filter(
             $coupons,
-            function ( $coupon ) {
+            function ( $coupon ) use ( $attributes ) {
             $expiry_date = $coupon->get_date_expires( 'edit' );
                 if ( ! $expiry_date ) {
+                    return true; // Keep coupons with no expiry.
+                }
+
+                if ( ! ( isset( $attributes['contentVisibility'] )
+                        && isset( $attributes['contentVisibility']->expired_coupons )
+                        && $attributes['contentVisibility']->expired_coupons ) ) {
                     return true; // Keep coupons with no expiry.
                 }
 
@@ -582,10 +588,11 @@ class Editor_Blocks implements Model_Interface, Initializable_Interface {
             'contentVisibility' => array(
                 'type'    => 'object',
                 'default' => (object) array(
-                    'discount_value' => true,
-                    'description'    => true,
-                    'usage_limit'    => true,
-                    'schedule'       => true,
+                    'discount_value'  => true,
+                    'description'     => true,
+                    'usage_limit'     => true,
+                    'schedule'        => true,
+                    'expired_coupons' => true,
                 ),
             ),
             'isPreview'         => array(
@@ -652,10 +659,11 @@ class Editor_Blocks implements Model_Interface, Initializable_Interface {
     private function _format_attributes_from_shortcode( $attributes ) {
         if ( ! isset( $attributes['contentVisibility'] ) && ! empty( $attributes ) ) {
             $attributes['contentVisibility'] = (object) array(
-                'discount_value' => isset( $attributes['show_discount_value'] ) ? rest_sanitize_boolean( $attributes['show_discount_value'] ) : true,
-                'description'    => isset( $attributes['show_description'] ) ? rest_sanitize_boolean( $attributes['show_description'] ) : true,
-                'usage_limit'    => isset( $attributes['show_usage_limit'] ) ? rest_sanitize_boolean( $attributes['show_usage_limit'] ) : true,
-                'schedule'       => isset( $attributes['show_schedule'] ) ? rest_sanitize_boolean( $attributes['show_schedule'] ) : true,
+                'discount_value'  => isset( $attributes['show_discount_value'] ) ? rest_sanitize_boolean( $attributes['show_discount_value'] ) : true,
+                'description'     => isset( $attributes['show_description'] ) ? rest_sanitize_boolean( $attributes['show_description'] ) : true,
+                'usage_limit'     => isset( $attributes['show_usage_limit'] ) ? rest_sanitize_boolean( $attributes['show_usage_limit'] ) : true,
+                'schedule'        => isset( $attributes['show_schedule'] ) ? rest_sanitize_boolean( $attributes['show_schedule'] ) : true,
+                'expired_coupons' => isset( $attributes['show_expired_coupons'] ) ? rest_sanitize_boolean( $attributes['show_expired_coupons'] ) : true,
             );
         }
 

@@ -640,9 +640,9 @@ class Helper_Functions {
                         $cart_object           = \WC()->cart;
                         $product_category_data = array(
                             'source'                   => 'product_category_level_qty_based',
-                            'wholesale_price_with_tax' => 0,
+                            'wholesale_price_with_tax' => $data['wholesale_price_with_tax'],
                             'discount'                 => 0,
-                            'wholesale_price'          => 0,
+                            'wholesale_price'          => $data['wholesale_price'],
                         );
                         $category_discount     = $wc_wholesale_prices_premium->wwpp_wholesale_price_product_category->apply_product_category_level_wholesale_discount( $product_category_data, $product->get_id(), $wwp_wholesale_roles, $settings['cart_item'], $cart_object, true );
 

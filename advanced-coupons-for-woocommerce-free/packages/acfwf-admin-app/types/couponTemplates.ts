@@ -7,6 +7,14 @@ export interface ICouponTemplatesStore {
   categories: ICouponTemplateCategory[];
   formResponse: ICreateCouponFromTemplateResponse | null;
   premiumModal: boolean;
+  searchFilters: {
+    searchTerm: string;
+    licenseFilter: string;
+  };
+  sortOptions: {
+    sortBy: 'title' | 'date';
+    sortOrder: 'asc' | 'desc';
+  };
 }
 
 export interface ICouponTemplateListItem {
@@ -16,6 +24,7 @@ export interface ICouponTemplateListItem {
   license_type: 'free' | 'premium';
   image_bg_color: string;
   image_svg: string;
+  date?: string;
 }
 
 export interface ICouponTemplate extends ICouponTemplateListItem {

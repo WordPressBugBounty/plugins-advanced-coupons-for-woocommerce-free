@@ -328,7 +328,35 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
     }
 
     /**
-     * Add allowed custmers upsell field in usage restrictions tab.
+     * Add disallowed emails upsell field in usage restrictions tab.
+     *
+     * @since 4.6.9
+     * @access public
+     *
+     * @param int $coupon_id Coupon ID.
+     */
+    public function upsell_disallowed_emails_restriction( $coupon_id ) {
+        woocommerce_wp_select(
+            array(
+                'id'                => 'acfw_disallowed_emails',
+                'class'             => 'wc-product-search',
+                'style'             => 'width:50%;',
+                'label'             => __( 'Disallowed emails (Premium)', 'advanced-coupons-for-woocommerce-free' ),
+                'description'       => __( 'List of disallowed billing email addresses. Separate multiple email addresses with commas. Wildcards like *@gmail.com are supported.', 'advanced-coupons-for-woocommerce-free' ),
+                'desc_tip'          => true,
+                'options'           => array(),
+                'custom_attributes' => array(
+                    'multiple'         => true,
+                    'data-placeholder' => __( 'No restrictions', 'advanced-coupons-for-woocommerce-free' ),
+                    'data-action'      => 'acfw_search_coupons',
+                    'readonly'         => true,
+                ),
+            )
+        );
+    }
+
+    /**
+     * Add allowed customers upsell field in usage restrictions tab.
      *
      * @since 4.2.1
      * @access public
@@ -343,6 +371,34 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                 'style'             => 'width:50%;',
                 'label'             => __( 'Allowed customers (Premium)', 'advanced-coupons-for-woocommerce-free' ),
                 'description'       => __( 'Search and select customers that are eligible to only use this coupon.', 'advanced-coupons-for-woocommerce-free' ),
+                'desc_tip'          => true,
+                'options'           => array(),
+                'custom_attributes' => array(
+                    'multiple'         => true,
+                    'data-placeholder' => __( 'Search customers&hellip;', 'advanced-coupons-for-woocommerce-free' ),
+                    'data-action'      => 'acfw_search_coupons',
+                    'readonly'         => true,
+                ),
+            )
+        );
+    }
+
+    /**
+     * Add disallowed customers upsell field in usage restrictions tab.
+     *
+     * @since 4.6.9
+     * @access public
+     *
+     * @param int $coupon_id Coupon ID.
+     */
+    public function upsell_disallowed_customers_restriction( $coupon_id ) {
+        woocommerce_wp_select(
+            array(
+                'id'                => 'acfw_disallowed_customers',
+                'class'             => 'wc-product-search',
+                'style'             => 'width:50%;',
+                'label'             => __( 'Disallowed customers (Premium)', 'advanced-coupons-for-woocommerce-free' ),
+                'description'       => __( 'Search and select customers that are NOT allowed to use this coupon.', 'advanced-coupons-for-woocommerce-free' ),
                 'desc_tip'          => true,
                 'options'           => array(),
                 'custom_attributes' => array(
@@ -428,6 +484,11 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                 'key'   => 'cart-weight',
                 'title' => __( 'Cart Weight (Premium)', 'advanced-coupons-for-woocommerce-free' ),
             ),
+            'cart_total'                                => array(
+                'group' => 'cart-items',
+                'key'   => 'cart-total',
+                'title' => __( 'Cart Total (Premium)', 'advanced-coupons-for-woocommerce-free' ),
+            ),
             'product_quantity'                          => array(
                 'group' => 'products',
                 'key'   => 'product-quantity',
@@ -472,6 +533,11 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                 'group' => 'customers',
                 'key'   => 'shipping-zone-region',
                 'title' => __( 'Shipping Zone And Region (Premium)', 'advanced-coupons-for-woocommerce-free' ),
+            ),
+            'number_of_orders'                          => array(
+                'group' => 'customers',
+                'key'   => 'number-of-orders',
+                'title' => __( 'Number of Customer Orders (Premium)', 'advanced-coupons-for-woocommerce-free' ),
             ),
             'custom_taxonomy'                           => array(
                 'group' => 'product-categories',
@@ -687,14 +753,14 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
     }
 
     /**
-     * Upsell BOGO automatically add deal products feature.
+     * Upsell BOGO additional settings.
      *
      * @since 4.1
      * @access public
      *
      * @param array $bogo_deals Coupon BOGO Deals data.
      */
-    public function upsell_automatically_add_deal_products_feature( $bogo_deals ) {
+    public function upsell_bogo_additional_settings( $bogo_deals ) {
         $deals_type = isset( $bogo_deals['deals_type'] ) ? $bogo_deals['deals_type'] : 'specific-products';
 
         include $this->_constants->VIEWS_ROOT_PATH . 'premium/view-coupon-bogo-additional-settings.php';
@@ -781,6 +847,29 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                 ),
             )
         );
+    }
+
+    /**
+     * Add defer apply upsell field to URL coupon panel fields.
+     *
+     * @since 4.6.9
+     * @access public
+     *
+     * @param array $fields Array of URL coupon panel fields.
+     * @return array Filtered array of URL coupon panel fields.
+     */
+    public function upsell_defer_apply_url_coupon_field( $fields ) {
+        $fields[] = array(
+            'cb'   => 'woocommerce_wp_checkbox',
+            'args' => array(
+                'id'          => 'acfw_defer_apply_url_coupon',
+                'label'       => __( 'Defer Apply (Premium)', 'advanced-coupons-for-woocommerce-free' ),
+                'description' => __( 'When checked, the coupon will not be applied to the cart until its conditions and/or restrictions are met.', 'advanced-coupons-for-woocommerce-free' ),
+                'value'       => 'no',
+            ),
+        );
+
+        return $fields;
     }
 
     /*
@@ -1336,6 +1425,18 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                 ),
             ),
             array(
+                'key'      => 'bogo_discount_order',
+                'title'    => __( 'Upgrade To Apply Discount to the Least or Most Expensive Eligible Products First', 'advanced-coupons-for-woocommerce-free' ),
+                'contents' => array(
+                    __( 'In Advanced Coupons Premium, you can configure which product to be discounted in the additional settings option.', 'advanced-coupons-for-woocommerce-free' ),
+                    sprintf(
+                        /* Translators: %s: Advanced coupons pricing link. */
+                        __( '<a href="%s" target="_blank">See all features & pricing →</a>', 'advanced-coupons-for-woocommerce-free' ),
+                        apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'bogodiscountorder' ) )
+                    ),
+                ),
+            ),
+            array(
                 'key'      => 'day_time_schedules',
                 'title'    => __( 'Day/Time Schedules', 'advanced-coupons-for-woocommerce-free' ),
                 'contents' => array(
@@ -1356,6 +1457,18 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
                         /* Translators: %s: Advanced coupons pricing link. */
                         __( '<a href="%s" target="_blank">See all features & pricing →</a>', 'advanced-coupons-for-woocommerce-free' ),
                         apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'cashbackcoupon' ) )
+                    ),
+                ),
+            ),
+            array(
+                'key'      => 'defer_apply_url_coupon',
+                'title'    => __( 'Defer Apply URL Coupon', 'advanced-coupons-for-woocommerce-free' ),
+                'contents' => array(
+                    __( 'In Advanced Coupons Premium you can defer the application of URL coupons until the customer visits the cart or checkout page. This gives you more control over when coupons are applied and can improve the customer experience.', 'advanced-coupons-for-woocommerce-free' ),
+                    sprintf(
+                        /* Translators: %s: Advanced coupons pricing link. */
+                        __( '<a href="%s" target="_blank">See all features & pricing →</a>', 'advanced-coupons-for-woocommerce-free' ),
+                        apply_filters( 'acfwp_upsell_link', $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'deferapplyurlcoupon' ) )
                     ),
                 ),
             ),
@@ -2052,7 +2165,7 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
             add_filter( 'acfw_bogo_trigger_apply_type_descs', array( $this, 'bogo_premium_trigger_apply_type_descs' ) );
             add_filter( 'acfw_bogo_trigger_type_options', array( $this, 'bogo_premium_trigger_type_options' ) );
             add_filter( 'acfw_bogo_apply_type_options', array( $this, 'bogo_premium_apply_type_options' ) );
-            add_action( 'acfw_bogo_before_additional_settings', array( $this, 'upsell_automatically_add_deal_products_feature' ), 10, 2 );
+            add_action( 'acfw_bogo_before_additional_settings', array( $this, 'upsell_bogo_additional_settings' ), 10, 2 );
             add_filter( 'woocommerce_get_sections_acfw_settings', array( $this, 'register_upsell_settings_section' ) );
             add_filter( 'woocommerce_get_settings_acfw_settings', array( $this, 'get_upsell_settings_section_fields' ), 10, 2 );
             add_action( 'acfw_settings_help_section_options', array( $this, 'help_settings_upgrade_section' ) );
@@ -2067,7 +2180,9 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
             add_action( 'woocommerce_coupon_data_panels', array( $this, 'display_upsell_panel_views' ) );
             add_action( 'woocommerce_coupon_options_usage_limit', array( $this, 'upsell_advanced_usage_limits_fields' ) );
             add_action( 'woocommerce_coupon_options_usage_restriction', array( $this, 'upsell_exclude_coupons_restriction' ) );
+            add_action( 'woocommerce_coupon_options_usage_restriction', array( $this, 'upsell_disallowed_emails_restriction' ) );
             add_action( 'woocommerce_coupon_options_usage_restriction', array( $this, 'upsell_allowed_customers_restriction' ) );
+            add_action( 'woocommerce_coupon_options_usage_restriction', array( $this, 'upsell_disallowed_customers_restriction' ) );
             add_action( 'woocommerce_coupon_options_usage_restriction', array( $this, 'upsell_product_attributes_restriction' ) );
             add_action( 'woocommerce_coupon_options_usage_restriction', array( $this, 'upsell_exclude_product_attributes_restriction' ) );
             add_action( 'woocommerce_coupon_options_usage_restriction', array( $this, 'usage_restrictions_add_help_link' ) );
@@ -2076,6 +2191,7 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
             add_action( 'in_admin_header', array( $this, 'display_admin_notice_bar_lite' ) );
             add_filter( 'woocommerce_coupon_discount_types', array( $this, 'upsell_cashback_coupon_types' ) );
             add_action( 'woocommerce_coupon_options_usage_restriction', array( $this, 'upsell_allowed_coupons' ) );
+            add_filter( 'acfw_url_coupons_admin_data_panel_fields', array( $this, 'upsell_defer_apply_url_coupon_field' ) );
 
             add_filter( 'acfw_edit_advanced_coupon_localize', array( $this, 'add_upsell_localized_script_data_on_edit_advanced_coupon_js' ) );
             add_filter( 'plugin_action_links_' . $this->_constants->PLUGIN_BASENAME, array( $this, 'plugin_upgrade_action_link' ), 20 );

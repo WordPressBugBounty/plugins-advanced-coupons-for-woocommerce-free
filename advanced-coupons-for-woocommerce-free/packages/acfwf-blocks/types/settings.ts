@@ -3,6 +3,7 @@ export interface IContentVisibility {
   description: true;
   usage_limit: true;
   schedule: true;
+  expired_coupons: true;
 }
 
 export interface IAttributes {

@@ -12,19 +12,29 @@ let exludeCouponShown = false;
  */
 export default function upsell_events() {
   $('#usage_limit_coupon_data').on('change', '#reset_usage_limit_period', upsell_advance_usage_limits);
+
   $(
-    '#usage_restriction_coupon_data .acfw_exclude_coupons_field,#usage_restriction_coupon_data .acfw_allowed_customers_field,#usage_restriction_coupon_data .acfw_allowed_coupons_field,#usage_restriction_coupon_data .acfw_product_attributes_field,#usage_restriction_coupon_data .acfw_exclude_product_attributes_field'
+    `#usage_restriction_coupon_data .acfw_exclude_coupons_field,
+    #usage_restriction_coupon_data .acfw_allowed_customers_field,
+    #usage_restriction_coupon_data .acfw_allowed_coupons_field,
+    #usage_restriction_coupon_data .acfw_product_attributes_field,
+    #usage_restriction_coupon_data .acfw_exclude_product_attributes_field,
+    #usage_restriction_coupon_data .acfw_disallowed_emails_field,
+    #usage_restriction_coupon_data .acfw_disallowed_customers_field`
   ).on('click change focus', 'input,select', upsell_exclude_coupons_restriction);
+
   $('#acfw-auto-apply-coupon').on('change', '#acfw_auto_apply_coupon_field', upsell_auto_apply);
   $('#acfw-virtual-coupon').on('change', '#acfw_enable_virtual_coupons', upsell_virtual_coupons);
+  $('#acfw_url_coupon').on('change', '#acfw_defer_apply_url_coupon', upsell_defer_apply_url_coupon);
   $('#acfw_cart_conditions').on('change', '.condition-types', cart_condition_select_notice);
   $('#woocommerce-coupon-data').on('change acfw_load', '#discount_type', hideGeneralUpsellOnBogo);
   $('#woocommerce-coupon-data').on('change acfw_load', '#discount_type', displayCashbackUpsellModal);
   $('#woocommerce-coupon-data').on('focusin', '#discount_type', cacheCurrentDiscountType);
 
   $('#acfw_bogo_deals').on('change acfw_load', 'select#bogo-deals-type', toggle_bogo_auto_add_products_field);
-
   $('#acfw_bogo_deals').on('change', "input[name='acfw_bogo_auto_add_products']", upsell_bogo_auto_add_get_products);
+  $('#acfw_bogo_deals').on('change acfw_load', 'select#bogo-deals-type', toggle_bogo_discount_order);
+  $('#acfw_bogo_deals').on('change', 'select[name="acfw_bogo_discount_order"]', upsell_bogo_discount_order);
 
   $('#acfw_scheduler').on(
     'change',
@@ -107,6 +117,21 @@ function upsell_virtual_coupons() {
 
   vex.dialog.alert({
     unsafeMessage: `<div class="upsell-alert auto-apply">${virtual_coupons}</div>`,
+  });
+  // @ts-ignore
+  $(this).prop('checked', false);
+}
+
+/**
+ * Defer apply URL coupon upsell vex dialog.
+ *
+ * @since 4.6.9
+ */
+function upsell_defer_apply_url_coupon() {
+  const { defer_apply_url_coupon } = acfw_edit_coupon.upsell;
+
+  vex.dialog.alert({
+    unsafeMessage: `<div class="upsell-alert defer-apply">${defer_apply_url_coupon}</div>`,
   });
   // @ts-ignore
   $(this).prop('checked', false);
@@ -221,6 +246,48 @@ function upsell_bogo_auto_add_get_products() {
 
   vex.dialog.alert({
     unsafeMessage: `<div class="upsell-alert usage-limits">${bogo_auto_add_get_products}</div>`,
+  });
+  // @ts-ignore
+  $(this).val('none');
+}
+
+/**
+ * Toggle BOGO discount order feature.
+ *
+ * @since 4.6.9
+ */
+function toggle_bogo_discount_order() {
+  // @ts-ignore
+  const $this = $(this);
+  const $module = $this.closest('#acfw_bogo_deals');
+  const $field = $module.find('.bogo-discount-order-field');
+  const $input = $field.find('select');
+  const applyType = $this.val();
+
+  if (applyType === 'specific-products') {
+    $input.prop('disabled', false);
+    $field.addClass('show');
+  } else {
+    $input.prop('disabled', false);
+    $field.removeClass('show');
+  }
+}
+
+/**
+ * Upsell BOGO auto add get products feature.
+ *
+ * @since 4.6.9
+ */
+function upsell_bogo_discount_order() {
+  // @ts-ignore
+  const $this = $(this);
+
+  $this.val('none');
+
+  const { bogo_discount_order } = acfw_edit_coupon.upsell;
+
+  vex.dialog.alert({
+    unsafeMessage: `<div class="upsell-alert usage-limits">${bogo_discount_order}</div>`,
   });
   // @ts-ignore
   $(this).val('none');

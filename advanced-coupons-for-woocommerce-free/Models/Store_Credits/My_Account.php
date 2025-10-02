@@ -123,6 +123,12 @@ class My_Account implements Model_Interface, Initializable_Interface {
             return $items;
         }
 
+        // Don't display store credits if "Hide Store Credits when balance is zero" is enabled and the user has no balance.
+        if ( 'yes' === get_option( Plugin_Constants::STORE_CREDITS_HIDE_MY_ACCOUNT_ZERO_BALANCE, 'no' ) &&
+            \ACFWF()->Store_Credits_Calculate->get_customer_balance( get_current_user_id() ) <= 0 ) {
+            return $items;
+        }
+
         $filtered_items = array();
 
         foreach ( $items as $key => $item ) {
@@ -144,6 +150,13 @@ class My_Account implements Model_Interface, Initializable_Interface {
      * @access public
      */
     private function _register_store_credits_endpoint() {
+
+        // Don't register store credits endpoint if "Hide Store Credits when balance is zero" is enabled and the user has no balance.
+        if ( 'yes' === get_option( Plugin_Constants::STORE_CREDITS_HIDE_MY_ACCOUNT_ZERO_BALANCE, 'no' ) &&
+            \ACFWF()->Store_Credits_Calculate->get_customer_balance( get_current_user_id() ) <= 0 ) {
+            return;
+        }
+
         add_rewrite_endpoint( $this->_get_store_credits_endpoint(), EP_ROOT | EP_PAGES );
     }
 
@@ -157,6 +170,13 @@ class My_Account implements Model_Interface, Initializable_Interface {
      * @return array Filtered query vars.
      */
     public function register_store_credits_endpoint_query_vars( $vars ) {
+
+        // Don't register store credits endpoint if "Hide Store Credits when balance is zero" is enabled and the user has no balance.
+        if ( 'yes' === get_option( Plugin_Constants::STORE_CREDITS_HIDE_MY_ACCOUNT_ZERO_BALANCE, 'no' ) &&
+            \ACFWF()->Store_Credits_Calculate->get_customer_balance( get_current_user_id() ) <= 0 ) {
+            return $vars;
+        }
+
         $vars[] = $this->_get_store_credits_endpoint();
         return $vars;
     }

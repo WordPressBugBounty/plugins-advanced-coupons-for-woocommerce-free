@@ -148,6 +148,9 @@ class Notifications extends Base_Model implements Model_Interface, Initializable
         $note = $this->_helper_functions->wc_admin_note( $note_ids[0] );
         $note->set_is_deleted( 1 );
         $note->save();
+
+        // Clear cached notices, because the dismissed notice still shows up until the cache is cleared.
+        delete_transient( Plugin_Constants::NOTIFICATIONS_CACHE );
     }
 
     /**
@@ -184,11 +187,8 @@ class Notifications extends Base_Model implements Model_Interface, Initializable
             return false;
         }
 
-        // Filter existing notifications.
-        $existing_notifications = $this->filter_existing_notifications( $notifications );
-
         // Filter notifications based on conditions.
-        $filtered_notifications = $this->filter_notifications_conditions( $existing_notifications );
+        $filtered_notifications = $this->filter_notifications_conditions( $notifications );
 
         if ( empty( $filtered_notifications ) ) {
             return; // No notifications pass the conditions.
@@ -196,6 +196,9 @@ class Notifications extends Base_Model implements Model_Interface, Initializable
 
         // Save filtered notifications.
         $this->save_notifications( $filtered_notifications );
+
+        // Clear cached notices, so that the new notifications will be fetched next time.
+        delete_transient( Plugin_Constants::NOTIFICATIONS_CACHE );
     }
 
     /**
@@ -217,37 +220,6 @@ class Notifications extends Base_Model implements Model_Interface, Initializable
         $notifications = json_decode( wp_remote_retrieve_body( $data ) ?? '[]', true );
 
         return $notifications;
-    }
-
-    /**
-     * Filter out existing notices from the database.
-     *
-     * @since  4.6.2
-     * @access public
-     *
-     * @param array $notifications The array of notifications to filter.
-     * @return array The filtered array of new notifications.
-     */
-    public function filter_existing_notifications( $notifications ) {
-        global $wpdb;
-
-        $new_notifications = array();
-
-        foreach ( $notifications as $notification ) {
-            $existing_notice = $wpdb->get_row(
-                $wpdb->prepare(
-                    "SELECT * FROM {$wpdb->prefix}wc_admin_notes WHERE name = %s AND source = %s",
-                    'acfw-notification-' . sanitize_text_field( $notification['id'] ),
-                    'advancedcouponsplugin.com'
-                )
-            );
-
-            if ( null === $existing_notice ) {
-                $new_notifications[] = $notification;
-            }
-        }
-
-        return $new_notifications;
     }
 
     /**
@@ -284,13 +256,6 @@ class Notifications extends Base_Model implements Model_Interface, Initializable
                 }
             }
 
-            if ( null !== $notification['end_date'] ) {
-                $end_time = new \WC_DateTime( $notification['end_date'], $current_timezone );
-                if ( $now > $end_time ) {
-                    $schedule_valid = false;
-                }
-            }
-
             // Check if trigger conditions are met.
             $trigger_met = $this->_check_trigger_conditions( $notification );
 
@@ -318,12 +283,33 @@ class Notifications extends Base_Model implements Model_Interface, Initializable
 
             $data_store = \WC_Data_Store::load( 'admin-note' );
             $note_ids   = $data_store->get_notes_with_name( $name );
-            if ( ! empty( $note_ids ) ) {
-                return;
-            }
 
-            // create admin note instance.
-            $note = $this->_helper_functions->wc_admin_note();
+            if ( ! empty( $note_ids ) ) {
+                // Update existing note.
+                $note = $this->_helper_functions->wc_admin_note( $note_ids[0] );
+
+                // Check if end_date has changed and if it's extended.
+                $old_content_data = $note->get_content_data();
+                $old_end_date     = isset( $old_content_data->end_date ) ? $old_content_data->end_date : null;
+                $new_end_date     = ! empty( $notification['end_date'] ) ? sanitize_text_field( $notification['end_date'] ) : null;
+
+                // If end_date changed and the new date is in the future, restore the note.
+                if ( $old_end_date !== $new_end_date && ! empty( $new_end_date ) ) {
+                    $current_timezone = new \DateTimeZone( $this->_helper_functions->get_site_current_timezone() );
+                    $now              = new \WC_DateTime( 'now', $current_timezone );
+                    $end_time         = new \WC_DateTime( $new_end_date, $current_timezone );
+
+                    if ( $now <= $end_time ) {
+                        $note->set_is_deleted( 0 );
+                    }
+                }
+
+                // Clear actions first to avoid duplicates.
+                $note->set_actions( array() );
+            } else {
+                // Create new admin note instance.
+                $note = $this->_helper_functions->wc_admin_note();
+            }
 
             $note->set_title( $notification['title'] );
             $note->set_content( $notification['content'] );

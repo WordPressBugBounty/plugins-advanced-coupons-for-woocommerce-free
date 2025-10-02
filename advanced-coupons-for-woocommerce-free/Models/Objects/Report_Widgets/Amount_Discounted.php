@@ -63,9 +63,9 @@ class Amount_Discounted extends Abstract_Report_Widget {
          */
         foreach ( $orders as $order ) {
             foreach ( $order->get_coupons() as $item ) {
-                $discount        = apply_filters( 'acfw_query_report_get_discount', $item->get_discount(), $item, $order );
-                $discount_tax    = apply_filters( 'acfw_query_report_get_discount_tax', $item->get_discount_tax(), $item, $order );
-                $extra_discount  = apply_filters( 'acfw_query_report_extra_discount', \ACFWF()->Helper_Functions->get_coupon_order_item_extra_discounts( $item ), $item, $order );
+                $discount        = (float) apply_filters( 'acfw_query_report_get_discount', $item->get_discount(), $item, $order );
+                $discount_tax    = (float) apply_filters( 'acfw_query_report_get_discount_tax', $item->get_discount_tax(), $item, $order );
+                $extra_discount  = (float) apply_filters( 'acfw_query_report_extra_discount', \ACFWF()->Helper_Functions->get_coupon_order_item_extra_discounts( $item ), $item, $order );
                 $total_discount += wc_add_number_precision( $discount ) + wc_add_number_precision( $discount_tax ) + $extra_discount;
             }
         }

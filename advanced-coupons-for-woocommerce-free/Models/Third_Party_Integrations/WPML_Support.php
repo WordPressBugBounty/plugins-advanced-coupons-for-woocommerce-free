@@ -578,6 +578,13 @@ class WPML_Support implements Model_Interface {
      * @return array Filtered session data.
      */
     public function save_user_currency_to_store_credits_discount_session( $sc_discount ) {
+        global $woocommerce_wpml;
+
+        // if multi currency is disabled, return the session data as is.
+        if ( ! $woocommerce_wpml->settings['enable_multi_currency'] ) {
+            return $sc_discount;
+        }
+
         $sc_discount['currency'] = $this->_get_multi_currency()->get_client_currency();
         return $sc_discount;
     }
@@ -595,6 +602,13 @@ class WPML_Support implements Model_Interface {
      * @return float Filtered discount amount.
      */
     public function validate_user_currency_on_apply_store_credits_discount( $sc_discount, $session_name ) {
+        global $woocommerce_wpml;
+
+        // if multi currency is disabled, return the session data as is.
+        if ( ! $woocommerce_wpml->settings['enable_multi_currency'] ) {
+            return $sc_discount;
+        }
+
         if ( isset( $sc_discount['currency'] ) && $sc_discount['currency'] !== $this->_get_multi_currency()->get_client_currency() ) {
 
             // convert back from previously selected currency to site currency.
@@ -686,6 +700,23 @@ class WPML_Support implements Model_Interface {
         );
 
         return $fields;
+    }
+
+    /**
+     * Filter the priority level for implementing BOGO (Buy One Get One) deals.
+     *
+     * Ensures that advanced BOGO logic runs after WPML’s recursive
+     * `calculate_totals()` adjustments, preventing duplicate processing
+     * and product ID mismatches.
+     *
+     * @since 4.6.9
+     * @access public
+     *
+     * @param int $priority The default priority value.
+     * @return int The filtered priority value (20) for stable BOGO execution.
+     */
+    public function filter_bogo_implementation_priority( $priority ) {
+        return 20;
     }
 
     /**
@@ -785,6 +816,8 @@ class WPML_Support implements Model_Interface {
      * @inherit ACFWF\Interfaces\Model_Interface
      */
     public function run() {
+        add_filter( 'acfw_bogo_implementation_priority', array( $this, 'filter_bogo_implementation_priority' ) );
+
         // priority is set to 110 so it runs after the WPML strings translation is loaded.
         add_action( 'wpml_loaded', array( $this, 'wpml_loaded' ), 110 );
         add_action( 'admin_enqueue_scripts', array( $this, 'dequeue_wpml_styles_scripts_agc_admin' ), 999 );

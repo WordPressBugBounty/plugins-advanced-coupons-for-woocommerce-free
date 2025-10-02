@@ -8,10 +8,9 @@
     <p>
         <?php
         printf(
-            /* translators: %s: URL to Advanced Coupons Premium pricing page */
-            esc_html__(
-                'Unlock the full power of Cart Conditions with <a href="%s" target="_blank" rel="norefer noopener">Advanced Coupons Premium</a>. Restrict your coupons using these premium cart conditions.',
-                'advanced-coupons-for-woocommerce-free'
+            wp_kses_post(
+                /* translators: %s: URL to Advanced Coupons Premium pricing page */
+                __( 'Unlock the full power of Cart Conditions with <a href="%s" target="_blank" rel="norefer noopener">Advanced Coupons Premium</a>. Restrict your coupons using these premium cart conditions.', 'advanced-coupons-for-woocommerce-free' )
             ),
             esc_url( \ACFWF()->Helper_Functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'morecartconditionslink' ) )
         );

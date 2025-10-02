@@ -758,7 +758,7 @@ class Frontend extends Base_Model implements Model_Interface {
         }
 
         add_filter( 'woocommerce_coupon_is_valid', array( $this, 'restrict_cart_to_only_one_bogo_deal' ), 10, 2 );
-        add_action( 'woocommerce_before_calculate_totals', array( $this, 'implement_bogo_deals' ), 11 );
+        add_action( 'woocommerce_before_calculate_totals', array( $this, 'implement_bogo_deals' ), apply_filters( 'acfw_bogo_implementation_priority', 11 ) );
         add_filter( 'woocommerce_cart_item_price', array( $this, 'display_discounted_price' ), 10, 2 );
         add_filter( 'woocommerce_cart_totals_coupon_html', array( $this, 'display_bogo_discount_summary' ), 10, 3 );
         add_filter( 'acfwf_cart_checkout_block_coupon_summary', array( $this, 'add_bogo_discount_summary_to_cart_checkout_block' ), 10, 2 );

@@ -677,6 +677,13 @@ class ACFW_Settings extends \WC_Settings_Page {
             ),
 
             array(
+                'title' => __( 'Hide store credits on My Account if zero balance', 'advanced-coupons-for-woocommerce-free' ),
+                'type'  => 'checkbox',
+                'desc'  => __( 'Hides the store credit section on the My Account page if the logged in customer has zero balance.', 'advanced-coupons-for-woocommerce-free' ),
+                'id'    => Plugin_Constants::STORE_CREDITS_HIDE_MY_ACCOUNT_ZERO_BALANCE,
+            ),
+
+            array(
                 'title' => __( 'Auto-display Store Credits Redemption Form', 'advanced-coupons-for-woocommerce-free' ),
                 'type'  => 'checkbox',
                 'desc'  => __( 'Automatically display the form for redeeming store credits on the checkout page upon page load. This eliminates the need for the customer to click on the label to make the form visible.', 'advanced-coupons-for-woocommerce-free' ),

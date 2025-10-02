@@ -16,7 +16,7 @@ do_action( 'acfw_before_display_edit_bogo_panel', $bogo_deals ); ?>
     <div class="bogo-info">
         <h3><?php esc_html_e( 'Buy X Get X (BOGO) Deal', 'advanced-coupons-for-woocommerce-free' ); ?></h3>
         <p><?php esc_html_e( 'BOGO (Buy One, Get One) style deals let you define a "Buy" Type which says what activates the deal, and a "Get" type that says what the customer will get when fulfilling the deal.', 'advanced-coupons-for-woocommerce-free' ); ?></p>
-        <p><?php esc_html_e( 'The "Buy" products must be present in the cart before the BOGO deal becomes eligible, they are not part of the "Get" products. The customer must add the "Get" products to the cart to fully satisfy the BOGO coupon and get the discount. If multiple products are eligible, the cheapest product is always given the discount first.', 'advanced-coupons-for-woocommerce-free' ); ?></p>
+        <p><?php esc_html_e( 'The "Buy" products must be present in the cart before the BOGO deal becomes eligible, they are not part of the "Get" products. The customer must add the "Get" products to the cart to fully satisfy the BOGO coupon and get the discount. If multiple products are eligible, the cheapest product is always given the discount first. You can configure which product to be discounted in the additional settings option.', 'advanced-coupons-for-woocommerce-free' ); ?></p>
     </div>
 
     <div class="bogo-conditions-wrap">

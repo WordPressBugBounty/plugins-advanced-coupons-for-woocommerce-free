@@ -100,6 +100,16 @@ export interface ITogglePremiumModalPayload {
   show: boolean;
 }
 
+export interface ISetSearchFiltersPayload {
+  searchTerm: string;
+  licenseFilter: string;
+}
+
+export interface ISetSortOptionsPayload {
+  sortBy: 'title' | 'date';
+  sortOrder: 'asc' | 'desc';
+}
+
 // #endregion [Action Payloads]
 
 // #region [Action Types] ==============================================================================================
@@ -124,6 +134,8 @@ export enum ECouponTemplatesActionTypes {
   SET_COUPON_CREATED_RESPONSE_DATA = 'SET_COUPON_CREATED_RESPONSE_DATA',
   CLEAR_COUPON_CREATED_RESPONSE_DATA = 'CLEAR_COUPON_CREATED_RESPONSE_DATA',
   TOGGLE_PREMIUM_MODAL = 'TOGGLE_PREMIUM_MODAL',
+  SET_SEARCH_FILTERS = 'SET_SEARCH_FILTERS',
+  SET_SORT_OPTIONS = 'SET_SORT_OPTIONS',
 }
 
 // #endregion [Action Types]
@@ -202,6 +214,14 @@ export const CouponTemplatesActions = {
   }),
   togglePremiumModal: (payload: ITogglePremiumModalPayload) => ({
     type: ECouponTemplatesActionTypes.TOGGLE_PREMIUM_MODAL,
+    payload,
+  }),
+  setSearchFilters: (payload: ISetSearchFiltersPayload) => ({
+    type: ECouponTemplatesActionTypes.SET_SEARCH_FILTERS,
+    payload,
+  }),
+  setSortOptions: (payload: ISetSortOptionsPayload) => ({
+    type: ECouponTemplatesActionTypes.SET_SORT_OPTIONS,
     payload,
   }),
 };

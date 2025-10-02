@@ -3,7 +3,7 @@ Contributors: jkohlbach, RymeraWebCo, Rymera01, smub
 Tags: woocommerce coupons, bogo coupons, store credit, url coupons, bogo
 Requires at least: 5.2
 Tested up to: 6.8
-Stable tag: 4.6.8
+Stable tag: 4.6.9
 Requires PHP: 5.6
 License: GNU General Public License v2.0 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -379,6 +379,26 @@ Thanks,
 Josh Kohlbach (CEO of Rymera Web Co)
 
 == Changelog ==
+
+= 4.6.9 =
+* Bug Fix: BOGO discount is not applied on translated cart/checkout pages
+* Bug Fix: BOGO discount not applying on wholesale products
+* Bug Fix: Editing the date on a notification that has been shown will not work due to filter logic
+* Bug Fix: Notification is fetched incorrectly due to long transient expiration time (1 day)
+* Bug Fix: Restoring an expired notification is not yet possible
+* Bug Fix: Critical error due to incorrect usage of precision functions
+* Bug Fix: Manually updating cart quantity without refreshing page does not re-calculate coupon validity
+* Bug Fix: Advanced Coupons by category block content shows warning
+* Bug Fix: Store credit does not apply in non-default currency when WPML and Aelia are active
+* Feature: Coupon Template: Add search filter for coupon templates
+* Feature: Coupon Template: Add sorting for coupon templates 
+* Feature: Custom taxonomy feature for grouping coupons based on the features they use
+* Improvement: Add option to hide expired coupons in Advanced Coupons block
+* Improvement: Add coupon count under feature term in usage tracking data
+* Improvement: Add upsell for premium features in coupon editor
+* Improvement: Feature Custom Taxonomy: Add new filter for ACFWP module
+* Improvement: Option to hide store credits on My Account if zero balance
+* Improvement: Rename feature custom taxonomy on coupon list following standard format
 
 = 4.6.8 =
 * Bug Fix: BOGO discount is not applied on wholesale product until page is refreshed
