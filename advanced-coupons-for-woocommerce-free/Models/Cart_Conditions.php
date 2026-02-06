@@ -381,8 +381,9 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initializab
      * @return bool Condition field value.
      */
     private function _get_cart_quantity_condition_field_value( $condition_data ) {
-        // outputs the following variables: $condition and $value.
-        extract( $condition_data ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
+        // Replace extract() with explicit variable assignment for security.
+        $condition = isset( $condition_data['condition'] ) ? $condition_data['condition'] : '';
+        $value     = isset( $condition_data['value'] ) ? $condition_data['value'] : 0;
 
         $count = array_reduce(
             \WC()->cart->get_cart_contents(),
@@ -409,11 +410,12 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initializab
      * @return bool Condition field value.
      */
     private function _get_cart_subtotal_condition_field_value( $condition_data ) {
-        // outputs the following variables: $condition, $value and $include_tax.
-        extract( $condition_data ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
+        // Replace extract() with explicit variable assignment for security.
+        $condition = isset( $condition_data['condition'] ) ? $condition_data['condition'] : '';
+        $value     = isset( $condition_data['value'] ) ? $condition_data['value'] : 0;
 
         $default_include_tax = \wc_tax_enabled() && 'incl' === get_option( 'woocommerce_tax_display_cart' ) ? 'yes' : 'no';
-        $include_tax         = $include_tax ?? $default_include_tax;
+        $include_tax         = isset( $condition_data['include_tax'] ) ? $condition_data['include_tax'] : $default_include_tax;
 
         $subtotal = WC()->cart->get_subtotal();
         $value    = apply_filters( 'acfw_filter_amount', (float) $value );
@@ -541,7 +543,7 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initializab
         $button = $btn_text && $btn_url ? sprintf( '<a class="button" href="%s">%s</a>', esc_url( $btn_url ), $btn_text ) : '';
 
         // Because the response message in the WooCommerce block is stripped, it needs to be modified.
-        if ( $this->_helper_functions->is_current_request_using_wpjson_wc_api() ) {
+        if ( $this->_helper_functions->is_current_request_using_wpjson_wc_api() || version_compare( WC()->version, '9.4.0', '>=' ) ) {
             return htmlentities2( sprintf( '%s %s', $message, $button ) );
         }
 

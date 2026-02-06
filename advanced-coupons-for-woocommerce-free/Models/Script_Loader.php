@@ -307,6 +307,7 @@ class Script_Loader extends Base_Model implements Model_Interface {
                             'categories_get'    => __( 'Once the "Buy" portion of the BOGO deal is satisfied, grant the following discounts on additional products belonging to the following categories in the cart. If multiple items are present and eligible for the discount, the cheapest product will get the discount first. You can configure which product to be discounted in the additional settings option.', 'advanced-coupons-for-woocommerce-free' ),
                             'anyproducts_buy'   => __( 'If the quantity of all products in the cart is met, they will be eligible for "Get" portion of the BOGO deal.', 'advanced-coupons-for-woocommerce-free' ),
                             'anyproducts_get'   => __( 'Once the "Buy" portion of the BOGO deal is satisfied, grant the following discount on any product in the cart. If multiple items are present and eligible for the discount, the cheapest product will get the discount first. You can configure which product to be discounted in the additional settings option.', 'advanced-coupons-for-woocommerce-free' ),
+                            'sameproducts_get'  => __( 'Once the "Buy" portion of the BOGO deal is satisfied, grant the following discounts on the same product(s) already in the cart. You can configure which product to be discounted in the additional settings option.', 'advanced-coupons-for-woocommerce-free' ),
                         ),
                         'bogo_form_fields'                => array(
                             'product_in_cart'     => __( 'Product in cart', 'advanced-coupons-for-woocommerce-free' ),
@@ -338,6 +339,8 @@ class Script_Loader extends Base_Model implements Model_Interface {
                         'post_status'                     => $post ? get_post_status( $post ) : '',
                         'user_role_options'               => $this->_helper_functions->get_default_allowed_user_roles(),
                         'cart_condition_fields'           => array(),
+                        // Default value for including tax in cart conditions based on WooCommerce tax settings.
+                        'default_include_tax'             => \wc_tax_enabled() && 'incl' === get_option( 'woocommerce_tax_display_cart' ) ? 'yes' : 'no',
                         'help_modal'                      => array(
                             'is_premium'    => function_exists( 'ACFWP' ),
                             'link_logo'     => $this->_helper_functions->get_utm_url( '', function_exists( 'ACFWP' ) ? 'acfwp' : 'acfwf', 'help_modal', false ),
@@ -361,6 +364,15 @@ class Script_Loader extends Base_Model implements Model_Interface {
                                 'cancel'             => __( 'Cancel', 'advanced-coupons-for-woocommerce-free' ),
                                 'no_video'           => __( 'There was an issue trying to embed the video. Please click the image to watch the video directly in youtube.com', 'advanced-coupons-for-woocommerce-free' ),
                             ),
+                        ),
+                        'create_new_coupon_popup'         => array(
+                            'title'                => __( 'Create New Coupon', 'advanced-coupons-for-woocommerce-free' ),
+                            'description'          => __( 'Choose how you\'d like to create your coupon. Start from scratch or use a pre-built template to save time.', 'advanced-coupons-for-woocommerce-free' ),
+                            'create_manually'      => __( 'Create Coupon Manually', 'advanced-coupons-for-woocommerce-free' ),
+                            'create_manually_desc' => __( 'Build your coupon from the ground up with complete control over every setting and option.', 'advanced-coupons-for-woocommerce-free' ),
+                            'use_template'         => __( 'Choose Coupon Template', 'advanced-coupons-for-woocommerce-free' ),
+                            'use_template_desc'    => __( 'Select from pre-configured templates to quickly create common coupon types with proven settings.', 'advanced-coupons-for-woocommerce-free' ),
+                            'site_url'             => get_site_url(),
                         ),
                     )
                 )
@@ -438,8 +450,10 @@ class Script_Loader extends Base_Model implements Model_Interface {
         $force_load = apply_filters( 'acfw_force_load_frontend_js', false );
 
         // Load regular checkout package.
-        $is_cart_checkout_block = $this->_helper_functions->is_current_page_using_cart_checkout_block();
-        if ( ( is_checkout() && ! $is_cart_checkout_block ) || $force_load ) {
+        $is_cart_checkout_block   = $this->_helper_functions->is_current_page_using_cart_checkout_block();
+        $is_cart_checkout_element = apply_filters( 'acfw_is_cart_checkout_element', false );
+
+        if ( ( ( is_checkout() || $is_cart_checkout_element ) && ! $is_cart_checkout_block ) || $force_load ) {
             $checkout_vite = new Vite_App(
                 'acfwf-checkout',
                 'packages/acfwf-checkout/index.ts',
@@ -458,6 +472,16 @@ class Script_Loader extends Base_Model implements Model_Interface {
                     'auto_display_store_credits_redeem_form' => get_option( Plugin_Constants::AUTO_DISPLAY_STORE_CREDITS_REDEEM_FORM, 'no' ),
                 )
             );
+        }
+
+        // Load regular cart package.
+        if ( ( is_cart() && ! $is_cart_checkout_block ) || $force_load ) {
+            $cart_vite = new Vite_App(
+                'acfwf-cart',
+                'packages/acfwf-cart/index.ts',
+                array( 'jquery', 'wc-cart' ),
+            );
+            $cart_vite->enqueue();
         }
 
         if ( is_account_page() || $force_load ) {
@@ -591,6 +615,25 @@ class Script_Loader extends Base_Model implements Model_Interface {
 
     /*
     |--------------------------------------------------------------------------
+    | Header tags
+    |--------------------------------------------------------------------------
+     */
+
+    /**
+     * Print ACFWF tag.
+     *
+     * @since 4.7.1
+     * @access public
+     */
+    public function print_acfwf_tag() {
+        printf(
+            '<meta name="generator" content="%s" />',
+            esc_attr( 'Advanced Coupons for WooCommerce Free v' . Plugin_Constants::VERSION )
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | Fulfill implemented interface contracts
     |--------------------------------------------------------------------------
      */
@@ -606,6 +649,7 @@ class Script_Loader extends Base_Model implements Model_Interface {
         add_filter( 'script_loader_tag', array( $this, 'defer_enqueued_scripts' ), 99, 2 );
         add_action( 'admin_enqueue_scripts', array( $this, 'load_backend_scripts' ), 10, 1 );
         add_action( 'wp_enqueue_scripts', array( $this, 'load_frontend_scripts' ) );
+        add_action( 'wp_head', array( $this, 'print_acfwf_tag' ) );
 
         add_action( 'enqueue_block_editor_assets', array( $this, 'load_gutenberg_editor_scripts' ) );
     }

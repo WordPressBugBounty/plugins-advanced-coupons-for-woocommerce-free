@@ -285,14 +285,14 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                     ),
                     'premium_upsell'     => false,
                     'dashboard_page'     => array(
-                        'title'             => __( 'Dashboard', 'advanced-coupons-for-woocommerce-free' ),
-                        'create_coupon'     => array(
+                        'title'                => __( 'Dashboard', 'advanced-coupons-for-woocommerce-free' ),
+                        'create_coupon'        => array(
                             'label'      => __( 'Quick Create', 'advanced-coupons-for-woocommerce-free' ),
                             'percentage' => __( 'New % Coupon', 'advanced-coupons-for-woocommerce-free' ),
                             'fixed'      => __( 'New Fixed Coupon', 'advanced-coupons-for-woocommerce-free' ),
                             'bogo'       => __( 'New BOGO Coupon', 'advanced-coupons-for-woocommerce-free' ),
                         ),
-                        'resources_links'   => array(
+                        'resources_links'      => array(
                             array(
                                 'key'   => 'getting_started',
                                 'slug'  => 'getting_started',
@@ -318,7 +318,7 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                                 'link'  => $this->_helper_functions->get_contact_support_link(),
                             ),
                         ),
-                        'labels'            => array(
+                        'labels'               => array(
                             'coupon'                    => __( 'Coupon', 'advanced-coupons-for-woocommerce-free' ),
                             'uses'                      => __( 'Uses', 'advanced-coupons-for-woocommerce-free' ),
                             'discounted'                => __( 'Discounted', 'advanced-coupons-for-woocommerce-free' ),
@@ -333,8 +333,68 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                             'dismiss'                   => __( 'Dismiss', 'advanced-coupons-for-woocommerce-free' ),
                             'view_all'                  => __( 'View all', 'advanced-coupons-for-woocommerce-free' ),
                             'hide'                      => __( 'Hide', 'advanced-coupons-for-woocommerce-free' ),
+                            'free_plugin'               => __( 'Free Plugin', 'advanced-coupons-for-woocommerce-free' ),
+                            'recommended'               => __( 'Recommended', 'advanced-coupons-for-woocommerce-free' ),
+                            'install_and_activate'      => __( 'Install & Activate', 'advanced-coupons-for-woocommerce-free' ),
+                            'installed_successfully'    => __( 'has been installed successfully!', 'advanced-coupons-for-woocommerce-free' ),
                         ),
-                        'coupons_list_link' => admin_url( 'edit.php?post_type=shop_coupon' ),
+                        'coupons_list_link'    => admin_url( 'edit.php?post_type=shop_coupon' ),
+                        'cross_promo_products' => array(
+                            array(
+                                'key'         => 'woocommerce-wholesale-prices',
+                                'name'        => 'WooCommerce Wholesale Prices',
+                                'slug'        => 'woocommerce-wholesale-prices',
+                                'description' => __( 'Complete wholesale solution for WooCommerce with pricing, user roles, and order management.', 'advanced-coupons-for-woocommerce-free' ),
+                                'logo'        => $this->_constants->IMAGES_ROOT_URL . 'wws-icon.png',
+                                'badges'      => array( 'free', 'recommended' ),
+                                'is_active'   => $this->_helper_functions->is_plugin_active( Plugin_Constants::WWP_PLUGIN_BASENAME ),
+                            ),
+                            array(
+                                'key'         => 'wc-vendors',
+                                'name'        => 'WC Vendors Marketplace',
+                                'slug'        => 'wc-vendors',
+                                'description' => __( 'Create a multivendor marketplace and earn commission from every sale.', 'advanced-coupons-for-woocommerce-free' ),
+                                'logo'        => $this->_helper_functions->get_wp_org_plugin_icon_url( 'wc-vendors' ),
+                                'badges'      => array( 'free', 'recommended' ),
+                                'is_active'   => $this->_helper_functions->is_plugin_active( Plugin_Constants::WC_VENDORS_PLUGIN ),
+                            ),
+                            array(
+                                'key'         => 'woocommerce-store-toolkit',
+                                'name'        => 'Store Toolkit for WooCommerce',
+                                'slug'        => 'woocommerce-store-toolkit',
+                                'description' => __( 'Essential WooCommerce admin tools for bulk operations and store management.', 'advanced-coupons-for-woocommerce-free' ),
+                                'logo'        => $this->_helper_functions->get_wp_org_plugin_icon_url( 'woocommerce-store-toolkit' ),
+                                'badges'      => array( 'free', 'recommended' ),
+                                'is_active'   => $this->_helper_functions->is_plugin_active( Plugin_Constants::STORE_TOOLKIT_PLUGIN ),
+                            ),
+                            array(
+                                'key'         => 'woo-product-feed-pro',
+                                'name'        => 'Product Feed Pro',
+                                'slug'        => 'woo-product-feed-pro',
+                                'description' => __( 'Generate and manage product feeds for Google Shopping, Facebook, and more.', 'advanced-coupons-for-woocommerce-free' ),
+                                'logo'        => $this->_helper_functions->get_wp_org_plugin_icon_url( 'woo-product-feed-pro' ),
+                                'badges'      => array( 'free', 'recommended' ),
+                                'is_active'   => $this->_helper_functions->is_plugin_active( Plugin_Constants::PRODUCT_FEED_PRO_PLUGIN ),
+                            ),
+                            array(
+                                'key'         => 'storeagent-ai-for-woocommerce',
+                                'name'        => 'StoreAgent AI for WooCommerce',
+                                'slug'        => 'storeagent-ai-for-woocommerce',
+                                'description' => __( 'AI-powered automation for WooCommerce stores with intelligent agents.', 'advanced-coupons-for-woocommerce-free' ),
+                                'logo'        => $this->_helper_functions->get_wp_org_plugin_icon_url( 'storeagent-ai-for-woocommerce' ),
+                                'badges'      => array( 'free', 'recommended' ),
+                                'is_active'   => $this->_helper_functions->is_plugin_active( Plugin_Constants::STOREAGENT_AI_PLUGIN ),
+                            ),
+                            array(
+                                'key'         => 'saveto-wishlist-lite-for-woocommerce',
+                                'name'        => 'SaveTo Wishlist Lite for WooCommerce',
+                                'slug'        => 'saveto-wishlist-lite-for-woocommerce',
+                                'description' => __( 'Adds a wishlist button to product and shop pages so customers can save items, manage their wishlist, and return later to purchase—helping boost engagement and sales.', 'advanced-coupons-for-woocommerce-free' ),
+                                'logo'        => $this->_helper_functions->get_wp_org_plugin_icon_url( 'saveto-wishlist-lite-for-woocommerce' ),
+                                'badges'      => array( 'free', 'recommended' ),
+                                'is_active'   => $this->_helper_functions->is_plugin_active( Plugin_Constants::SAVETO_WISHLIST_LITE_PLUGIN ),
+                            ),
+                        ),
                     ),
                     'license_page'       => array(
                         'title'              => __( 'Advanced Coupons License Activation', 'advanced-coupons-for-woocommerce-free' ),
@@ -483,6 +543,12 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                                 'content' => __( 'Easily export Orders, Subscriptions, Coupons, Products, Categories, Tags to a variety of formats. The deluxe version also adds scheduled exporting for easy reporting and syncing with other systems.', 'advanced-coupons-for-woocommerce-free' ),
                                 'action'  => $this->_get_plugin_action_link( 'woocommerce-exporter' ),
                             ),
+                            array(
+                                'icon'    => $this->_helper_functions->get_wp_org_plugin_icon_url( 'saveto-wishlist-lite-for-woocommerce' ),
+                                'title'   => __( 'SaveTo Wishlist Lite for WooCommerce', 'advanced-coupons-for-woocommerce-free' ),
+                                'content' => __( 'Adds a wishlist button to product and shop pages so customers can save items, manage their wishlist, and return later to purchase, helping boost engagement and sales.', 'advanced-coupons-for-woocommerce-free' ),
+                                'action'  => $this->_get_plugin_action_link( 'saveto-wishlist-lite-for-woocommerce' ),
+                            ),
                         ),
                         'status'       => __( 'Status', 'advanced-coupons-for-woocommerce-free' ),
                         'status_texts' => array(
@@ -574,44 +640,48 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                             ),
                         ),
                         'adjust_modal'   => array(
-                            'title'            => __(
+                            'title'                   => __(
                                 'Adjust Store Credit',
                                 'advanced-coupons-for-woocommerce-free'
                             ),
-                            'description'      => __(
+                            'description'             => __(
                                 'Adjust Store credit for this user. Remember store credits are worth the same as your base currency in the store.',
                                 'advanced-coupons-for-woocommerce-free'
                             ),
-                            'current_balance'  => __(
+                            'current_balance'         => __(
                                 'Current balance: {balance}',
                                 'advanced-coupons-for-woocommerce-free'
                             ),
-                            'new_balance'      => __(
+                            'new_balance'             => __(
                                 'New balance: {balance}',
                                 'advanced-coupons-for-woocommerce-free'
                             ),
-                            'increase'         => __(
+                            'increase'                => __(
                                 'Increase Store Credit',
                                 'advanced-coupons-for-woocommerce-free'
                             ),
-                            'decrease'         => __(
+                            'decrease'                => __(
                                 'Decrease Store Credit',
                                 'advanced-coupons-for-woocommerce-free'
                             ),
-                            'invalid_price'    => __(
+                            'invalid_price'           => __(
                                 'The price entered is not valid',
                                 'advanced-coupons-for-woocommerce-free'
                             ),
-                            'make_adjustment'  => __(
+                            'make_adjustment'         => __(
                                 'Make Adjustment',
                                 'advanced-coupons-for-woocommerce-free'
                             ),
-                            'add_note'         => __(
+                            'add_note'                => __(
                                 'Add Note',
                                 'advanced-coupons-for-woocommerce-free'
                             ),
-                            'note_placeholder' => __(
+                            'note_placeholder'        => __(
                                 'Enter a note for this adjustment',
+                                'advanced-coupons-for-woocommerce-free'
+                            ),
+                            'send_email_notification' => __(
+                                'Send email notification to customer',
                                 'advanced-coupons-for-woocommerce-free'
                             ),
                         ),
@@ -908,17 +978,20 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
             );
         } else {
 
-            $args = wp_parse_args(
-                $_POST,
-                array(
-                    'name'      => '',
-                    'email'     => '',
-                    'title'     => '',
-                    'url'       => '',
-                    'referrer'  => '',
-                    'timestamp' => '',
-                )
+            // Sanitize input immediately after retrieval to prevent security vulnerabilities.
+            $args = array(
+                'name'      => isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '',
+                'email'     => isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '',
+                'title'     => isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '',
+                'url'       => isset( $_POST['url'] ) ? esc_url_raw( wp_unslash( $_POST['url'] ) ) : '',
+                'referrer'  => isset( $_POST['referrer'] ) ? esc_url_raw( wp_unslash( $_POST['referrer'] ) ) : '',
+                'timestamp' => isset( $_POST['timestamp'] ) ? sanitize_text_field( wp_unslash( $_POST['timestamp'] ) ) : '',
             );
+
+            // Validate email format.
+            if ( ! empty( $args['email'] ) && ! is_email( $args['email'] ) ) {
+                $args['email'] = '';
+            }
 
             $name = explode( ' ', $args['name'] );
 
@@ -961,7 +1034,9 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                         'headers' => array(
                             'Accept'       => '*/*',
                             'Content-Type' => 'application/json',
-                            'User-Agent'   => $_SERVER['HTTP_USER_AGENT'] ?? '', // phpcs:ignore
+                            'User-Agent'   => isset( $_SERVER['HTTP_USER_AGENT'] )
+                                ? substr( sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ), 0, 255 )
+                                : '',
                         ),
                         'body'    => wp_json_encode( $form_data ),
                     )

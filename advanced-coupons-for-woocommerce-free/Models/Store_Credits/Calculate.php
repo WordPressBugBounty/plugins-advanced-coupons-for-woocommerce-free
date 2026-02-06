@@ -540,7 +540,16 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
                 'decimals'     => wc_get_price_decimals(),
             )
         );
-        extract( $params ); // phpcs:ignore
+
+        // Replace extract() with explicit variable assignment for security.
+        $user_id      = isset( $params['user_id'] ) ? $params['user_id'] : 0;
+        $type         = isset( $params['type'] ) ? $params['type'] : '';
+        $action       = isset( $params['action'] ) ? $params['action'] : '';
+        $object_id    = isset( $params['object_id'] ) ? $params['object_id'] : 0;
+        $start_period = isset( $params['start_period'] ) ? $params['start_period'] : '';
+        $end_period   = isset( $params['end_period'] ) ? $params['end_period'] : '';
+        $precision    = isset( $params['precision'] ) ? $params['precision'] : $this->get_decimal_precision();
+        $decimals     = isset( $params['decimals'] ) ? $params['decimals'] : wc_get_price_decimals();
 
         $user_query    = $user_id ? $wpdb->prepare( 'AND user_id = %d', $user_id ) : '';
         $type_query    = $type ? $wpdb->prepare( 'AND entry_type = %s', $type ) : '';
@@ -700,6 +709,42 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
         );
 
         return $this->_get_entries_sum( $params );
+    }
+
+    /**
+     * Get expire date for user's store credits.
+     *
+     * @since 4.7.0
+     * @access public
+     *
+     * @param int $user_id User ID.
+     * @return string Formatted expire date or null if expiry is disabled.
+     */
+    public function get_expire_date_for_user_store_credits( $user_id ) {
+
+        // Return as valid if store credits expiry is disabled.
+        if ( ! $this->should_store_credits_expire() ) {
+            return null;
+        }
+
+        $expire_date     = clone $this->get_last_active( $user_id );
+        $interval        = get_option( Plugin_Constants::STORE_CREDIT_EXPIRY );
+        $interval_string = intval( $interval ) > 1 ? "$interval years" : "$interval year";
+        $expire_date->add( \DateInterval::createFromDateString( $interval_string ) );
+
+        // Return as null if expiry date is not a valid datetime object.
+        if ( ! $expire_date instanceof \WC_DateTime ) {
+            return null;
+        }
+
+        $datetime = new \DateTime( 'now', new \DateTimeZone( $this->_helper_functions->get_site_current_timezone() ) );
+
+        // Return as null if the store credits are expired.
+        if ( $expire_date <= $datetime ) {
+            return null;
+        }
+
+        return $this->_helper_functions->convert_datetime_to_site_standard_format( $expire_date->format( 'Y-m-d H:i:s' ) );
     }
 
     /*
