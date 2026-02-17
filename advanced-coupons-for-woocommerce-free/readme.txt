@@ -380,6 +380,10 @@ Josh Kohlbach (CEO of Rymera Web Co)
 
 == Changelog ==
 
+= 4.7.1.1 =
+* Improvement: Enhance WPML support for different domain language formats in URL translation
+* Bug Fix: Implement missing coupon access validation for users
+
 = 4.7.1 =
 * Bug Fix: BOGO coupon not working when a regular coupon is already applied
 * Bug Fix: Elementor Pro: Unable to apply Store Credits if using the Elementor Checkout element
