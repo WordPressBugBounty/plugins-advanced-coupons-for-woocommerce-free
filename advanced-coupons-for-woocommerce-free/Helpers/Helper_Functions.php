@@ -266,6 +266,40 @@ class Helper_Functions {
     }
 
     /**
+     * Get the active product brand taxonomy slug.
+     *
+     * Detects the registered brand taxonomy used by the store, checking the common
+     * brand plugin slugs in priority order. Returns an empty string when none is found.
+     *
+     * @since 4.7.4
+     * @access public
+     *
+     * @return string Registered brand taxonomy slug, or empty string if none is detected.
+     */
+    public function get_product_brand_taxonomy() {
+        $candidates = apply_filters(
+            'acfw_product_brand_taxonomy_candidates',
+            array(
+                'product_brand',        // WooCommerce core brands & WooCommerce Brands extension.
+                'pwb-brand',            // Perfect Brands for WooCommerce.
+                'yith_product_brand',   // YITH WooCommerce Brands Add-on.
+                'product_brands',       // Brands for WooCommerce.
+                'berocket_brand',       // BeRocket Brands.
+            )
+        );
+
+        $taxonomy = '';
+        foreach ( $candidates as $candidate ) {
+            if ( taxonomy_exists( $candidate ) ) {
+                $taxonomy = $candidate;
+                break;
+            }
+        }
+
+        return apply_filters( 'acfw_product_brand_taxonomy', $taxonomy );
+    }
+
+    /**
      * This function is an alias for WP get_option(), but will return the default value if option value is empty or invalid.
      *
      * @since 1.0

@@ -3,7 +3,7 @@ Contributors: jkohlbach, RymeraWebCo, Rymera01, smub
 Tags: woocommerce coupons, bogo coupons, store credit, bogo, smart coupons
 Requires at least: 5.9
 Tested up to: 7.0
-Stable tag: 4.7.3
+Stable tag: 4.7.4
 Requires PHP: 5.6
 License: GNU General Public License v2.0 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
