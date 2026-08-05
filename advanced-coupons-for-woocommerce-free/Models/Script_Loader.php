@@ -280,11 +280,21 @@ class Script_Loader extends Base_Model implements Model_Interface {
                         'shipping_zone_already_added'     => __( 'Selected shipping zone is already added.', 'advanced-coupons-for-woocommerce-free' ),
                         'fail_add_condition_field'        => __( 'Failed to add condition field.', 'advanced-coupons-for-woocommerce-free' ),
                         'add_new_and_rule'                => __( "Add a New 'AND' Rule", 'advanced-coupons-for-woocommerce-free' ),
-                        'each_product_same_product_error' => __( "Any products trigger type based on each product's quantity can only work with <em>Same Products</em> apply type.", 'advanced-coupons-for-woocommerce-free' ),
+                        'each_product_same_product_error' => sprintf(
+                            /* Translators: %1$s: opening emphasis tag. %2$s: closing emphasis tag. */
+                            __( "Any products trigger type based on each product's quantity can only work with %1\$sSame Products%2\$s apply type.", 'advanced-coupons-for-woocommerce-free' ),
+                            '<em>',
+                            '</em>'
+                        ),
                         'copied_label'                    => __( 'Copied', 'advanced-coupons-for-woocommerce-free' ),
                         'download_qr_image_label'         => __( 'Download QR Image', 'advanced-coupons-for-woocommerce-free' ),
                         'error_generate_qr_image'         => __( 'Coupon code is too long, failed to generate QR Code.', 'advanced-coupons-for-woocommerce-free' ),
-                        'invalid_scheduler_time'          => __( '<strong>Scheduler:</strong> Please enter a valid date and time range.', 'advanced-coupons-for-woocommerce-free' ),
+                        'invalid_scheduler_time'          => sprintf(
+                            /* Translators: %1$s: opening bold tag. %2$s: closing bold tag. */
+                            __( '%1$sScheduler:%2$s Please enter a valid date and time range.', 'advanced-coupons-for-woocommerce-free' ),
+                            '<strong>',
+                            '</strong>'
+                        ),
                         'product_table_buttons'           => array(
                             'add'    => __( 'Add', 'advanced-coupons-for-woocommerce-free' ),
                             'edit'   => __( 'Edit', 'advanced-coupons-for-woocommerce-free' ),
@@ -419,9 +429,11 @@ class Script_Loader extends Base_Model implements Model_Interface {
                             $this->_helper_functions->api_wc_price( $customer_store_credits_balance + $applied_store_credits_amount )
                         ),
                         'button_text'                => sprintf(
-                            /* Translators: %s: 0.00 amount in site currency. */
-                            __( 'Refund <span class="amount">%s</span> to Store Credits', 'advanced-coupons-for-woocommerce-free' ),
-                            $this->_helper_functions->api_wc_price( 0.0, array( 'currency' => $order->get_currency() ) )
+                            /* Translators: %1$s: opening amount span tag. %2$s: 0.00 amount in site currency. %3$s: closing span tag. */
+                            __( 'Refund %1$s%2$s%3$s to Store Credits', 'advanced-coupons-for-woocommerce-free' ),
+                            '<span class="amount">',
+                            $this->_helper_functions->api_wc_price( 0.0, array( 'currency' => $order->get_currency() ) ),
+                            '</span>'
                         ),
                         'store_credit_coupon_code'   => \ACFWF()->Store_Credits_Checkout->get_store_credit_coupon_code(),
                     )
@@ -608,9 +620,10 @@ class Script_Loader extends Base_Model implements Model_Interface {
                 'currentlySelectedCouponLabel' => __( 'Currently selected coupon:', 'advanced-coupons-for-woocommerce-free' ),
                 'searchAndSelectCouponLabel'   => __( 'Search and select coupon', 'advanced-coupons-for-woocommerce-free' ),
                 'premiumUpsellMessage'         => sprintf(
-                    /* Translators: %s: Advanced Coupons premium pricing page URL. */
-                    __( 'This block is only available in the <a href="%s" target="_blank" rel="noopener noreferer">Premium add-on for Advanced Coupons.</a>', 'advanced-coupons-for-woocommerce-free' ),
-                    $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'gutenberg' )
+                    /* Translators: %1$s: opening anchor tag linking to the premium pricing page. %2$s: closing anchor tag. */
+                    __( 'This block is only available in the %1$sPremium add-on for Advanced Coupons.%2$s', 'advanced-coupons-for-woocommerce-free' ),
+                    '<a href="' . esc_url( $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'gutenberg' ) ) . '" target="_blank" rel="noopener noreferrer">',
+                    '</a>'
                 ),
 
                 'emptyCouponSearch'            => __( 'No coupons found.', 'advanced-coupons-for-woocommerce-free' ),

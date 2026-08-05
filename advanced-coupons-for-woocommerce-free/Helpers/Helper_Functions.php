@@ -230,6 +230,53 @@ class Helper_Functions {
     }
 
     /**
+     * Get the discount application mode for a given feature.
+     *
+     * Resolves the store-owner setting that controls how a feature's discount is applied:
+     * - 'price'  : bake the discount into the item/shipping rate price directly (default, legacy behavior).
+     * - 'coupon' : keep prices unchanged and attribute the discount to the coupon amount instead.
+     *
+     * Premium features register their feature => option ID mapping via the
+     * `acfw_discount_application_mode_options_map` filter.
+     *
+     * @since 4.8
+     * @access public
+     *
+     * @param string          $feature Feature slug (e.g. 'bogo_deals', 'add_products', 'shipping_overrides').
+     * @param \WC_Coupon|null $coupon  Coupon object context (reserved for future per-coupon overrides).
+     * @return string Discount application mode ('price' or 'coupon').
+     */
+    public function get_discount_application_mode( $feature, $coupon = null ) {
+        /**
+         * Filter the feature => option ID map used to resolve discount application modes.
+         *
+         * @since 4.8
+         *
+         * @param array $options_map Feature slug keyed list of option IDs.
+         */
+        $options_map = apply_filters(
+            'acfw_discount_application_mode_options_map',
+            array(
+                'bogo_deals' => Plugin_Constants::BOGO_DISCOUNT_APPLICATION_MODE,
+            )
+        );
+
+        $mode = isset( $options_map[ $feature ] ) ? get_option( $options_map[ $feature ], 'price' ) : 'price';
+        $mode = in_array( $mode, array( 'price', 'coupon' ), true ) ? $mode : 'price';
+
+        /**
+         * Filter the resolved discount application mode for a feature.
+         *
+         * @since 4.8
+         *
+         * @param string          $mode    Discount application mode ('price' or 'coupon').
+         * @param string          $feature Feature slug.
+         * @param \WC_Coupon|null $coupon  Coupon object context.
+         */
+        return apply_filters( 'acfw_discount_application_mode', $mode, $feature, $coupon );
+    }
+
+    /**
      * Get all currently active modules.
      *
      * @since 1.0

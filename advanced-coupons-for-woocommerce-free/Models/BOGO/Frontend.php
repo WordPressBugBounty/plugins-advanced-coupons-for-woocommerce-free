@@ -219,11 +219,15 @@ class Frontend extends Base_Model implements Model_Interface {
         }
 
         // apply discount by adjusting cart item prices.
+        // NOTE: in "coupon" discount application mode this still runs to populate the
+        // price display bookkeeping (used by the coupon summary and order meta), but the
+        // actual cart item price mutations are skipped — the discount is instead delivered
+        // through the `woocommerce_coupon_get_discount_amount` filter.
         if ( ! empty( $this->_calculation->get_all_entries() ) ) {
             $this->_set_matching_cart_item_deals_prices();
 
-            // apply price of matching cart item triggers.
-            if ( apply_filters( 'acfw_enable_matching_cart_triggers_prices', false ) ) {
+            // apply price of matching cart item triggers (price modification mode only).
+            if ( ! $this->is_coupon_amount_mode() && apply_filters( 'acfw_enable_matching_cart_triggers_prices', false ) ) {
                 $this->_set_matching_cart_item_triggers_prices();
             }
         }
@@ -428,9 +432,14 @@ class Frontend extends Base_Model implements Model_Interface {
                 // reads this meta and returns it, overriding whatever WooPayments at
                 // priority 99 computed. This follows the same pattern WooPayments itself
                 // uses in its WooCommerceProductAddOns compatibility class.
-                $bogo_new_price = apply_filters( 'acfw_bogo_get_item_new_price', $new_price, $cart_item );
-                $cart_item['data']->update_meta_data( self::BOGO_LOCKED_PRICE_META_KEY, (float) $bogo_new_price );
-                $cart_item['data']->set_price( $bogo_new_price );
+                // In "coupon" discount application mode the product price is left untouched
+                // (no set_price, no locked-price meta) — the discount is applied to the
+                // coupon amount instead.
+                if ( ! $this->is_coupon_amount_mode() ) {
+                    $bogo_new_price = apply_filters( 'acfw_bogo_get_item_new_price', $new_price, $cart_item );
+                    $cart_item['data']->update_meta_data( self::BOGO_LOCKED_PRICE_META_KEY, (float) $bogo_new_price );
+                    $cart_item['data']->set_price( $bogo_new_price );
+                }
 
                 // add details to $this->_price_display property price differences on cart table.
                 $this->_price_display[ $key ] = array(
@@ -492,6 +501,12 @@ class Frontend extends Base_Model implements Model_Interface {
             if ( ! in_array( $key, $cart_keys, true ) ) {
                 unset( $this->_price_display[ $key ] );
             }
+        }
+
+        // In "coupon" discount application mode no prices were modified, so there is
+        // nothing to reset (and no locked-price meta should ever be stamped).
+        if ( $this->is_coupon_amount_mode() ) {
+            return;
         }
 
         // Reset prices for items that don't have BOGO discounts.
@@ -886,6 +901,12 @@ class Frontend extends Base_Model implements Model_Interface {
      * @return string Filtered item price.
      */
     public function display_discounted_price( $price_html, $item ) {
+        // In "coupon" discount application mode item prices are not modified, so the
+        // price column should display the normal product price.
+        if ( $this->is_coupon_amount_mode() ) {
+            return $price_html;
+        }
+
         $key               = $item['key'];
         $data              = isset( $this->_price_display[ $key ] ) ? $this->_price_display[ $key ] : array();
         $discounted_prices = isset( $data['discounted_prices'] ) ? $data['discounted_prices'] : array();
@@ -986,6 +1007,127 @@ class Frontend extends Base_Model implements Model_Interface {
     }
 
     /**
+     * Check if BOGO Deals discounts should be applied to the coupon amount instead of
+     * modifying the deal item prices.
+     *
+     * @since 4.8
+     * @access public
+     *
+     * @return bool True when the "coupon amount" discount application mode is selected.
+     */
+    public function is_coupon_amount_mode() {
+        return 'coupon' === $this->_helper_functions->get_discount_application_mode( 'bogo_deals' );
+    }
+
+    /**
+     * Register the BOGO coupon type as a cart coupon type in "coupon" discount application mode.
+     *
+     * `WC_Discounts::get_items_to_apply_coupon()` only passes cart items to a coupon when
+     * the coupon is valid for the product or valid for the cart. Custom coupon types fail
+     * both checks by default, which would prevent `apply_coupon_custom()` from ever calling
+     * `WC_Coupon::get_discount_amount()` for BOGO coupons. Registering `acfw_bogo` as a cart
+     * coupon type makes all cart items eligible (mirrors the Cashback coupon type approach);
+     * items without matched deal entries simply receive a zero discount.
+     *
+     * @since 4.8
+     * @access public
+     *
+     * @param array $types Cart coupon types.
+     * @return array Filtered cart coupon types.
+     */
+    public function register_bogo_cart_coupon_type( $types ) {
+        if ( $this->is_coupon_amount_mode() && ! in_array( 'acfw_bogo', $types, true ) ) {
+            $types[] = 'acfw_bogo';
+        }
+
+        return $types;
+    }
+
+    /**
+     * Deliver BOGO deal discounts through the native coupon discount amount in
+     * "coupon" discount application mode.
+     *
+     * Runs on `woocommerce_coupon_get_discount_amount` during `WC_Discounts::apply_coupon_custom()`.
+     * The discount per unit is calculated from the same matched deal entries and price basis as
+     * price modification mode, so totals are identical between the two modes. WooCommerce then
+     * natively handles the item tax bases, the cart coupon discount totals, and the order
+     * coupon line amounts.
+     *
+     * Notes:
+     * - `apply_coupon_custom()` calls this with `$single = true` (per-unit price) and multiplies
+     *   the result by the item quantity, so the matched entries' total is averaged across the
+     *   full line quantity (deal entries may cover only part of the line).
+     * - Price-increasing overrides (override price above the product price) cannot be expressed
+     *   as a coupon discount, so entry discounts are clamped at zero.
+     * - Order recalculations pass order items instead of cart items and are intentionally
+     *   ignored (the persisted order coupon line and meta are the durable record).
+     *
+     * @since 4.8
+     * @access public
+     *
+     * @param float      $discount           Discount amount.
+     * @param float      $discounting_amount Amount the coupon is being applied to.
+     * @param array|null $cart_item          Cart item data (order item object during order recalculation).
+     * @param bool       $single             True if the discount is being applied to a single qty.
+     * @param \WC_Coupon $coupon             Coupon object.
+     * @return float Filtered discount amount.
+     */
+    public function filter_bogo_coupon_discount_amount( $discount, $discounting_amount, $cart_item, $single, $coupon ) {
+        if (
+            ! $this->is_coupon_amount_mode()
+            || ! $coupon instanceof \WC_Coupon
+            || 'acfw_bogo' !== $coupon->get_discount_type()
+            || ! is_array( $cart_item )
+            || ! isset( $cart_item['key'], $cart_item['data'], $cart_item['quantity'] )
+            || ! $cart_item['data'] instanceof \WC_Product
+        ) {
+            return $discount;
+        }
+
+        if ( ! $this->_calculation instanceof Calculation ) {
+            $this->_calculation = Calculation::get_instance();
+        }
+
+        $coupon_code = $coupon->get_code();
+        $deals       = array_filter(
+            $this->_calculation->get_entries_by_cart_item( $cart_item['key'], 'deal' ),
+            function ( $entry ) use ( $coupon_code ) {
+                return $entry['coupon'] === $coupon_code;
+            }
+        );
+
+        if ( empty( $deals ) ) {
+            return $discount;
+        }
+
+        // Use the same price basis as price modification mode (the "regular" price basis,
+        // subject to the always-use-regular-price option) so both modes charge the customer
+        // the same amount for each deal unit.
+        $price_basis = $this->_helper_functions->get_price( $cart_item['data'], array( 'cart_item' => $cart_item ) );
+
+        // Per-unit price the customer is actually being discounted against. The price basis
+        // can differ from it (e.g. regular price basis vs. sale price on the line), so the
+        // coupon discount per unit is the difference between the current unit price and the
+        // unit price that price modification mode would have charged (basis - deal discount).
+        $current_unit_price = $single ? (float) $discounting_amount : (float) $discounting_amount / max( 1, (int) $cart_item['quantity'] );
+        $total              = 0.0;
+
+        foreach ( $deals as $deal ) {
+            $deal_discount  = (float) \ACFWF()->Helper_Functions->calculate_discount_by_type( $deal['discount_type'], $deal['discount'], $price_basis );
+            $new_unit_price = max( 0.0, $price_basis - $deal_discount );
+            $total         += max( 0.0, $current_unit_price - $new_unit_price ) * $deal['quantity'];
+        }
+
+        if ( 0.0 >= $total ) {
+            return $discount;
+        }
+
+        // Average the matched entries' total across the full line quantity, as WooCommerce
+        // multiplies the per-unit discount by the item quantity.
+        return $single ? $total / max( 1, (int) $cart_item['quantity'] ) : $total;
+    }
+
+    /**
      * Save bogo discounts to order.
      *
      * @since 1.0
@@ -1005,23 +1147,29 @@ class Frontend extends Base_Model implements Model_Interface {
         $order->update_meta_data( Plugin_Constants::ORDER_BOGO_DISCOUNTS, array_values( $this->_price_display ) );
         $order->save_meta_data();
 
-        $order_coupons = $order->get_items( 'coupon' );
+        // In "coupon" discount application mode the BOGO discount is already part of the
+        // native order coupon line discount. Skip the extra meta so downstream consumers
+        // (edit order coupon value display, extra discount totals) don't count it twice.
+        if ( ! $this->is_coupon_amount_mode() ) {
 
-        foreach ( $order_coupons as $order_coupon ) {
-            $discounts = $this->calculate_bogo_discounts_for_coupon( $order_coupon->get_code() );
+            $order_coupons = $order->get_items( 'coupon' );
 
-            // calculate the total discount via BOGO for coupon.
-            $bogo_discount = array_reduce(
-                $discounts,
-                function ( $c, $d ) {
-                    return $c + $d['amount'];
-                },
-                0.0
-            );
+            foreach ( $order_coupons as $order_coupon ) {
+                $discounts = $this->calculate_bogo_discounts_for_coupon( $order_coupon->get_code() );
 
-            // save BOGO total discount to the coupon line item meta.
-            $order_coupon->update_meta_data( Plugin_Constants::ORDER_COUPON_BOGO_DISCOUNT, $bogo_discount );
-            $order_coupon->save_meta_data();
+                // calculate the total discount via BOGO for coupon.
+                $bogo_discount = array_reduce(
+                    $discounts,
+                    function ( $c, $d ) {
+                        return $c + $d['amount'];
+                    },
+                    0.0
+                );
+
+                // save BOGO total discount to the coupon line item meta.
+                $order_coupon->update_meta_data( Plugin_Constants::ORDER_COUPON_BOGO_DISCOUNT, $bogo_discount );
+                $order_coupon->save_meta_data();
+            }
         }
 
         // clear session data.
@@ -1132,7 +1280,20 @@ class Frontend extends Base_Model implements Model_Interface {
 
             // calculate total discount value for matched deal item, by looping on all applied discount prices.
             $amount = \ACFWF()->Helper_Functions->calculate_discount_by_type( $deal['discount_type'], $deal['discount'], $price );
-            $total  = $amount * $deal['quantity'];
+
+            // In "coupon" discount application mode report the amount actually attributed to
+            // the coupon (difference between the item's natural unit price and the unit price
+            // that price modification mode would have charged) so the summary rows add up to
+            // the coupon line total.
+            if ( $this->is_coupon_amount_mode() ) {
+                $cart_item = $this->_helper_functions->get_cart_item( $deal['key'] );
+
+                if ( ! empty( $cart_item ) && isset( $cart_item['data'] ) ) {
+                    $amount = max( 0.0, (float) $cart_item['data']->get_price() - max( 0.0, (float) $price - $amount ) );
+                }
+            }
+
+            $total = $amount * $deal['quantity'];
 
             /**
              * If discount is negative, it means that the new price is greater than the regular price.
@@ -1230,6 +1391,10 @@ class Frontend extends Base_Model implements Model_Interface {
         add_filter( 'woocommerce_coupon_is_valid', array( $this, 'restrict_cart_to_only_one_bogo_deal' ), 10, 2 );
         add_action( 'woocommerce_before_calculate_totals', array( $this, 'implement_bogo_deals' ), apply_filters( 'acfw_bogo_implementation_priority', 11 ) );
         add_filter( 'woocommerce_cart_item_price', array( $this, 'display_discounted_price' ), 10, 2 );
+        // "Coupon amount" discount application mode: deliver BOGO discounts through the
+        // native coupon discount amount instead of modifying deal item prices.
+        add_filter( 'woocommerce_cart_coupon_types', array( $this, 'register_bogo_cart_coupon_type' ) );
+        add_filter( 'woocommerce_coupon_get_discount_amount', array( $this, 'filter_bogo_coupon_discount_amount' ), 10, 5 );
         add_filter( 'woocommerce_cart_totals_coupon_html', array( $this, 'display_bogo_discount_summary' ), 10, 3 );
         add_filter( 'acfwf_cart_checkout_block_coupon_summary', array( $this, 'add_bogo_discount_summary_to_cart_checkout_block' ), 10, 2 );
         add_action( 'woocommerce_checkout_order_processed', array( $this, 'save_bogo_discounts_to_order' ), 10, 3 );

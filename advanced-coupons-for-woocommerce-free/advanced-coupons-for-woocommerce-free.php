@@ -4,13 +4,13 @@
  * Plugin Name: Advanced Coupons for WooCommerce Free
  * Plugin URI: https://advancedcouponsplugin.com
  * Description: Advanced Coupons for WooCommerce (Free Version) gives WooCommerce store owners extra coupon features so they can market their stores better.
- * Version: 4.7.4
+ * Version: 4.7.5
  * Author: Rymera Web Co
  * Author URI: https://rymera.com.au
  * Requires at least: 5.9
- * Tested up to: 7.0
+ * Tested up to: 7.0.2
  * WC requires at least: 4.0
- * WC tested up to: 10.9.3
+ * WC tested up to: 10.9.4
  *
  * Text Domain: advanced-coupons-for-woocommerce-free
  * Domain Path: /languages/
@@ -37,6 +37,7 @@ use ACFWF\Models\BOGO_Deals; // deprecated.
 use ACFWF\Models\Bootstrap;
 use ACFWF\Models\General;
 use ACFWF\Models\Cart_Conditions;
+use ACFWF\Models\Discount_Application;
 use ACFWF\Models\Scheduler;
 use ACFWF\Models\Editor_Blocks;
 use ACFWF\Models\Edit_Coupon;
@@ -425,6 +426,7 @@ class ACFWF extends Abstract_Main_Plugin_Class { // phpcs:ignore
         $url_coupons             = URL_Coupons::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $role_restriction        = Role_Restrictions::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $cart_conditions         = Cart_Conditions::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        $discount_application    = Discount_Application::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $scheduler               = Scheduler::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $plugin_installer        = Plugin_Installer::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $admin_app               = Admin_App::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions, $plugin_installer );
